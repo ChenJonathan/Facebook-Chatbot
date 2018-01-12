@@ -1,3 +1,2 @@
 cleverbot.py==2.0.1
 fbchat==1.2.1
-gunicorn==19.6.0
