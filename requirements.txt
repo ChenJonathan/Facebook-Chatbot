@@ -1,4 +1,3 @@
 cleverbot.py==2.0.1
-inflect==0.2.5
 fbchat==1.2.1
 Flask==0.11.1
