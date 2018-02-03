@@ -77,9 +77,14 @@ def alias_remove(alias):
 
 # Priority methods
 
+priority_names = ['Peasant', 'User', 'Mod', 'Admin', 'Master']
+
 def priority_get(user_id):
     user_try_add(user_id)
     return db_users.find_one(user_id)['priority']
+
+def exceeds_priority(user_id_1, user_id_2):
+    return priority_get(user_id_1) > priority_get(user_id_2)
 
 def priority_set(user_id, priority):
     user_try_add(user_id)
@@ -87,3 +92,12 @@ def priority_set(user_id, priority):
     db_users.update_one({'_id': user_id}, update)
 
 # Experience methods
+
+def experience_get(user_id):
+    user_try_add(user_id)
+    return db_users.find_one(user_id)['experience']
+
+def experience_add(user_id, experience):
+    user_try_add(user_id)
+    update = {'$inc': {'experience': experience}}
+    db_users.update_one({'_id': user_id}, update)
