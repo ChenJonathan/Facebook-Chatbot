@@ -239,7 +239,6 @@ def run_command_group(client, command, text, author_id, thread_id):
                 message = Message(reply)
         else:
             user = client.fetchUserInfo(author_id)[author_id]
-            priority_set(user.uid, 0)
             reply = user.name + '\'s priority has been set to 0'
             reply += ' (' + priority_names[0] + ').'
             message = Message(reply)
@@ -274,8 +273,39 @@ def run_command_group(client, command, text, author_id, thread_id):
         message = Message(user.name + ' rolls ' + roll + '.')
         client.send(message, thread_id=thread_id, thread_type=ThreadType.GROUP)
 
-    elif command == 'store' or command == 's':
-        pass
+    elif command == 'shop' or command == 's':
+        text = text.strip().lower()
+        if len(text) == 0:
+            reply = ['<Wong\'s Shoppe>']
+            reply.append('1. 0100 exp: Charity donation')
+            reply.append('2. 1000 exp: Reaction image')
+            reply.append('3. 9999 exp: Priority boost')
+            reply.append('(Buy things with "!shop <item>")')
+            reply = '\n'.join(reply)
+        else:
+            text = int(text)
+            experience = experience_get(author_id)
+            if text == 1 and experience >= 100:
+                charities = [
+                    'Flat Earth Society', 
+                    'KKK', 
+                    'Westboro Baptist Church', 
+                    'Church of Scientology'
+                ]
+                experience_add(author_id, -100)
+                reply = 'The ' + random.choice(charities) + ' thanks you for your donation.'
+            elif text == 2 and experience >= 1000:
+                reply = 'Not implemented yet.'
+            elif text == 3 and experience >= 9999:
+                priority = priority_get(author_id) + 1
+                if priority < priority_get(master_id):
+                    experience_add(author_id, -9999)
+                    priority_set(author_id, priority)
+                    name = user_from_id(author_id)['name']
+                    reply = name + '\'s rank is now ' + priority_names[priority] + '!'
+                else:
+                    reply = 'You\'ve already reached the highest rank.'
+        client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
 
     elif command == 'test' or command == 't':
         colors = list(ThreadColor)
