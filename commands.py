@@ -8,7 +8,7 @@ from quest import generate_quest
 
 master_id = '1564703352'
 
-def run_command_user(client, command, text, author_id, thread_id):
+def run_user_command(client, command, text, author_id, thread_id):
     if command == 'alias' or command == 'a':
         alias, user, *_ = text.split(' ', 1) + ['']
         alias = alias.lower()
@@ -125,7 +125,7 @@ def run_command_user(client, command, text, author_id, thread_id):
         elif len(text) == 1:
             client.responses.clear()
 
-def run_command_group(client, command, text, author_id, thread_id):
+def run_group_command(client, command, text, author_id, thread_id):
     if command == 'alias' or command == 'a':
         if author_id != master_id:
             return
@@ -187,7 +187,7 @@ def run_command_group(client, command, text, author_id, thread_id):
 
     elif command == 'daily' or command == 'd':
         text = text.strip().lower()
-        if text != 'color' and text != 'emoji':
+        if not in ['color', 'emoji']:
             return
         subscriptions = subscription_get(thread_id)
         if text in subscriptions:
@@ -205,7 +205,7 @@ def run_command_group(client, command, text, author_id, thread_id):
 
     elif command == 'image' or command == 'i':
         if len(text) > 0:
-            image = image_get(author_id, int(text) - 1) % 96
+            image = image_get(author_id, int(text)) % 96
             if image:
                 path = './images/' + str(image) + '.jpg'
                 client.sendLocalImage(path, thread_id=thread_id, thread_type=ThreadType.GROUP)
@@ -305,6 +305,7 @@ def run_command_group(client, command, text, author_id, thread_id):
                 image = random.randint(0, 999999)
                 image_add(author_id, image)
                 reply = 'You\'ve received an image!\n'
+                reply += 'It has been placed in slot ' + str(image_count(author_id)) + '.\n'
                 reply += '(Use it with "!image <slot>")'
             elif text == 3 and experience >= 9999:
                 priority = priority_get(author_id) + 1
