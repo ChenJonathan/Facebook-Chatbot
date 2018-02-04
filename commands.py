@@ -204,10 +204,14 @@ def run_command_group(client, command, text, author_id, thread_id):
         client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
 
     elif command == 'image' or command == 'i':
-        image = image_get(author_id, int(text) - 1) % 96
-        if image:
-            path = './images/' + str(image) + '.jpg'
-            client.sendLocalImage(path, thread_id=thread_id, thread_type=ThreadType.GROUP)
+        if len(text) > 0:
+            image = image_get(author_id, int(text) - 1) % 96
+            if image:
+                path = './images/' + str(image) + '.jpg'
+                client.sendLocalImage(path, thread_id=thread_id, thread_type=ThreadType.GROUP)
+        else:
+            reply = 'You have ' + str(len(user_from_id(author_id)['images'])) + ' images.'
+            client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
 
     elif command == 'mute' or command == 'm':
         if len(text) == 0:
