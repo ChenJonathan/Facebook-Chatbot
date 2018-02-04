@@ -205,7 +205,7 @@ def run_group_command(client, command, text, author_id, thread_id):
 
     elif command == 'image' or command == 'i':
         if len(text) > 0:
-            image = image_get(author_id, int(text)) % 96
+            image = image_get(author_id, int(text))
             if image:
                 path = './images/' + str(image) + '.jpg'
                 client.sendLocalImage(path, thread_id=thread_id, thread_type=ThreadType.GROUP)
@@ -302,7 +302,7 @@ def run_group_command(client, command, text, author_id, thread_id):
                 reply = 'The ' + random.choice(charities) + ' thanks you for your donation.'
             elif text == 2 and experience >= 1000:
                 experience_add(author_id, -1000)
-                image = random.randint(0, 999999)
+                image = random.randint(0, client.num_images - 1)
                 image_add(author_id, image)
                 reply = 'You\'ve received an image!\n'
                 reply += 'It has been placed in slot ' + str(image_count(author_id)) + '.\n'
