@@ -304,7 +304,8 @@ def run_command_group(client, command, text, author_id, thread_id):
                 experience_add(author_id, -1000)
                 image = random.randint(0, 999999)
                 image_add(author_id, image)
-                reply = 'You\'ve received an image!'
+                reply = 'You\'ve received an image!\n'
+                reply += '(Use it with "!image <slot>")'
             elif text == 3 and experience >= 9999:
                 priority = priority_get(author_id) + 1
                 if priority < priority_get(master_id):

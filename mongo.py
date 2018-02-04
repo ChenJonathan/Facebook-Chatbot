@@ -107,8 +107,10 @@ def experience_add(user_id, experience):
 
 def image_get(user_id, slot):
     user_try_add(user_id)
+    if slot < 0:
+        return None
     images = db_users.find_one(user_id)['images']
-    return images[slot] if slot >= 0 and slot < len(images) else None
+    return images[slot] if slot < len(images) else None
 
 def image_add(user_id, image):
     user_try_add(user_id)
