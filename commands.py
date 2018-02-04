@@ -187,7 +187,7 @@ def run_group_command(client, command, text, author_id, thread_id):
 
     elif command == 'daily' or command == 'd':
         text = text.strip().lower()
-        if not in ['color', 'emoji']:
+        if text not in ['color', 'emoji']:
             return
         subscriptions = subscription_get(thread_id)
         if text in subscriptions:
