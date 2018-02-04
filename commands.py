@@ -204,8 +204,10 @@ def run_command_group(client, command, text, author_id, thread_id):
         client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
 
     elif command == 'image' or command == 'i':
-        path = './images/' + str(random.randint(0, 95)) + '.jpg'
-        client.sendLocalImage(path, thread_id=thread_id, thread_type=ThreadType.GROUP)
+        image = image_get(author_id, int(text)) % 96
+        if image:
+            path = './images/' + str(image) + '.jpg'
+            client.sendLocalImage(path, thread_id=thread_id, thread_type=ThreadType.GROUP)
 
     elif command == 'mute' or command == 'm':
         if len(text) == 0:
@@ -245,10 +247,11 @@ def run_command_group(client, command, text, author_id, thread_id):
         client.send(message, thread_id=thread_id, thread_type=ThreadType.GROUP)
 
     elif command == 'quest' or command == 'q':
-        experience = experience_get(author_id)
+        user = user_from_id(author_id)
+        experience = user['experience']
         quest = generate_quest(1 if experience < 0 else len(str(experience)))
         client.quest_record[author_id] = quest
-        reply = '"' + quest['question'] + '" means:'
+        reply = user['name'] + ', which word means "' + quest['question'] + '"?'
         for i, answer in enumerate(quest['answers']):
             reply += '\n' + str(i + 1) + '. ' + quest['answers'][i]
         client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
@@ -279,7 +282,7 @@ def run_command_group(client, command, text, author_id, thread_id):
             reply = ['<Wong\'s Shoppe>']
             reply.append('1. 0100 exp: Charity donation')
             reply.append('2. 1000 exp: Reaction image')
-            reply.append('3. 9999 exp: Priority boost')
+            reply.append('3. 9999 exp: Rank boost')
             reply.append('(Buy things with "!shop <item>")')
             reply = '\n'.join(reply)
         else:
@@ -288,14 +291,16 @@ def run_command_group(client, command, text, author_id, thread_id):
             if text == 1 and experience >= 100:
                 charities = [
                     'Flat Earth Society', 
-                    'KKK', 
                     'Westboro Baptist Church', 
                     'Church of Scientology'
                 ]
                 experience_add(author_id, -100)
                 reply = 'The ' + random.choice(charities) + ' thanks you for your donation.'
             elif text == 2 and experience >= 1000:
-                reply = 'Not implemented yet.'
+                experience_add(author_id, -1000)
+                image = random.randint(0, 999999)
+                image_add(author_id, image)
+                reply = 'You\'ve received an image!'
             elif text == 3 and experience >= 9999:
                 priority = priority_get(author_id) + 1
                 if priority < priority_get(master_id):

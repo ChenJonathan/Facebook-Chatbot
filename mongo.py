@@ -57,7 +57,8 @@ def user_try_add(user_id):
             '_id': user_id, 
             'name': name, 
             'priority': 1, 
-            'experience': 0
+            'experience': 0,
+            'images': []
         })
 
 # Alias methods
@@ -100,4 +101,16 @@ def experience_get(user_id):
 def experience_add(user_id, experience):
     user_try_add(user_id)
     update = {'$inc': {'experience': experience}}
+    db_users.update_one({'_id': user_id}, update)
+
+# Image methods
+
+def image_get(user_id, slot):
+    user_try_add(user_id)
+    images = db_users.find_one(user_id)['images']
+    return images[slot] if slot >= 0 and slot < len(images) else None
+
+def image_add(user_id, image):
+    user_try_add(user_id)
+    update = {'$push': {'images': image}}
     db_users.update_one({'_id': user_id}, update)
