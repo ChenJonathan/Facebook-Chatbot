@@ -57,7 +57,7 @@ def user_try_add(user_id):
             '_id': user_id, 
             'name': name, 
             'priority': 1, 
-            'experience': 0,
+            'gold': 0,
             'images': []
         })
 
@@ -90,15 +90,15 @@ def priority_set(user_id, priority):
     update = {'$set': {'priority': priority}}
     db_users.update_one({'_id': user_id}, update)
 
-# Experience methods
+# Gold methods
 
-def experience_get(user_id):
+def gold_get(user_id):
     user_try_add(user_id)
-    return db_users.find_one(user_id)['experience']
+    return db_users.find_one(user_id)['gold']
 
-def experience_add(user_id, experience):
+def gold_add(user_id, gold):
     user_try_add(user_id)
-    update = {'$inc': {'experience': experience}}
+    update = {'$inc': {'gold': gold}}
     db_users.update_one({'_id': user_id}, update)
 
 # Image methods

@@ -39,11 +39,11 @@ def run_user_command(client, command, text, author):
             users = alias_get_all()
         reply = []
         for user in users:
-            line = user['alias'] + ': '
-            line += '<' + user['name'] + ' (' + user['_id'] + ')>: '
-            line += priority_names[priority_get(user['_id'])]
+            line = '<' + user['name'] + '> (' + user['alias'] + ')\n'
+            line += 'Priority: ' + priority_names[user['priority']] + '\n'
+            line += 'Gold: ' + str(user['gold'])
             reply.append(line)
-        reply = '\n'.join(reply) if reply else 'No aliases set.'
+        reply = '\n\n'.join(reply) if reply else 'No aliases set.'
         client.send(Message(reply), thread_id=author_id)
 
     elif command == 'define' or command == 'd':
@@ -52,7 +52,7 @@ def run_user_command(client, command, text, author):
         text = text.strip()
         if len(text) > 0:
             client.defines[command] = text
-        else:
+        elif len(command) > 0:
             del client.defines[command]
 
     elif command == 'help' or command == 'h':
@@ -160,16 +160,18 @@ def run_group_command(client, command, text, author, thread_id):
                 meessage = Message('User not found.')
                 client.send(message, thread_id=thread_id, thread_type=ThreadType.GROUP)
                 return
-            users = {user.uid: user}
+            users = [user.uid]
         else:
-            group = client.fetchGroupInfo(thread_id)[thread_id]
-            users = client.fetchUserInfo(*group.participants)
+            users = client.fetchGroupInfo(thread_id)[thread_id].participants
         reply = []
-        for user_id, user in users.items():
-            line = '<' + user.name + ' (' + user.uid + ')>: '
-            line += priority_names[priority_get(user_id)]
+        for user_id in users:
+            user = user_from_id(user_id)
+            line = '<' + user['name'] + '>\n'
+            line += 'Priority: ' + priority_names[user['priority']] + '\n'
+            line += 'Gold: ' + str(user['gold'])
             reply.append(line)
-        client.send(Message('\n'.join(reply)), thread_id=thread_id, thread_type=ThreadType.GROUP)
+        reply = '\n\n'.join(reply)
+        client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
 
     elif command == 'daily' or command == 'd':
         text = text.strip().lower()
@@ -274,26 +276,26 @@ def run_group_command(client, command, text, author, thread_id):
             reply = '\n'.join(reply)
         else:
             text = int(text)
-            experience = experience_get(author_id)
-            if text == 1 and experience >= 100:
+            gold = gold_get(author_id)
+            if text == 1 and gold >= 100:
                 charities = [
                     'Flat Earth Society', 
                     'Westboro Baptist Church', 
                     'Church of Scientology'
                 ]
-                experience_add(author_id, -100)
+                gold_add(author_id, -100)
                 reply = 'The ' + random.choice(charities) + ' thanks you for your donation.'
-            elif text == 2 and experience >= 1000:
-                experience_add(author_id, -1000)
+            elif text == 2 and gold >= 1000:
+                gold_add(author_id, -1000)
                 image = random.randint(0, client.num_images - 1)
                 image_add(author_id, image)
                 reply = 'You\'ve received an image!\n'
                 reply += 'It has been placed in slot ' + str(len(author['images'])) + '.\n'
                 reply += '(Use it with "!image <slot>")'
-            elif text == 3 and experience >= 9999:
+            elif text == 3 and gold >= 9999:
                 priority = priority_get(author_id) + 1
                 if priority < priority_get(master_id):
-                    experience_add(author_id, -9999)
+                    gold_add(author_id, -9999)
                     priority_set(author_id, priority)
                     name = author['name']
                     reply = name + '\'s rank is now ' + priority_names[priority] + '!'

@@ -100,10 +100,10 @@ def generate_group_info(client, text, author, thread_id):
         reply += '!image: Post saved images\n'
         reply += '!mute: Kick someone\n'
         reply += '!perm: Change user priority\n'
-        reply += '!quest: Earn experience\n'
+        reply += '!quest: Earn gold\n'
         reply += '!random: Random chat emoji / color\n'
         reply += '!roll: Roll the dice\n'
-        reply += '!shop: Spend experience\n'
+        reply += '!shop: Spend gold\n'
         reply += '(See what commands do with "!help <command>")'
 
     elif text == 'alias':
@@ -173,8 +173,7 @@ def generate_group_info(client, text, author, thread_id):
         reply += 'Usage: "!quest"\n'
         reply += 'Generates a multiple choice question for you. You can answer by '
         reply += 'replying with either the answer itself or the choice number. '
-        reply += 'Correct responses increase your experience while incorrect responses '
-        reply += 'decrease it.'
+        reply += 'Correct responses increase gold while incorrect responses decrease it.'
 
     elif text == 'random':
         reply = '<<Random>>\n'
