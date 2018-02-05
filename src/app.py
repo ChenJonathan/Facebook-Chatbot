@@ -72,7 +72,7 @@ class ChatBot(Client):
 
         # Update travel status - Unrelated to messaging
         now = datetime.now()
-        for user_id, record in self.travel_record.items():
+        for user_id, record in list(self.travel_record.items()):
             if now > record[1]:
                 location_set(user_id, record[0])
                 del self.travel_record[user_id]
