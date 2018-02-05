@@ -141,7 +141,7 @@ def run_group_command(client, command, text, author, thread_id):
             user = client.matchUser(thread_id, text)
         if user:
             if exceeds_priority(user.uid, author_id):
-                reply = '{} is a cool guy.'.format(user.name)
+                reply = user.name + ' is a cool guy.'
                 client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
                 user = client.fetchUserInfo(author_id)[author_id]
             url = 'https://insult.mattbas.org/api/insult.txt?who=' + user.name
@@ -287,8 +287,8 @@ def run_group_command(client, command, text, author, thread_id):
         if len(text) == 0:
             reply = ['<<The Wong Shoppe>>']
             reply.append('1. 0100 gold: Charity donation')
-            reply.append('2. 1000 gold: Reaction image')
-            reply.append('3. 2000 gold: Random hunting pet')
+            reply.append('2. 0500 gold: Reaction image')
+            reply.append('3. 1000 gold: Random hunting pet')
             reply.append('4. 9999 gold: Priority boost')
             reply.append('(Buy things with "!shop <item>")')
             reply = '\n'.join(reply)
@@ -303,17 +303,17 @@ def run_group_command(client, command, text, author, thread_id):
                 ]
                 gold_add(author_id, -100)
                 reply = 'The ' + random.choice(charities) + ' thanks you for your donation.'
-            elif text == 2 and gold >= 1000:
-                gold_add(author_id, -1000)
+            elif text == 2 and gold >= 500:
+                gold_add(author_id, -500)
                 image = random.randint(0, client.num_images - 1)
                 image_add(author_id, image)
                 reply = 'You\'ve received an image! It has been placed in slot '
                 reply += str(len(author['images']) + 1) + '.\n'
                 reply += '(Use it with "!image <slot>")'
-            elif text == 3 and gold >= 2000:
+            elif text == 3 and gold >= 1000:
                 beast = random_beast()
                 delta_rate = beast[1] * beast[2]
-                gold_add(author_id, -2000)
+                gold_add(author_id, -1000)
                 gold_rate_add(author_id, delta_rate)
                 reply = 'You\'ve bought a ' + str(beast[1]) + '/' + str(beast[2])
                 reply += ' ' + beast[0] + '! It grants you an additional '
