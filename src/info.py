@@ -102,11 +102,11 @@ def generate_group_info(client, text, author, thread_id):
         reply += '!mute: Kick someone\n'
         if is_master:
             reply += '!perm: Change user priority\n'
-        reply += '!quest: Earn gold\n'
+        reply += '!quest: Earn gold through quizzes\n'
         reply += '!random: Random chat emoji / color\n'
         reply += '!roll: Roll the dice\n'
         reply += '!shop: Spend gold\n'
-        reply += '(See what commands do with "!help <command>")'
+        reply += '(See how commands work with "!help <command>")'
 
     elif text == 'alias':
         if is_master:

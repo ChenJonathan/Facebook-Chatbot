@@ -1,4 +1,6 @@
 from fbchat.models import *
+from datetime import datetime, timedelta
+import math
 import random
 import requests
 
@@ -7,6 +9,7 @@ from hearthstone import random_beast
 from info import generate_user_info, generate_group_info
 from mongo import *
 from quest import generate_quest
+from travel import check_locations, travel_to_location, location_to_name
 from util import master_id, priority_names
 
 def run_user_command(client, command, text, author):
@@ -43,6 +46,12 @@ def run_user_command(client, command, text, author):
             line = '<' + user['name'] + '> (' + user['alias'] + ')\n'
             line += 'Priority: ' + priority_names[user['priority']] + '\n'
             line += 'Gold: ' + str(user['gold']) + ' (+' + str(user['gold_rate']) + '/hour)\n'
+            line += 'Location: ' + location_to_name(user['location'])
+            if user['_id'] in client.travel_record:
+                record = client.travel_record[user['_id']]
+                minutes = math.ceil((record[1] - datetime.now()).total_seconds() / 60)
+                line += ' -> ' + location_to_name(record[0]) + '\n'
+                line += '(' + str(minutes) + ' minutes remaining)'
             reply.append(line)
         reply = '\n\n'.join(reply) if reply else 'No aliases set.'
         client.send(Message(reply), thread_id=author_id)
@@ -166,6 +175,12 @@ def run_group_command(client, command, text, author, thread_id):
             line = '<' + user['name'] + '>\n'
             line += 'Priority: ' + priority_names[user['priority']] + '\n'
             line += 'Gold: ' + str(user['gold']) + ' (+' + str(user['gold_rate']) + '/hour)\n'
+            line += 'Location: ' + location_to_name(user['location'])
+            if user['_id'] in client.travel_record:
+                record = client.travel_record[user['_id']]
+                minutes = math.ceil((record[1] - datetime.now()).total_seconds() / 60)
+                line += ' -> ' + location_to_name(record[0]) + '\n'
+                line += '(' + str(minutes) + ' minutes remaining)'
             reply.append(line)
         reply = '\n\n'.join(reply)
         client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
@@ -253,7 +268,7 @@ def run_group_command(client, command, text, author, thread_id):
         client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
 
     elif command == 'quest' or command == 'q':
-        generate_quest(client, author_id, thread_id)
+        generate_quest(client, author, thread_id)
 
     elif command == 'random':
         colors = list(ThreadColor)
@@ -330,3 +345,9 @@ def run_group_command(client, command, text, author, thread_id):
             else:
                 return
         client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
+
+    elif command == 'travel' or command == 't':
+        if len(text) == 0:
+            check_locations(client, author, thread_id)
+        else:
+            travel_to_location(client, author, text, thread_id)

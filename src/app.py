@@ -12,7 +12,7 @@ from clock import set_timer
 from commands import run_group_command, run_user_command
 from emoji import random_emoji
 from mongo import *
-from quest import check_quest
+from quest import complete_quest
 from util import master_id
 
 cb = cleverbot.Cleverbot(os.environ.get('CLEVERBOT_KEY'))
@@ -26,6 +26,7 @@ class ChatBot(Client):
         self.num_images = len(os.listdir('./images'))
         self.message_record = {}
         self.quest_record = {}
+        self.travel_record = {}
 
         self.defines = {}
         self.responses = []
@@ -68,6 +69,13 @@ class ChatBot(Client):
     def onMessage(self, author_id, message_object, thread_id, thread_type, **kwargs):
         if author_id == self.uid:
             return
+
+        # Update travel status - Unrelated to messaging
+        now = datetime.now()
+        for user_id, record in self.travel_record.items():
+            if now > record[1]:
+                location_set(user_id, record[0])
+                del self.travel_record[user_id]
 
         # Check for chat commands
         if message_object.text[0] == '!':
@@ -112,7 +120,8 @@ class ChatBot(Client):
                     self.send(message, thread_id=thread_id, thread_type=ThreadType.GROUP)
 
             # Check for active quest
-            check_quest(self, text, author_id, thread_id)
+            if author_id in self.quest_record:
+                complete_quest(self, user_from_id(author_id). text, thread_id)
 
             # Cleverbot messaging
             if not command:

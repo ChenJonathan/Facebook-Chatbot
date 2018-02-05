@@ -25,11 +25,11 @@ def manage_subscriptions():
             self.changeThreadEmoji(emoji, thread_id=group_id)
 
 def reset_timer():
-    set_timer()
-
     apply_gold_rates()
     if datetime.today().hour == 0:
         manage_subscriptions()
+
+    set_timer()
 
 def set_timer():
     now = datetime.today()

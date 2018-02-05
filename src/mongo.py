@@ -62,6 +62,7 @@ def user_try_add(user_id):
             'priority': 1, 
             'gold': 0,
             'gold_rate': 0,
+            'location': 0,
             'images': []
         })
 
@@ -108,6 +109,13 @@ def gold_add(user_id, gold):
 def gold_rate_add(user_id, rate):
     user_try_add(user_id)
     update = {'$inc': {'gold_rate': rate}}
+    db_users.update_one({'_id': user_id}, update)
+
+# Travel methods
+
+def location_set(user_id, location):
+    user_try_add(user_id)
+    update = {'$set': {'location': location}}
     db_users.update_one({'_id': user_id}, update)
 
 # Image methods

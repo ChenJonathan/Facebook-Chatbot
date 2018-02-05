@@ -14,8 +14,7 @@ with open('./data/vocab.txt', 'r') as data:
         terms.append(term.strip())
         definitions.append(definition.strip())
 
-def generate_quest(client, author_id, thread_id):
-    user = user_from_id(author_id)
+def generate_quest(client, user, thread_id):
     gold = user['gold']
     difficulty = 1 if gold < 0 else len(str(gold))
     indices = random.sample(range(0, len(terms)), difficulty + 1)
@@ -40,23 +39,20 @@ def generate_quest(client, author_id, thread_id):
         reply += '\n' + str(i + 1) + '. ' + quest['answers'][i]
     client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
 
-def check_quest(client, text, author_id, thread_id):
-    if author_id in client.quest_record:
-        text = text.lower()
-        quest = client.quest_record[author_id]
-        correct = quest['correct']
-        del client.quest_record[author_id]
-        if text == str(correct + 1) or text == quest['answers'][correct].lower():
-            delta = random.randint(10, 99)
-            gold_add(author_id, delta)
-            user = user_from_id(author_id)
-            reply = user['name'] + ' has gained ' + str(delta) + ' gold and is now at '
-            reply += str(user['gold']) + ' gold total!'
-        else:
-            delta = random.randint(-99, -10)
-            gold_add(author_id, delta)
-            user = user_from_id(author_id)
-            reply = user['name'] + ' has lost ' + str(-delta) + ' gold and is now at '
-            reply += str(user['gold']) + ' gold total. The correct answer was '
-            reply += '"' + quest['answers'][correct] + '".'
-        client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
+def complete_quest(client, user, text, thread_id):
+    text = text.lower()
+    quest = client.quest_record[author_id]
+    correct = quest['correct']
+    del client.quest_record[author_id]
+    if text == str(correct + 1) or text == quest['answers'][correct].lower():
+        delta = random.randint(10, 99)
+        gold_add(author_id, delta)
+        reply = user['name'] + ' has gained ' + str(delta) + ' gold and is now at '
+        reply += str(user['gold']) + ' gold total!'
+    else:
+        delta = random.randint(-99, -10)
+        gold_add(author_id, delta)
+        reply = user['name'] + ' has lost ' + str(-delta) + ' gold and is now at '
+        reply += str(user['gold']) + ' gold total. The correct answer was '
+        reply += '"' + quest['answers'][correct] + '".'
+    client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
