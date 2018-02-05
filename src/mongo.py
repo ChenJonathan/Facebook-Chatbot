@@ -49,6 +49,9 @@ def user_from_id(user_id):
     user_try_add(user_id)
     return db_users.find_one(user_id)
 
+def user_get_all():
+    return db_users.find()
+
 # - Must be used to add users so that attribute constraints are enforced
 def user_try_add(user_id):
     if not db_users.find_one({'_id': user_id}):
@@ -58,6 +61,7 @@ def user_try_add(user_id):
             'name': name, 
             'priority': 1, 
             'gold': 0,
+            'gold_rate': 0,
             'images': []
         })
 

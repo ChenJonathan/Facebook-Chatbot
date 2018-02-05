@@ -107,7 +107,6 @@ def run_user_command(client, command, text, author):
         elif len(text) == 1:
             client.responses.clear()
 
-
 def run_group_command(client, command, text, author, thread_id):
     author_id = author['_id']
 
@@ -213,7 +212,7 @@ def run_group_command(client, command, text, author, thread_id):
             slot = int(text)
             image = images[slot - 1] if slot > 0 and slot <= len(images) else None
             if image:
-                path = './images/' + str(image) + '.jpg'
+                path = '../images/' + str(image) + '.jpg'
                 client.sendLocalImage(path, thread_id=thread_id, thread_type=ThreadType.GROUP)
         else:
             reply = 'You have ' + str(len(author['images'])) + ' images stored.'
@@ -288,9 +287,9 @@ def run_group_command(client, command, text, author, thread_id):
         text = text.strip().lower()
         if len(text) == 0:
             reply = ['<<The Wong Shoppe>>']
-            reply.append('1. 0100 exp: Charity donation')
-            reply.append('2. 1000 exp: Reaction image')
-            reply.append('3. 9999 exp: Priority boost')
+            reply.append('1. 0100 gold: Charity donation')
+            reply.append('2. 1000 gold: Reaction image')
+            reply.append('3. 9999 gold: Priority boost')
             reply.append('(Buy things with "!shop <item>")')
             reply = '\n'.join(reply)
         else:

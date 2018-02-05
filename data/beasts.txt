@@ -1,0 +1,50 @@
+Angry Chicken, 1, 1
+Bearshark, 4, 3
+Bittertide Hydra, 8, 8
+Bloodfen Raptor, 3, 2
+Captured Jormungar, 5, 9
+Cave Hydra, 2, 4
+Charged Devilsaur, 7, 7
+Core Hound, 9, 5
+Corridor Creeper, 5, 5
+Crackling Razormaw, 3, 2
+Desert Camel, 2, 4
+Dire Mole, 1, 3
+Dire Wolf Alpha, 2, 2
+Direhorn Hatchling, 3, 6
+Duskboar, 4, 1
+Emperor Cobra, 2, 3
+Enchanted Raven, 2, 2
+Fierce Monkey, 3, 4
+Fiery Bat, 2, 1
+Gentle Megasaur, 5, 4
+Giant Anaconda, 5, 3
+Giant Mastodan, 6, 10
+Giant Sand Worm, 8, 8
+Grotesque Dragonhawk, 5, 5
+Haunted Creeper, 1, 2
+Huge Toad, 3, 2
+Infested Wolf, 3, 3
+Ironfur Grizzly, 3, 3
+Jungle Panther, 4, 2
+Lightfused Stegodon, 3, 4
+Lost Tallstrider, 5, 4
+Nesting Roc, 4, 7
+Oasis Snapjaw, 2, 7
+Ornery Direhorn, 5, 5
+Plated Beetle, 2, 3
+Ravenous Pterrordax, 4, 4
+River Crocolisk, 2, 3
+Sabretooth Stalker, 8, 2
+Sated Threshadon, 5, 7
+Savannah Highmane, 6, 5
+Scavenging Hyena, 2, 2
+Silverback Patriarch, 1, 4
+Stampeding Kodo, 3, 5
+Starving Buzzard, 3, 2
+Stranglethorn Tiger, 5, 5
+Thunder Lizard, 3, 3
+Tomb Spider, 3, 3
+Tundra Rhino, 2, 5
+Violet Wurm, 7, 7
+Volcanosaur, 5, 6

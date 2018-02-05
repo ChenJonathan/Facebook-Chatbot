@@ -278,7 +278,7 @@ erudite:learned; scholarly
 esoteric:hard to understand; known only to a few
 essay:to make an attempt; subject to a test
 estimable:admirable; possible to estimate
-ethnocentric:based on the attitude tha one's group is superior
+ethnocentric:based on the attitude that one's group is superior
 etiology:causes or origins
 etymology:origin an history of a word
 eugenics:study of factors that influence the hereditary qualities of the human race and ways to improve those qualities
