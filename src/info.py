@@ -129,7 +129,7 @@ def generate_group_info(client, text, author, thread_id):
         reply += 'Example: "!check Raphael"\n'
         reply += 'Returns some information on the user designated by <search_string>.\n\n'
         reply += 'Usage: "!check"\n'
-        reply += 'Returns some information on all users in the group.'
+        reply += 'Returns some information on yourself.'
 
     elif text == 'daily':
         reply = '<<Daily>>\n'

@@ -168,7 +168,7 @@ def run_group_command(client, command, text, author, thread_id):
                 return
             users = [user.uid]
         else:
-            users = client.fetchGroupInfo(thread_id)[thread_id].participants
+            users = [author_id]
         reply = []
         for user_id in users:
             user = user_from_id(user_id)

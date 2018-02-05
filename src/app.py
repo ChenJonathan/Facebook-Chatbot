@@ -78,12 +78,12 @@ class ChatBot(Client):
                 del self.travel_record[user_id]
 
         # Check for chat commands
-        if message_object.text[0] == '!':
+        if message_object.text and message_object.text[0] == '!':
             command, text, *_ = message_object.text.split(' ', 1) + ['']
             command = command[1:].lower()
             text = text.strip()
         else:
-            command, text = None, message_object.text
+            command, text = None, (message_object.text or '')
 
         # Check for mentions
         mentions = []
