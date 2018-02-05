@@ -23,7 +23,7 @@ class ChatBot(Client):
         super().__init__(email, password)
         init_db(self)
 
-        self.num_images = len(os.listdir('../images'))
+        self.num_images = len(os.listdir('./images'))
         self.message_record = {}
         self.quest_record = {}
 

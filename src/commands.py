@@ -212,7 +212,7 @@ def run_group_command(client, command, text, author, thread_id):
             slot = int(text)
             image = images[slot - 1] if slot > 0 and slot <= len(images) else None
             if image:
-                path = '../images/' + str(image) + '.jpg'
+                path = './images/' + str(image) + '.jpg'
                 client.sendLocalImage(path, thread_id=thread_id, thread_type=ThreadType.GROUP)
         else:
             reply = 'You have ' + str(len(author['images'])) + ' images stored.'
