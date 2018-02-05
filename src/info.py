@@ -205,6 +205,14 @@ def generate_group_info(client, text, author, thread_id):
         reply += 'Purchases the shop item designated by <slot>. Make sure to check the '
         reply += 'shop first to see which item is in each slot.'
 
+    elif text == 'travel':
+        reply = '<<Travel>>\n'
+        reply += 'Usage: "!travel <location>"\n'
+        reply += 'Example: "!travel Desert"\n'
+        reply += 'Sets your character on a journey to <location>.\n\n'
+        reply += 'Usage: "!travel"\n'
+        reply += 'Checks which locations you can travel to from your current location.'
+
     else:
         return
     client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
