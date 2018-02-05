@@ -320,7 +320,7 @@ def run_group_command(client, command, text, author, thread_id):
                 delta_rate = beast[1] * beast[2]
                 gold_add(author_id, -2000)
                 gold_rate_add(author_id, delta_rate)
-                reply = 'You\'ve bought a pet ' + str(beast[1]) + '/' + str(beast[2])
+                reply = 'You\'ve bought a ' + str(beast[1]) + '/' + str(beast[2])
                 reply += ' ' + beast[0] + '! It grants you an additional '
                 reply += str(delta_rate) + ' gold per hour.'
             elif text == 4 and gold >= 9999:
