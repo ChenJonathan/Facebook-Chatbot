@@ -332,4 +332,6 @@ def run_group_command(client, command, text, author, thread_id):
                     reply = name + '\'s rank is now ' + priority_names[priority] + '!'
                 else:
                     reply = 'You\'ve already reached the highest rank.'
+            else:
+                return
         client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
