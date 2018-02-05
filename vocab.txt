@@ -441,7 +441,7 @@ itinerary:route of a traveler's journey
 jaundiced:havind a yellowish discoloration of the skin; affected by envy
 jibe:to be in agreement
 jocose:fond of joking; jocular
-juggernaut:huge froce destrying everything in its path
+juggernaut:huge force destrying everything in its path
 junta:group of people united in political intrigue
 juxtapose:place side by side
 kudos:fame; glory; honor
@@ -617,7 +617,7 @@ qualm:sudden feeling of faintness or nausea
 query:question
 quibble:to argue over insignificant and irrelevant details
 quiescent:inactive, still
-quorum:number of memeber necessary to conduct a meeting
+quorum:number of members necessary to conduct a meeting
 raconteur:witty, skillful storyteller
 rail:to scold with bitter or abusive language
 raiment:clothing

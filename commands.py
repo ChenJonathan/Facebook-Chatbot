@@ -3,12 +3,16 @@ import random
 import requests
 
 from emoji import random_emoji
+from info import generate_user_info, generate_group_info
 from mongo import *
 from quest import generate_quest
+from util import master_id, priority_names
 
-master_id = '1564703352'
+def run_user_command(client, command, text, author):
+    author_id = author['_id']
+    if author_id != master_id:
+        return
 
-def run_user_command(client, command, text, author_id, thread_id):
     if command == 'alias' or command == 'a':
         alias, user, *_ = text.split(' ', 1) + ['']
         alias = alias.lower()
@@ -23,13 +27,13 @@ def run_user_command(client, command, text, author_id, thread_id):
                 message = Message(user['name'] + '\'s alias has been unset.')
             else:
                 message = Message('Alias not found.')
-        client.send(message, thread_id=thread_id)
+        client.send(message, thread_id=author_id)
 
     elif command == 'check' or command == 'c':
         if len(text) > 0:
             users = [user_from_alias(text.lower())]
             if not users:
-                client.send(Message('Alias not found'), thread_id=thread_id)
+                client.send(Message('Alias not found'), thread_id=author_id)
                 return
         else:
             users = alias_get_all()
@@ -40,7 +44,7 @@ def run_user_command(client, command, text, author_id, thread_id):
             line += priority_names[priority_get(user['_id'])]
             reply.append(line)
         reply = '\n'.join(reply) if reply else 'No aliases set.'
-        client.send(Message(reply), thread_id=thread_id)
+        client.send(Message(reply), thread_id=author_id)
 
     elif command == 'define' or command == 'd':
         command, text, *_ = text.split(' ', 1) + ['']
@@ -51,11 +55,14 @@ def run_user_command(client, command, text, author_id, thread_id):
         else:
             del client.defines[command]
 
+    elif command == 'help' or command == 'h':
+        generate_user_info(client, text, author)
+
     elif command == 'message' or command == 'm':
         alias, reply, *_ = text.split(' ', 1) + ['']
         user = user_from_alias(alias.lower())
         if not user:
-            client.send(Message('Alias not found.'), thread_id=thread_id)
+            client.send(Message('Alias not found.'), thread_id=author_id)
         elif len(reply) > 0:
             client.send(Message(reply), thread_id=user['_id'])
         else:
@@ -76,45 +83,20 @@ def run_user_command(client, command, text, author_id, thread_id):
             reply = user['name'] + '\'s priority has been set to ' + str(priority)
             reply += ' (' + priority_names[priority] + ').'
             message = Message(reply)
-        client.send(message, thread_id=thread_id)
-
-    elif command == 'roll' or command == 'r':
-        text = text.split(' ', 1)
-        if len(text) == 2:
-            count, text = text
-            count = int(count)
-            try: 
-                int(text)
-                if text[0] == '8' or (text[0:2] == '18' and len(text) % 3 == 2):
-                    value = ['an ' + text, count]
-                else:
-                    value = ['a ' + text, count]
-            except ValueError:
-                value = [text, count]
-            finally:
-                if value[0] == client.rolls[-1][0]:
-                    client.rolls[-1][1] += value[1]
-                else:
-                    client.rolls.append(value)
-        elif len(text) == 0:
-            client.rolls.clear()
+        client.send(message, thread_id=author_id)
 
     elif command == 'secret' or command == 's':
         reply = []
         if client.defines:
-            section = '<Defines>\n'
+            section = '< Defines >\n'
             section += '\n'.join(['"' + i + '": ' + j for i, j in client.defines.items()])
             reply.append(section)
         if client.responses:
-            section = '<Responses>\n'
+            section = '< Responses >\n'
             section += '\n'.join(['"' + i[0] + '": ' + str(i[1]) for i in client.responses])
             reply.append(section)
-        if client.rolls:
-            section = '<Rolls>\n'
-            section += '\n'.join(['"' + i[0] + '": ' + str(i[1]) for i in client.rolls])
-            reply.append(section)
         reply = '\n\n'.join(reply) if reply else 'No secrets active.'
-        client.send(Message(reply), thread_id=thread_id)
+        client.send(Message(reply), thread_id=author_id)
 
     elif command == 'wong' or command == 'w':
         text = text.split(' ', 1)
@@ -125,27 +107,31 @@ def run_user_command(client, command, text, author_id, thread_id):
         elif len(text) == 1:
             client.responses.clear()
 
-def run_group_command(client, command, text, author_id, thread_id):
+
+def run_group_command(client, command, text, author, thread_id):
+    author_id = author['_id']
+
     if command == 'alias' or command == 'a':
-        if author_id != master_id:
-            return
-        alias, user, *_ = text.split(' ', 1) + ['']
-        alias = alias.lower()
-        if len(user) > 0:
-            user = client.matchUser(thread_id, user)
-            if user:
-                alias_add(user.uid, alias)
-                message = Message(user.name + '\'s alias has been set to ' + alias + '.')
+        if author_id == master_id:
+            alias, user, *_ = text.split(' ', 1) + ['']
+            alias = alias.lower()
+            if len(user) > 0:
+                user = client.matchUser(thread_id, user)
+                if user:
+                    alias_add(user.uid, alias)
+                    reply = user.name + '\'s alias has been set to ' + alias + '.'
+                else:
+                    reply = 'User not found.'
             else:
-                message = Message('User not found.')
+                user = user_from_alias(alias)
+                if user:
+                    alias_remove(alias)
+                    reply = user['name'] + '\'s alias has been unset.'
+                else:
+                    reply = 'Alias not found.'
         else:
-            user = user_from_alias(alias)
-            if user:
-                alias_remove(alias)
-                message = Message(user['name'] + '\'s alias has been unset.')
-            else:
-                message = Message('Alias not found.')
-        client.send(message, thread_id=thread_id, thread_type=ThreadType.GROUP)
+            reply = 'You don\'t have permission to do this.'
+        client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
 
     elif command == 'booli':
         message = Message('Deprecated - please use !bully instead.')
@@ -158,14 +144,14 @@ def run_group_command(client, command, text, author_id, thread_id):
             user = client.matchUser(thread_id, text)
         if user:
             if exceeds_priority(user.uid, author_id):
-                message = Message('{} is a cool guy.'.format(user.name))
-                client.send(message, thread_id=thread_id, thread_type=ThreadType.GROUP)
+                reply = '{} is a cool guy.'.format(user.name)
+                client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
                 user = client.fetchUserInfo(author_id)[author_id]
             url = 'https://insult.mattbas.org/api/insult.txt?who=' + user.name
-            message = Message(requests.get(url).text + '.')
+            reply = requests.get(url).text + '.'
         else:
-            message = Message('User not found.')
-        client.send(message, thread_id=thread_id, thread_type=ThreadType.GROUP)
+            reply = 'User not found.'
+        client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
 
     elif command == 'check' or command == 'c':
         if len(text) > 0:
@@ -198,19 +184,18 @@ def run_group_command(client, command, text, author_id, thread_id):
             reply = 'This conversation has been subscribed to daily ' + text + 's.'
         client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
 
-    elif command == 'exp' or command == 'e':
-        user = user_from_id(author_id)
-        reply = user['name'] + ' has ' + str(user['experience']) + ' experience total.'
-        client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
+    elif command == 'help' or command == 'h':
+        generate_group_info(client, text, author, thread_id)
 
     elif command == 'image' or command == 'i':
         if len(text) > 0:
-            image = image_get(author_id, int(text))
+            slot = int(text)
+            image = images[slot - 1] if slot > 0 and slot <= len(images) else None
             if image:
                 path = './images/' + str(image) + '.jpg'
                 client.sendLocalImage(path, thread_id=thread_id, thread_type=ThreadType.GROUP)
         else:
-            reply = 'You have ' + str(len(user_from_id(author_id)['images'])) + ' images.'
+            reply = 'You have ' + str(len(author['images'])) + ' images.'
             client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
 
     elif command == 'mute' or command == 'm':
@@ -233,41 +218,39 @@ def run_group_command(client, command, text, author_id, thread_id):
             priority = int(priority)
             user = client.matchUser(thread_id, user)
             if not user:
-                message = Message('User not found.')
+                reply = 'User not found.'
             elif user.uid == master_id:
-                message = Message('Cannot modify master priority.')
+                reply = 'Cannot modify master priority.'
             elif priority < 0 or priority >= priority_get(master_id):
-                message = Message('Invalid priority.')
+                reply = 'Invalid priority.'
             else:
                 priority_set(user.uid, priority)
                 reply = user.name + '\'s priority has been set to ' + str(priority)
                 reply += ' (' + priority_names[priority] + ').'
-                message = Message(reply)
         else:
             user = client.fetchUserInfo(author_id)[author_id]
             reply = user.name + '\'s priority has been set to 0'
             reply += ' (' + priority_names[0] + ').'
-            message = Message(reply)
-        client.send(message, thread_id=thread_id, thread_type=ThreadType.GROUP)
+        client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
 
     elif command == 'quest' or command == 'q':
-        user = user_from_id(author_id)
-        experience = user['experience']
-        quest = generate_quest(1 if experience < 0 else len(str(experience)))
-        client.quest_record[author_id] = quest
-        reply = user['name'] + ', which word means "' + quest['question'] + '"?'
-        for i, answer in enumerate(quest['answers']):
-            reply += '\n' + str(i + 1) + '. ' + quest['answers'][i]
-        client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
+        generate_quest(client, author_id, thread_id)
+
+    elif command == 'random':
+        colors = list(ThreadColor)
+        group = client.fetchGroupInfo(thread_id)[thread_id]
+        color = group.color
+        while color == group.color:
+            color = random.choice(colors)
+        client.changeThreadColor(color, thread_id=thread_id)
+        emoji = group.emoji
+        while emoji == group.emoji:
+            emoji = random_emoji()
+        client.changeThreadEmoji(emoji, thread_id=thread_id)
 
     elif command == 'roll' or command == 'r':
         user = client.fetchUserInfo(author_id)[author_id]
-        if author_id == master_id and client.rolls:
-            roll = client.rolls[0][0]
-            client.rolls[0][1] -= 1
-            if client.rolls[0][1] == 0:
-                client.rolls.pop(0)
-        elif len(text) == 0:
+        if len(text) == 0:
             roll = 'a ' + str(random.randint(1, 6))
         elif len(text) > 0 and int(text) > 0:
             roll = str(random.randint(1, int(text)))
@@ -283,10 +266,10 @@ def run_group_command(client, command, text, author_id, thread_id):
     elif command == 'shop' or command == 's':
         text = text.strip().lower()
         if len(text) == 0:
-            reply = ['<Wong\'s Shoppe>']
+            reply = ['<<The Wong Shoppe>>']
             reply.append('1. 0100 exp: Charity donation')
             reply.append('2. 1000 exp: Reaction image')
-            reply.append('3. 9999 exp: Rank boost')
+            reply.append('3. 9999 exp: Priority boost')
             reply.append('(Buy things with "!shop <item>")')
             reply = '\n'.join(reply)
         else:
@@ -305,27 +288,15 @@ def run_group_command(client, command, text, author_id, thread_id):
                 image = random.randint(0, client.num_images - 1)
                 image_add(author_id, image)
                 reply = 'You\'ve received an image!\n'
-                reply += 'It has been placed in slot ' + str(image_count(author_id)) + '.\n'
+                reply += 'It has been placed in slot ' + str(len(author['images'])) + '.\n'
                 reply += '(Use it with "!image <slot>")'
             elif text == 3 and experience >= 9999:
                 priority = priority_get(author_id) + 1
                 if priority < priority_get(master_id):
                     experience_add(author_id, -9999)
                     priority_set(author_id, priority)
-                    name = user_from_id(author_id)['name']
+                    name = author['name']
                     reply = name + '\'s rank is now ' + priority_names[priority] + '!'
                 else:
                     reply = 'You\'ve already reached the highest rank.'
         client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
-
-    elif command == 'test' or command == 't':
-        colors = list(ThreadColor)
-        group = client.fetchGroupInfo(thread_id)[thread_id]
-        color = group.color
-        while color == group.color:
-            color = random.choice(colors)
-        client.changeThreadColor(color, thread_id=thread_id)
-        emoji = group.emoji
-        while emoji == group.emoji:
-            emoji = random_emoji()
-        client.changeThreadEmoji(emoji, thread_id=thread_id)

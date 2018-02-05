@@ -78,8 +78,6 @@ def alias_remove(alias):
 
 # Priority methods
 
-priority_names = ['Peasant', 'User', 'Mod', 'Admin', 'Master']
-
 def priority_get(user_id):
     user_try_add(user_id)
     return db_users.find_one(user_id)['priority']
@@ -104,18 +102,6 @@ def experience_add(user_id, experience):
     db_users.update_one({'_id': user_id}, update)
 
 # Image methods
-
-# - One indexed
-def image_get(user_id, slot):
-    user_try_add(user_id)
-    if slot < 1:
-        return None
-    images = db_users.find_one(user_id)['images']
-    return images[slot - 1] if slot <= len(images) else None
-
-def image_count(user_id):
-    user_try_add(user_id)
-    return len(db_users.find_one(user_id)['images'])
 
 def image_add(user_id, image):
     user_try_add(user_id)
