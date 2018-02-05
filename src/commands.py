@@ -36,7 +36,7 @@ def run_user_command(client, command, text, author):
     elif command == 'check' or command == 'c':
         if len(text) > 0:
             users = [user_from_alias(text.lower())]
-            if not users:
+            if not users[0]:
                 client.send(Message('Alias not found'), thread_id=author_id)
                 return
         else:
@@ -163,7 +163,7 @@ def run_group_command(client, command, text, author, thread_id):
         if len(text) > 0:
             user = client.matchUser(thread_id, text)
             if not user:
-                meessage = Message('User not found.')
+                message = Message('User not found.')
                 client.send(message, thread_id=thread_id, thread_type=ThreadType.GROUP)
                 return
             users = [user.uid]

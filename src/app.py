@@ -52,7 +52,7 @@ class ChatBot(Client):
         users = self.fetchUserInfo(*group.participants)
         query = query.strip().lower()
         user = user_from_alias(query)
-        if user and user['name'] in users.keys():
+        if user and user['_id'] in users.keys():
             return users[user['_id']]
         for user_id, user in users.items():
             if query == user.name.lower():
