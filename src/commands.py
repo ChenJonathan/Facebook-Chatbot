@@ -42,6 +42,7 @@ def run_user_command(client, command, text, author):
         for user in users:
             line = '<' + user['name'] + '> (' + user['alias'] + ')\n'
             line += 'Priority: ' + priority_names[user['priority']] + '\n'
+            line += 'Gold / Hour: ' + str(user['gold_rate']) + '\n'
             line += 'Gold: ' + str(user['gold'])
             reply.append(line)
         reply = '\n\n'.join(reply) if reply else 'No aliases set.'
@@ -168,6 +169,7 @@ def run_group_command(client, command, text, author, thread_id):
             user = user_from_id(user_id)
             line = '<' + user['name'] + '>\n'
             line += 'Priority: ' + priority_names[user['priority']] + '\n'
+            line += 'Gold / Hour: ' + str(user['gold_rate']) + '\n'
             line += 'Gold: ' + str(user['gold'])
             reply.append(line)
         reply = '\n\n'.join(reply)
@@ -314,8 +316,13 @@ def run_group_command(client, command, text, author, thread_id):
                 reply += str(len(author['images']) + 1) + '.\n'
                 reply += '(Use it with "!image <slot>")'
             elif text == 3 and gold >= 2000:
+                beast = random_beast()
+                delta_rate = beast[1] * beast[2]
                 gold_add(author_id, -2000)
-                reply = str(random_beast())
+                gold_rate_add(author_id, delta_rate)
+                reply = 'You\'ve bought a pet ' + str(beast[1]) + '/' + str(beast[2])
+                reply += ' ' + beast[0] + '! It grants you an additional '
+                reply += str(delta_rate) + ' gold per hour.'
             elif text == 4 and gold >= 9999:
                 priority = priority_get(author_id) + 1
                 if priority < priority_get(master_id):
