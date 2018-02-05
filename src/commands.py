@@ -310,38 +310,50 @@ def run_group_command(client, command, text, author, thread_id):
         else:
             text = int(text)
             gold = gold_get(author_id)
-            if text == 1 and gold >= 100:
-                charities = [
-                    'Flat Earth Society', 
-                    'Westboro Baptist Church', 
-                    'Church of Scientology'
-                ]
-                gold_add(author_id, -100)
-                reply = 'The ' + random.choice(charities) + ' thanks you for your donation.'
-            elif text == 2 and gold >= 500:
-                gold_add(author_id, -500)
-                image = random.randint(0, client.num_images - 1)
-                image_add(author_id, image)
-                reply = 'You\'ve received an image! It has been placed in slot '
-                reply += str(len(author['images']) + 1) + '.\n'
-                reply += '(Use it with "!image <slot>")'
-            elif text == 3 and gold >= 1000:
-                beast = random_beast()
-                delta_rate = beast[1] * beast[2]
-                gold_add(author_id, -1000)
-                gold_rate_add(author_id, delta_rate)
-                reply = 'You\'ve bought a ' + str(beast[1]) + '/' + str(beast[2])
-                reply += ' ' + beast[0] + '! It grants you an additional '
-                reply += str(delta_rate) + ' gold per hour.'
-            elif text == 4 and gold >= 9999:
-                priority = priority_get(author_id) + 1
-                if priority < priority_get(master_id):
-                    gold_add(author_id, -9999)
-                    priority_set(author_id, priority)
-                    name = author['name']
-                    reply = name + '\'s rank is now ' + priority_names[priority] + '!'
+            if text == 1:
+                if gold >= 100:
+                    charities = [
+                        'Flat Earth Society', 
+                        'Westboro Baptist Church', 
+                        'Church of Scientology'
+                    ]
+                    gold_add(author_id, -100)
+                    reply = 'The ' + random.choice(charities) + ' thanks you for your donation.'
                 else:
-                    reply = 'You\'ve already reached the highest rank.'
+                    reply = 'You can\'t afford that.'
+            elif text == 2:
+                if gold >= 500:
+                    gold_add(author_id, -500)
+                    image = random.randint(0, client.num_images - 1)
+                    image_add(author_id, image)
+                    reply = 'You\'ve received an image! It has been placed in slot '
+                    reply += str(len(author['images']) + 1) + '.\n'
+                    reply += '(Use it with "!image <slot>")'
+                else:
+                    reply = 'You can\'t afford that.'
+            elif text == 3:
+                if gold >= 1000:
+                    beast = random_beast()
+                    delta_rate = beast[1] * beast[2]
+                    gold_add(author_id, -1000)
+                    gold_rate_add(author_id, delta_rate)
+                    reply = 'You\'ve bought a ' + str(beast[1]) + '/' + str(beast[2])
+                    reply += ' ' + beast[0] + '! It grants you an additional '
+                    reply += str(delta_rate) + ' gold per hour.'
+                else:
+                    reply = 'You can\'t afford that.'
+            elif text == 4:
+                if gold >= 9999:
+                    priority = priority_get(author_id) + 1
+                    if priority < priority_get(master_id):
+                        gold_add(author_id, -9999)
+                        priority_set(author_id, priority)
+                        name = author['name']
+                        reply = name + '\'s rank is now ' + priority_names[priority] + '!'
+                    else:
+                        reply = 'You\'ve already reached the highest rank.'
+                else:
+                    reply = 'You can\'t afford that.'
             else:
                 return
         client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)

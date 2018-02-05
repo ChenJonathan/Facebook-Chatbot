@@ -55,6 +55,6 @@ def complete_quest(client, user, text, thread_id):
         delta = random.randint(-99, -10)
         gold_add(user_id, delta)
         reply = user['name'] + ' has lost ' + str(-delta) + ' gold and is now at '
-        reply += str(user['gold'] - delta) + ' gold total. The correct answer was '
+        reply += str(user['gold'] + delta) + ' gold total. The correct answer was '
         reply += '"' + quest['answers'][correct] + '".'
     client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
