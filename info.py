@@ -92,14 +92,16 @@ def generate_group_info(client, text, author, thread_id):
 
     if len(text) == 0:
         reply = '<<Commands>>\n'
-        reply += '!alias: Alias assignment\n'
+        if is_master:
+            reply += '!alias: Alias assignment\n'
         reply += '!bully: Harass someone\n'
         reply += '!check: See user statistics\n'
         reply += '!daily: Subscribe to daily events\n'
         reply += '!help: Read documentation\n'
-        reply += '!image: Post saved images\n'
+        reply += '!image: Post stored images\n'
         reply += '!mute: Kick someone\n'
-        reply += '!perm: Change user priority\n'
+        if is_master:
+            reply += '!perm: Change user priority\n'
         reply += '!quest: Earn gold\n'
         reply += '!random: Random chat emoji / color\n'
         reply += '!roll: Roll the dice\n'
@@ -138,6 +140,12 @@ def generate_group_info(client, text, author, thread_id):
         reply += '"color" - Changes the chat color\n'
         reply += '"emoji" - Changes the chat emoji'
 
+    elif text == 'give':
+        reply = '<<Give>>\n'
+        reply += 'Usage: "!give <amount> <search_string>"\n'
+        reply += 'Example: "!give 10 Raphael"\n'
+        reply += 'Gives <amount> gold to the user designated by <search_string>.'
+
     elif text == 'help':
         reply = '<<Help>>\n'
         reply += 'Usage: "!help"\n'
@@ -150,8 +158,10 @@ def generate_group_info(client, text, author, thread_id):
         reply = '<<Image>>\n'
         reply += 'Usage: "!image <slot>"\n'
         reply += 'Example: "!image 1"\n'
-        reply += 'Posts the image saved in <slot> to the group chat Images can be '
-        reply += 'bought from the shop (!shop).'
+        reply += 'Posts the image stored in <slot> to the group chat. Images can be '
+        reply += 'bought from the shop (!shop).\n\n'
+        reply += 'Usage: "!image"\n'
+        reply += 'Checks how many images you have stored in total.'
 
     elif text == 'mute':
         reply = '<<Mute>>\n'

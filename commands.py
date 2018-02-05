@@ -186,6 +186,25 @@ def run_group_command(client, command, text, author, thread_id):
             reply = 'This conversation has been subscribed to daily ' + text + 's.'
         client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
 
+    elif command == 'give' or command == 'g':
+        amount, user = text.split(' ', 1)
+        amount = int(amount)
+        if amount < 1:
+            reply = 'Invalid amount of gold.'
+        else:
+            user = client.matchUser(thread_id, user)
+            gold = gold_get(author_id)
+            if gold < amount:
+                reply = 'Not enough gold.'
+            elif author_id == user.uid:
+                reply = 'Cannot give gold to self.'
+            else:
+                gold_add(author_id, -amount)
+                gold_add(user.uid, amount)
+                reply = author['name'] + ' gives ' + str(amount)
+                reply += ' gold to ' + user.name + '.'
+        client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
+
     elif command == 'help' or command == 'h':
         generate_group_info(client, text, author, thread_id)
 
@@ -197,7 +216,7 @@ def run_group_command(client, command, text, author, thread_id):
                 path = './images/' + str(image) + '.jpg'
                 client.sendLocalImage(path, thread_id=thread_id, thread_type=ThreadType.GROUP)
         else:
-            reply = 'You have ' + str(len(author['images'])) + ' images.'
+            reply = 'You have ' + str(len(author['images'])) + ' images stored.'
             client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
 
     elif command == 'mute' or command == 'm':
