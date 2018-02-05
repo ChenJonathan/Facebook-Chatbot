@@ -210,6 +210,7 @@ def run_group_command(client, command, text, author, thread_id):
     elif command == 'image' or command == 'i':
         if len(text) > 0:
             slot = int(text)
+            images = author['images']
             image = images[slot - 1] if slot > 0 and slot <= len(images) else None
             if image:
                 path = './images/' + str(image) + '.jpg'
