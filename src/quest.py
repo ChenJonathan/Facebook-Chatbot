@@ -6,8 +6,8 @@ from mongo import *
 terms = []
 definitions = []
 
-with open('./data/vocab.txt', 'r') as vocab:
-    for line in vocab.readlines():
+with open('./data/vocab.txt', 'r') as data:
+    for line in data.readlines():
         term, definition = line.split(':', 1)
         term = term[0].upper() + term[1:]
         definition = definition[0].upper() + definition[1:]

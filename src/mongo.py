@@ -105,6 +105,11 @@ def gold_add(user_id, gold):
     update = {'$inc': {'gold': gold}}
     db_users.update_one({'_id': user_id}, update)
 
+def gold_rate_add(user_id, rate):
+    user_try_add(user_id)
+    update = {'$inc': {'gold_rate': rate}}
+    db_users.update_one({'_id': user_id}, update)
+
 # Image methods
 
 def image_add(user_id, image):

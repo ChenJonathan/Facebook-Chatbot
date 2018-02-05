@@ -3,6 +3,7 @@ import random
 import requests
 
 from emoji import random_emoji
+from hearthstone import random_beast
 from info import generate_user_info, generate_group_info
 from mongo import *
 from quest import generate_quest
@@ -290,7 +291,8 @@ def run_group_command(client, command, text, author, thread_id):
             reply = ['<<The Wong Shoppe>>']
             reply.append('1. 0100 gold: Charity donation')
             reply.append('2. 1000 gold: Reaction image')
-            reply.append('3. 9999 gold: Priority boost')
+            reply.append('3. 2000 gold: Random hunting pet')
+            reply.append('4. 9999 gold: Priority boost')
             reply.append('(Buy things with "!shop <item>")')
             reply = '\n'.join(reply)
         else:
@@ -308,10 +310,13 @@ def run_group_command(client, command, text, author, thread_id):
                 gold_add(author_id, -1000)
                 image = random.randint(0, client.num_images - 1)
                 image_add(author_id, image)
-                reply = 'You\'ve received an image!\n'
-                reply += 'It has been placed in slot ' + str(len(author['images'])) + '.\n'
+                reply = 'You\'ve received an image! It has been placed in slot '
+                reply += str(len(author['images']) + 1) + '.\n'
                 reply += '(Use it with "!image <slot>")'
-            elif text == 3 and gold >= 9999:
+            elif text == 3 and gold >= 2000:
+                gold_add(author_id, -2000)
+                reply = str(random_beast())
+            elif text == 4 and gold >= 9999:
                 priority = priority_get(author_id) + 1
                 if priority < priority_get(master_id):
                     gold_add(author_id, -9999)
