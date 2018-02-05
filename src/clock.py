@@ -28,7 +28,7 @@ def reset_timer():
     set_timer()
 
     apply_gold_rates()
-    if now.hour == 0:
+    if datetime.today().hour == 0:
         manage_subscriptions()
 
 def set_timer():
