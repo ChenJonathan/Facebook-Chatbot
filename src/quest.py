@@ -20,13 +20,22 @@ def generate_quest(client, author_id, thread_id):
     difficulty = 1 if gold < 0 else len(str(gold))
     indices = random.sample(range(0, len(terms)), difficulty + 1)
     correct = random.randint(0, difficulty)
-    quest = {
-        'question': definitions[indices[correct]],
-        'answers': [terms[index] for index in indices],
-        'correct': correct
-    }
-    client.quest_record[author_id] = quest
-    reply = user['name'] + ', which word means "' + quest['question'] + '"?'
+    if random.random() > 0.5:
+        quest = {
+            'question': definitions[indices[correct]],
+            'answers': [terms[index] for index in indices],
+            'correct': correct
+        }
+        client.quest_record[author_id] = quest
+        reply = user['name'] + ', which word means "' + quest['question'] + '"?'
+    else:
+        quest = {
+            'question': terms[indices[correct]],
+            'answers': [definitions[index] for index in indices],
+            'correct': correct
+        }
+        client.quest_record[author_id] = quest
+        reply = user['name'] + ', what does "' + quest['question'] + '" mean?'
     for i, answer in enumerate(quest['answers']):
         reply += '\n' + str(i + 1) + '. ' + quest['answers'][i]
     client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)

@@ -42,8 +42,7 @@ def run_user_command(client, command, text, author):
         for user in users:
             line = '<' + user['name'] + '> (' + user['alias'] + ')\n'
             line += 'Priority: ' + priority_names[user['priority']] + '\n'
-            line += 'Gold / Hour: ' + str(user['gold_rate']) + '\n'
-            line += 'Gold: ' + str(user['gold'])
+            line += 'Gold: ' + str(user['gold']) + ' (+' + str(user['gold_rate']) + '/hour)\n'
             reply.append(line)
         reply = '\n\n'.join(reply) if reply else 'No aliases set.'
         client.send(Message(reply), thread_id=author_id)
@@ -101,11 +100,8 @@ def run_user_command(client, command, text, author):
         client.send(Message(reply), thread_id=author_id)
 
     elif command == 'wong' or command == 'w':
-        text = text.split(' ', 1)
-        if len(text) == 2:
-            count, text = text
-            count = int(count)
-            client.responses.append([text, count])
+        if len(text) > 0:
+            client.responses.append(text)
         elif len(text) == 1:
             client.responses.clear()
 
@@ -169,8 +165,7 @@ def run_group_command(client, command, text, author, thread_id):
             user = user_from_id(user_id)
             line = '<' + user['name'] + '>\n'
             line += 'Priority: ' + priority_names[user['priority']] + '\n'
-            line += 'Gold / Hour: ' + str(user['gold_rate']) + '\n'
-            line += 'Gold: ' + str(user['gold'])
+            line += 'Gold: ' + str(user['gold']) + ' (+' + str(user['gold_rate']) + '/hour)\n'
             reply.append(line)
         reply = '\n\n'.join(reply)
         client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)

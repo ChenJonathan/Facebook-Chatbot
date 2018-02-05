@@ -120,10 +120,7 @@ class ChatBot(Client):
                 if text[0].lower() == 'wong,':
                     try:
                         if author_id == master_id and self.responses:
-                            reply = self.responses[0][0]
-                            self.responses[0][1] -= 1
-                            if self.responses[0][1] == 0:
-                                self.responses.pop(0)
+                            reply = self.responses.pop(0)
                         elif priority_get(author_id) == 0:
                             reply = 'Sorry, I don\'t respond to peasants.'
                         else:
