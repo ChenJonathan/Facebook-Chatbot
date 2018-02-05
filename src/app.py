@@ -121,7 +121,7 @@ class ChatBot(Client):
 
             # Check for active quest
             if author_id in self.quest_record:
-                complete_quest(self, user_from_id(author_id). text, thread_id)
+                complete_quest(self, user_from_id(author_id), text, thread_id)
 
             # Cleverbot messaging
             if not command:
@@ -176,7 +176,7 @@ class ServerThread(threading.Thread):
 class ChatThread(threading.Thread):
 
     def run(self):
-        client = ChatBot('Avenlokh@gmail.com', b64decode(os.environ.get('PASSWORD')))
+        client = ChatBot('archaicsun@gmail.com', 'botter4life')
         client.listen()
 
 
