@@ -103,7 +103,7 @@ def run_user_command(client, command, text, author):
             reply.append(section)
         if client.responses:
             section = '< Responses >\n'
-            section += '\n'.join(['"' + i[0] + '": ' + str(i[1]) for i in client.responses])
+            section += '\n'.join(['"' + response + '"' for response in client.responses])
             reply.append(section)
         reply = '\n\n'.join(reply) if reply else 'No secrets active.'
         client.send(Message(reply), thread_id=author_id)
