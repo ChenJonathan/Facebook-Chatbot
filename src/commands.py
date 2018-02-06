@@ -254,11 +254,17 @@ def run_group_command(client, command, text, author, thread_id):
                 client.send(message, thread_id=thread_id, thread_type=ThreadType.GROUP)
                 return
             user = user_from_id(user.uid)
+            if user['_id'] == master_id and author_id != master_id:
+                user = author
             if user['location'] == 0:
                 location_set(user['_id'], 1)
+                if user['_id'] in client.travel_record:
+                    del client.travel_record[user['_id']]
                 reply = user['name'] + ' has been freed from jail.'
             else:
                 location_set(user['_id'], 0)
+                if user['_id'] in client.travel_record:
+                    del client.travel_record[user['_id']]
                 reply = user['name'] + ' has been sent to jail!'
         else:
             reply = 'You don\'t have permission to do this.'
