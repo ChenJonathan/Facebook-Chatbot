@@ -30,7 +30,7 @@ def reset_timer(client):
     if datetime.today().hour == 0:
         manage_subscriptions(client)
 
-    set_timer()
+    set_timer(client)
 
 def set_timer(client):
     now = datetime.today()
