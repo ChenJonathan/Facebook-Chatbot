@@ -49,6 +49,9 @@ def user_from_id(user_id):
     user_try_add(user_id)
     return db_users.find_one(user_id)
 
+def user_get_all_in(user_ids):
+    return db_users.find({'_id': {'$in': user_ids}})
+
 def user_get_all():
     return db_users.find()
 

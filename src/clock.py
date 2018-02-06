@@ -5,6 +5,13 @@ import threading
 
 from mongo import *
 
+def check_records(client):
+    now = datetime.now()
+    for user_id, record in list(client.travel_record.items()):
+        if now > record[1]:
+            location_set(user_id, record[0])
+            del client.travel_record[user_id]
+
 def apply_gold_rates():
     for user in user_get_all():
         gold_add(user['_id'], user['gold_rate'])

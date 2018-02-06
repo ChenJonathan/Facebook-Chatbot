@@ -27,6 +27,7 @@ class ChatBot(Client):
         self.message_record = {}
         self.quest_record = {}
         self.travel_record = {}
+        self.explore_record = {}
 
         self.defines = {}
         self.responses = []

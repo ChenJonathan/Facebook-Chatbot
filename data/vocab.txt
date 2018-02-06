@@ -280,7 +280,7 @@ essay:to make an attempt; subject to a test
 estimable:admirable; possible to estimate
 ethnocentric:based on the attitude that one's group is superior
 etiology:causes or origins
-etymology:origin an history of a word
+etymology:origin and history of a word
 eugenics:study of factors that influence the hereditary qualities of the human race and ways to improve those qualities
 eulogy:high praise to a death person
 euphemism:use of agreeable or inoffensive language in place of offensive language
@@ -401,7 +401,7 @@ inadvertenly:carelessly; unintentionally
 incarnate:having bodily form
 inchoate:imperfectely formed or formulated
 incongruity:state of not fitting
-inconsequencial:insgnificant; unimportant
+inconsequencial:insignificant; unimportant
 incorporate:introduce something into another thing already in existence
 incursion:sudden invasion
 indeterminate:uncertain; indefinite

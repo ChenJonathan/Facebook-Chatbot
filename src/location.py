@@ -5,7 +5,7 @@ import string
 
 from mongo import *
 
-names = ['Plains', 'Desert', 'Swamp', 'Forest', 'Mountains']
+names = ['Lith Harbor', 'Henesys', 'Ellinia', 'Perion', 'Kerning City']
 edges = [
     [-1,  2, -1,  3, -1],
     [ 2, -1, -1, -1,  2],
@@ -38,12 +38,7 @@ def check_locations(client, user, thread_id):
 def travel_to_location(client, user, text, thread_id):
     current = user['location']
     location = name_to_location(text)
-    if user['_id'] in client.travel_record:
-        record = client.travel_record[user['_id']]
-        minutes = math.ceil((record[1] - datetime.now()).total_seconds() / 60)
-        reply = 'You\'re busy traveling to ' + location_to_name(record[0])
-        reply += '. (' + str(minutes) + ' minutes remaining)'
-    elif location == None:
+    if location == None:
         reply = 'That location doesn\'t exist.'
     elif edges[current][location] < 0:
         reply = 'You cannot travel there.'
@@ -52,3 +47,7 @@ def travel_to_location(client, user, text, thread_id):
         client.travel_record[user['_id']] = record
         reply = user['name'] + ' is now traveling to ' + names[location] + '.'
     client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
+
+def grant_treasures(client, user, elapsed, thread_id):
+    message = Message('You have explored for ' + str(elapsed) + 'minutes!')
+    client.send(message, thread_id=thread_id, thread_type=ThreadType.GROUP)

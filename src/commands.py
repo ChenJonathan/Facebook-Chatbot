@@ -9,8 +9,24 @@ from hearthstone import random_beast
 from info import generate_user_info, generate_group_info
 from mongo import *
 from quest import generate_quest
-from travel import check_locations, travel_to_location, location_to_name
+from location import location_to_name, check_locations, travel_to_location, grant_treasures
 from util import master_id, priority_names
+
+def check_busy(client, user, thread_id):
+    if user['_id'] in client.travel_record:
+        record = client.travel_record[user['_id']]
+        minutes = math.ceil((record[1] - datetime.now()).total_seconds() / 60)
+        reply = 'You\'re busy traveling to ' + location_to_name(record[0])
+        reply += '. (' + str(minutes) + ' minutes remaining).'
+    elif user['_id'] in client.explore_record:
+        record = client.explore_record[user['_id']]
+        minutes = math.ceil((datetime.now() - record[1]).total_seconds() / 60)
+        reply = 'You\'re busy exploring in ' + location_to_name(record[0])
+        reply += '. (' + str(minutes) + ' minutes total).'
+    else:
+        return False
+    client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
+    return True
 
 def run_user_command(client, command, text, author):
     author_id = author['_id']
@@ -37,7 +53,7 @@ def run_user_command(client, command, text, author):
         if len(text) > 0:
             users = [user_from_alias(text.lower())]
             if not users[0]:
-                client.send(Message('Alias not found'), thread_id=author_id)
+                client.send(Message('Alias not found.'), thread_id=author_id)
                 return
         else:
             users = alias_get_all()
@@ -198,6 +214,18 @@ def run_group_command(client, command, text, author, thread_id):
             reply = 'This conversation has been subscribed to daily ' + text + 's.'
         client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
 
+    elif command == 'explore' or command == 'e':
+        if author_id in client.explore_record:
+            elapsed = (datetime.now() - client.explore_record[author_id][1]).total_seconds()
+            elapsed = min(math.floor(elapsed / 60), 24 * 60)
+            grant_treasures(client, author, elapsed, thread_id)
+            del client.explore_record[author_id]
+        elif not check_busy(client, author, thread_id):
+            client.explore_record[author_id] = (author['location'], datetime.now())
+            location = location_to_name(author['location'])
+            message = Message('You have begun exploring in ' + location + '!')
+            client.send(message, thread_id=thread_id, thread_type=ThreadType.GROUP)
+
     elif command == 'give' or command == 'g':
         amount, user = text.split(' ', 1)
         amount = int(amount)
@@ -268,7 +296,8 @@ def run_group_command(client, command, text, author, thread_id):
         client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
 
     elif command == 'quest' or command == 'q':
-        generate_quest(client, author, thread_id)
+        if not check_busy(client, author, thread_id):
+            generate_quest(client, author, thread_id)
 
     elif command == 'random':
         colors = list(ThreadColor)
@@ -281,6 +310,17 @@ def run_group_command(client, command, text, author, thread_id):
         while emoji == group.emoji:
             emoji = random_emoji()
         client.changeThreadEmoji(emoji, thread_id=thread_id)
+
+    elif command == 'ranking':
+        group = client.fetchGroupInfo(thread_id)[thread_id].participants
+        users = sorted(user_get_all_in(list(group)), key=lambda x: x['gold'], reverse=True)
+        if len(users) > 9:
+            users = users[:9]
+        reply = '<<Chat Ranking>>'
+        for i, user in enumerate(users):
+            reply += '\n' + str(i + 1) + '. ' + user['name']
+            reply += ' (' + str(user['gold']) + ' gold)'
+        client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
 
     elif command == 'roll' or command == 'r':
         user = client.fetchUserInfo(author_id)[author_id]
@@ -359,7 +399,9 @@ def run_group_command(client, command, text, author, thread_id):
         client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
 
     elif command == 'travel' or command == 't':
-        if len(text) == 0:
+        if check_busy(client, author, thread_id):
+            return
+        elif len(text) == 0:
             check_locations(client, author, thread_id)
         else:
             travel_to_location(client, author, text, thread_id)
