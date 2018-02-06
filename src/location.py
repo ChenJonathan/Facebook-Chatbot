@@ -59,20 +59,22 @@ _connect(24, 27, 60)
 
 def check_locations(client, user, thread_id):
     current = user['location']
+    progress_keys = user['location_progress'].keys()
     reply = ['You are in ' + location_names[current]]
     reply[0] += ' and can travel to the following places:'
     for i, time in enumerate(edges[current]):
-        if time >= 0 and i not in user['location_progress']:
+        if time >= 0 and str(i) not in progress_keys:
             reply.append('- ' + location_names[i] + ': ' + str(time) + ' minutes away')
     reply = '\n'.join(reply) if len(reply) > 1 else 'You cannot travel anywhere.'
     client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
 
 def travel_to_location(client, user, text, thread_id):
     current = user['location']
+    progress_keys = user['location_progress'].keys()
     location = name_to_location(text)
     if location == None:
         reply = 'That location doesn\'t exist.'
-    elif edges[current][location] < 0 or location in user['location_progress']:
+    elif edges[current][location] < 0 or str(location) in progress_keys:
         reply = 'You cannot travel there.'
     else:
         record = (location, datetime.now() + timedelta(minutes=edges[current][location]))
@@ -97,10 +99,11 @@ def grant_treasures(client, user, minutes, thread_id):
     # Check for discovered location
     current = user['location']
     progress = user['location_progress']
+    progress_keys = progress.keys()
     unlocked = []
     presence = False
     for i, time in enumerate(edges[current]):
-        if time >= 0 and str(i) in progress.keys():
+        if time >= 0 and str(i) in progress_keys:
             delta_progress = elapsed / edges[current][i] * random.uniform(0.8, 1.2)
             total_progress = progress[str(i)] + delta_progress
             if total_progress >= 1:
