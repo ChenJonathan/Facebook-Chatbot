@@ -11,7 +11,7 @@ location_names += ['Nihal Desert', 'Magatia', 'Leafre', 'Minar Forest', 'Cave of
 def name_to_location(text):
     text = text.lower()
     for i, name in enumerate(location_names):
-        name = name.strip().lower().split()
-        if text in name:
+        name = name.strip().lower()
+        if text == name or text in name.split():
             return i
     return None

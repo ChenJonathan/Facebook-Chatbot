@@ -82,16 +82,16 @@ def travel_to_location(client, user, text, thread_id):
         reply = user['name'] + ' is now traveling to ' + location_names[location] + '.'
     client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
 
-def grant_treasures(client, user, minutes, thread_id):
-    elapsed = min(minutes / 60 * random.uniform(0.8, 1.2), 6)
+def explore_location(client, user, thread_id):
+    seed = random.uniform(0.8, 1.2)
 
     # Calculate gold gain
-    delta_gold = int(elapsed * (60 + random.randint(-10, 10)))
+    delta_gold = int(seed * (60 + random.randint(-10, 10)))
     gold_add(user['_id'], delta_gold)
 
     # Check for discovered hunting pet
     beast = None
-    if elapsed / 100 > random.random():
+    if seed / 100 > random.random():
         beast = random_beast()
         delta_rate = beast[1] * beast[2]
         gold_rate_add(user['_id'], delta_rate)
@@ -104,7 +104,7 @@ def grant_treasures(client, user, minutes, thread_id):
     presence = False
     for i, time in enumerate(edges[current]):
         if time >= 0 and str(i) in progress_keys:
-            delta_progress = elapsed / edges[current][i] * random.uniform(0.8, 1.2)
+            delta_progress = seed / edges[current][i] * random.uniform(0.8, 1.2)
             total_progress = progress[str(i)] + delta_progress
             if total_progress >= 1:
                 location_discover(user['_id'], i)

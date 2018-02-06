@@ -27,12 +27,12 @@ class ChatBot(Client):
         self.message_record = {}
         self.quest_record = {}
         self.travel_record = {}
-        self.explore_record = {}
+        self.explore_record = set()
 
         self.defines = {}
         self.responses = []
 
-        set_timer()
+        set_timer(self)
 
     def send(self, message, thread_id, thread_type=ThreadType.USER):
         super().send(message, thread_id=thread_id, thread_type=thread_type)

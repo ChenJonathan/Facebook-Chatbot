@@ -18,11 +18,6 @@ def check_busy(client, user, thread_id):
         minutes = math.ceil((record[1] - datetime.now()).total_seconds() / 60)
         reply = 'You\'re busy traveling to ' + location_names[record[0]]
         reply += '. (' + str(minutes) + ' minutes remaining).'
-    elif user['_id'] in client.explore_record:
-        record = client.explore_record[user['_id']]
-        minutes = math.floor((datetime.now() - record[1]).total_seconds() / 60)
-        reply = 'You\'re busy exploring in ' + location_names[record[0]]
-        reply += '. (' + str(minutes) + ' minutes total).'
     else:
         return False
     client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
@@ -216,14 +211,11 @@ def run_group_command(client, command, text, author, thread_id):
 
     elif command == 'explore' or command == 'e':
         if author_id in client.explore_record:
-            elapsed = (datetime.now() - client.explore_record[author_id][1]).total_seconds()
-            grant_treasures(client, author, elapsed / 60, thread_id)
-            del client.explore_record[author_id]
+            reply = 'You can only explore once per hour.'
+            client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
         elif not check_busy(client, author, thread_id):
-            client.explore_record[author_id] = (author['location'], datetime.now())
-            location = location_names[author['location']]
-            message = Message('You have begun exploring in ' + location + '!')
-            client.send(message, thread_id=thread_id, thread_type=ThreadType.GROUP)
+            client.explore_record.add(author_id)
+            explore_location(client, author, thread_id)
 
     elif command == 'give' or command == 'g':
         amount, user = text.split(' ', 1)
