@@ -1,13 +1,15 @@
 from fbchat.models import *
 
 from mongo import *
-from util import master_id
+from util import priority_names, master_priority, master_id
 
 def generate_user_info(client, text, author):
     text = text.lower()
     is_master = author['_id'] == master_id
+    if not is_master:
+        return
 
-    if len(text) == 0 and is_master:
+    if len(text) == 0:
         reply = '<<Command List>>\n'
         reply += '!alias: Alias assignment\n'
         reply += '!check: See user statistics\n'
@@ -19,21 +21,21 @@ def generate_user_info(client, text, author):
         reply += '!wong: Response priming\n'
         reply += '(See what commands do with "!help <command>")'
     
-    elif text == 'alias' and is_master:
+    elif text == 'alias':
         reply = '<<Alias>>\n'
         reply += 'Usage: "!alias <alias> <search_string>"\n'
         reply += 'Example: "!alias wong Wong Liu"\n'
         reply += 'Assigns an alias to a user (found using <search_string>) for '
         reply += 'use in other private chat commands. Aliases must be a single word.'
 
-    elif text == 'check' and is_master:
+    elif text == 'check':
         reply = '<<Check>>\n'
         reply += 'Usage: "!check <alias>"\n'
         reply += 'Returns some information on the user designated by <alias>.\n\n'
         reply += 'Usage: "!check"\n'
         reply += 'Returns some information on all users with aliases.'
 
-    elif text == 'define' and is_master:
+    elif text == 'define':
         reply = '<<Define>>\n'
         reply += 'Usage: "!define <command> <mapping>"\n'
         reply += 'Example: "!define quit !mute"\n'
@@ -45,7 +47,7 @@ def generate_user_info(client, text, author):
         reply += 'Usage: "!define <command>"\n'
         reply += 'Clears the mapping for <command> to its default.'
 
-    elif text == 'help' and is_master:
+    elif text == 'help':
         reply = '<<Help>>\n'
         reply += 'Usage: "!help"\n'
         reply += 'Lists all the user commands that you can use. Differs per person.\n\n'
@@ -53,7 +55,7 @@ def generate_user_info(client, text, author):
         reply += 'Example: "!help secret"\n'
         reply += 'Explains the syntax and effects of the provided user <command>.'
 
-    elif text == 'message' and is_master:
+    elif text == 'message':
         reply = '<<Message>>\n'
         reply += 'Usage: "!message <alias> <message>"\n'
         reply += 'Example: "!message raph This is Wong."\n'
@@ -62,19 +64,19 @@ def generate_user_info(client, text, author):
         reply += 'Example: "!message raph"\n'
         reply += 'Sends the default chat emoji from Wong to the user designated by <alias>.'
 
-    elif text == 'perm' and is_master:
+    elif text == 'perm':
         reply = '<<Perm>>\n'
         reply += 'Usage: "!perm <priority> <alias>"\n'
         reply += 'Example: "!perm 0 raph"\n'
         reply += 'Sets the priority of the user designated by <alias> to <priority>.'
 
-    elif text == 'secret' and is_master:
+    elif text == 'secret':
         reply = '<<Secret>>\n'
         reply += 'Usage: "!secret"\n'
         reply += 'Lists all of your active secrets. This includes command mappings '
         reply += '(!define) and primed responses (!wong).'
 
-    elif text == 'wong' and is_master:
+    elif text == 'wong':
         reply = '<<Wong>>\n'
         reply += 'Usage: "!wong <response>"\n'
         reply += 'Example: "!wong Anime belongs in the trash."\n'
@@ -92,17 +94,16 @@ def generate_group_info(client, text, author, thread_id):
 
     if len(text) == 0:
         reply = '<<Command List>>\n'
-        if is_master:
-            reply += '!alias: Alias assignment\n'
+        reply += '!alias: Alias assignment\n'
         reply += '!bully: Harass someone\n'
         reply += '!check: See user statistics\n'
         reply += '!daily: Subscribe to daily events\n'
         reply += '!explore: Discover new locations\n'
         reply += '!help: Read documentation\n'
         reply += '!image: Post stored images\n'
+        reply += '!jail: Send someone to jail\n'
         reply += '!mute: Kick someone from the chat\n'
-        if is_master:
-            reply += '!perm: Change user priority\n'
+        reply += '!perm: Change user priority\n'
         reply += '!quest: Earn gold through quizzes\n'
         reply += '!random: Random chat emoji / color\n'
         reply += '!roll: Roll the dice\n'
@@ -116,7 +117,7 @@ def generate_group_info(client, text, author, thread_id):
         reply += 'Example: "!alias wong Wong Liu"\n'
         reply += 'Assigns an alias to a user (found using <search_string>) for '
         reply += 'use in other private chat commands. Aliases must be a single word. '
-        reply += 'Only usable by Master priority.'
+        reply += 'Only usable by ' + priority_names[master_priority] + ' priority.'
 
     elif text == 'bully':
         reply = '<<Bully>>\n'
@@ -171,6 +172,15 @@ def generate_group_info(client, text, author, thread_id):
         reply += 'Usage: "!image"\n'
         reply += 'Checks how many images you have stored in total.'
 
+    elif text == 'jail':
+        reply = '<<Jail>>\n'
+        reply += 'Usage: "!jail"\n'
+        reply += 'Sends a person to jail, preventing them from taking any actions '
+        reply += '(such as questing or exploring). If the person is already in jail, '
+        reply += 'they will be freed from jail instead and sent to Lith Harbor. '
+        reply += 'Only usable by ' + priority_names[master_priority - 1]
+        reply += ' priority and above.'
+
     elif text == 'mute':
         reply = '<<Mute>>\n'
         reply += 'Usage: "!mute <search_string>"\n'
@@ -183,7 +193,8 @@ def generate_group_info(client, text, author, thread_id):
         reply += 'Usage: "!perm <priority> <search_string>"\n'
         reply += 'Example: "!perm 0 Raphael"\n'
         reply += 'Sets the priority of the user designated by <search_string> '
-        reply += 'to <priority>. Only usable by Master priority.'
+        reply += 'to <priority>. Only usable by ' + priority_names[master_priority]
+        reply += ' priority.'
 
     elif text == 'quest':
         reply = '<<Quest>>\n'

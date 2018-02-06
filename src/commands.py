@@ -10,7 +10,7 @@ from info import generate_user_info, generate_group_info
 from mongo import *
 from quest import generate_quest
 from location import check_locations, travel_to_location, explore_location
-from util import master_id, priority_names, location_names
+from util import priority_names, master_priority, master_id, location_names
 
 def check_busy(client, user, thread_id):
     if user['_id'] in client.travel_record:
@@ -97,7 +97,7 @@ def run_user_command(client, command, text, author):
             message = Message('Alias not found.')
         elif user['_id'] == master_id:
             message = Message('Cannot modify master priority.')
-        elif priority < 0 or priority >= priority_get(master_id):
+        elif priority < 0 or priority >= master_priority:
             message = Message('Invalid priority.')
         else:
             priority_set(user['_id'], priority)
@@ -177,23 +177,18 @@ def run_group_command(client, command, text, author, thread_id):
                 message = Message('User not found.')
                 client.send(message, thread_id=thread_id, thread_type=ThreadType.GROUP)
                 return
-            users = [user.uid]
-        else:
-            users = [author_id]
-        reply = []
-        for user_id in users:
             user = user_from_id(user_id)
-            line = '<' + user['name'] + '>\n'
-            line += 'Priority: ' + priority_names[user['priority']] + '\n'
-            line += 'Gold: ' + str(user['gold']) + ' (+' + str(user['gold_rate']) + '/hour)\n'
-            line += 'Location: ' + location_names[user['location']]
-            if user['_id'] in client.travel_record:
-                record = client.travel_record[user['_id']]
-                minutes = math.ceil((record[1] - datetime.now()).total_seconds() / 60)
-                line += ' -> ' + location_names[record[0]] + '\n'
-                line += '(' + str(minutes) + ' minutes remaining)'
-            reply.append(line)
-        reply = '\n\n'.join(reply)
+        else:
+            user = user_from_id(author_id)
+        reply = '<' + user['name'] + '>\n'
+        reply += 'Priority: ' + priority_names[user['priority']] + '\n'
+        reply += 'Gold: ' + str(user['gold']) + ' (+' + str(user['gold_rate']) + '/hour)\n'
+        reply += 'Location: ' + location_names[user['location']]
+        if user['_id'] in client.travel_record:
+            record = client.travel_record[user['_id']]
+            minutes = math.ceil((record[1] - datetime.now()).total_seconds() / 60)
+            reply += ' -> ' + location_names[record[0]] + '\n'
+            reply += '(' + str(minutes) + ' minutes remaining)'
         client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
 
     elif command == 'daily' or command == 'd':
@@ -251,6 +246,20 @@ def run_group_command(client, command, text, author, thread_id):
             reply = 'You have ' + str(len(author['images'])) + ' images stored.'
             client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
 
+    elif command == 'jail' or command == 'j':
+        if author['priority'] >= master_priority - 1:
+            user = client.matchUser(thread_id, text)
+            user = user_from_id(user.uid)
+            if user['location'] == 0:
+                location_set(author_id, 1)
+                reply = user['name'] + ' has been freed from jail.'
+            else:
+                location_set(author_id, 0)
+                reply = user['name'] + ' has been sent to jail!'
+        else:
+            reply = 'You don\'t have permission to do this.'
+        client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
+
     elif command == 'mute' or command == 'm':
         if len(text) == 0:
             client.removeUserFromGroup(author_id, thread_id)
@@ -274,7 +283,7 @@ def run_group_command(client, command, text, author, thread_id):
                 reply = 'User not found.'
             elif user.uid == master_id:
                 reply = 'Cannot modify master priority.'
-            elif priority < 0 or priority >= priority_get(master_id):
+            elif priority < 0 or priority >= master_priority:
                 reply = 'Invalid priority.'
             else:
                 priority_set(user.uid, priority)
@@ -376,7 +385,7 @@ def run_group_command(client, command, text, author, thread_id):
             elif text == 4:
                 if gold >= 9999:
                     priority = priority_get(author_id) + 1
-                    if priority < priority_get(master_id):
+                    if priority < master_priority:
                         gold_add(author_id, -9999)
                         priority_set(author_id, priority)
                         name = author['name']
