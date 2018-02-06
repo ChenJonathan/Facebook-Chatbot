@@ -9,7 +9,7 @@ from hearthstone import random_beast
 from info import generate_user_info, generate_group_info
 from mongo import *
 from quest import generate_quest
-from location import check_locations, travel_to_location, grant_treasures
+from location import check_locations, travel_to_location, explore_location
 from util import master_id, priority_names, location_names
 
 def check_busy(client, user, thread_id):
