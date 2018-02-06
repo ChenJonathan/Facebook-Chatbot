@@ -177,7 +177,7 @@ def run_group_command(client, command, text, author, thread_id):
                 message = Message('User not found.')
                 client.send(message, thread_id=thread_id, thread_type=ThreadType.GROUP)
                 return
-            user = user_from_id(user_id)
+            user = user_from_id(user.uid)
         else:
             user = user_from_id(author_id)
         reply = '<' + user['name'] + '>\n'
@@ -249,6 +249,10 @@ def run_group_command(client, command, text, author, thread_id):
     elif command == 'jail' or command == 'j':
         if author['priority'] >= master_priority - 1:
             user = client.matchUser(thread_id, text)
+            if not user:
+                message = Message('User not found.')
+                client.send(message, thread_id=thread_id, thread_type=ThreadType.GROUP)
+                return
             user = user_from_id(user.uid)
             if user['location'] == 0:
                 location_set(author_id, 1)
