@@ -177,7 +177,7 @@ class ServerThread(threading.Thread):
 class ChatThread(threading.Thread):
 
     def run(self):
-        client = ChatBot('Cykarius@gmail.com', b64decode(os.environ.get('PASSWORD')))
+        client = ChatBot('jonathanchen1025@gmail.com', b64decode(os.environ.get('PASSWORD')))
         client.listen()
 
 
