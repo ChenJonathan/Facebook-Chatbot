@@ -390,9 +390,8 @@ def run_group_command(client, command, text, author, thread_id):
         client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
 
     elif command == 'travel' or command == 't':
-        if check_busy(client, author, thread_id):
-            return
-        elif len(text) == 0:
-            check_locations(client, author, thread_id)
-        else:
-            travel_to_location(client, author, text, thread_id)
+        if not check_busy(client, author, thread_id):
+            if len(text) == 0:
+                check_locations(client, author, thread_id)
+            else:
+                travel_to_location(client, author, text, thread_id)

@@ -8,7 +8,7 @@ def generate_user_info(client, text, author):
     is_master = author['_id'] == master_id
 
     if len(text) == 0 and is_master:
-        reply = '<<Commands>>\n'
+        reply = '<<Command List>>\n'
         reply += '!alias: Alias assignment\n'
         reply += '!check: See user statistics\n'
         reply += '!define: Command remapping\n'
@@ -91,7 +91,7 @@ def generate_group_info(client, text, author, thread_id):
     is_master = author['_id'] == master_id
 
     if len(text) == 0:
-        reply = '<<Commands>>\n'
+        reply = '<<Command List>>\n'
         if is_master:
             reply += '!alias: Alias assignment\n'
         reply += '!bully: Harass someone\n'
@@ -111,12 +111,12 @@ def generate_group_info(client, text, author, thread_id):
         reply += '(See how commands work with "!help <command>")'
 
     elif text == 'alias':
-        if is_master:
-            reply = '<<Alias>>\n'
-            reply += 'Usage: "!alias <alias> <search_string>"\n'
-            reply += 'Example: "!alias wong Wong Liu"\n'
-            reply += 'Assigns an alias to a user (found using <search_string>) for '
-            reply += 'use in other private chat commands. Aliases must be a single word.'
+        reply = '<<Alias>>\n'
+        reply += 'Usage: "!alias <alias> <search_string>"\n'
+        reply += 'Example: "!alias wong Wong Liu"\n'
+        reply += 'Assigns an alias to a user (found using <search_string>) for '
+        reply += 'use in other private chat commands. Aliases must be a single word. '
+        reply += 'Only usable by Master priority.'
 
     elif text == 'bully':
         reply = '<<Bully>>\n'
@@ -144,10 +144,9 @@ def generate_group_info(client, text, author, thread_id):
 
     elif text == 'explore':
         reply = '<<Explore>>\n'
-        reply += 'Usage: "!explore>"\n'
-        reply += 'Toggles character exploration. Exploration will yield gold and newly '
-        reply += 'discovered locations upon completion based on the amount of time elapsed. '
-        reply += 'Exploring beyond 6 hours at a time will not grant additional rewards.'
+        reply += 'Usage: "!explore"\n'
+        reply += 'Explores the current location. Exploration will various rewards and '
+        reply += 'gradually discover surrounding locations. Can be done once per hour.'
 
     elif text == 'give':
         reply = '<<Give>>\n'
@@ -180,12 +179,11 @@ def generate_group_info(client, text, author, thread_id):
         reply += 'The user defaults to you if <search_string> is left blank.'
 
     elif text == 'perm':
-        if is_master:
-            reply = '<<Perm>>\n'
-            reply += 'Usage: "!perm <priority> <search_string>"\n'
-            reply += 'Example: "!perm 0 Raphael"\n'
-            reply += 'Sets the priority of the user designated by <search_string> '
-            reply += 'to <priority>.'
+        reply = '<<Perm>>\n'
+        reply += 'Usage: "!perm <priority> <search_string>"\n'
+        reply += 'Example: "!perm 0 Raphael"\n'
+        reply += 'Sets the priority of the user designated by <search_string> '
+        reply += 'to <priority>. Only usable by Master priority.'
 
     elif text == 'quest':
         reply = '<<Quest>>\n'
@@ -198,6 +196,11 @@ def generate_group_info(client, text, author, thread_id):
         reply = '<<Random>>\n'
         reply += 'Usage: "!random"\n'
         reply += 'Randomly sets the group chat\'s color and emoji.'
+
+    elif text == 'ranking':
+        reply = '<<Ranking>>\n'
+        reply += 'Usage: "!ranking"\n'
+        reply += 'Shows the top 9 richest people in the group chat.'
 
     elif text == 'roll':
         reply = '<<Roll>>\n'

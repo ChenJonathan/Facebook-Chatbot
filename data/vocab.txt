@@ -304,7 +304,7 @@ expository:explanatory
 extant:in existence; not lost
 extemporaneous:unrehearsed
 extirpate:to root up; to destroy
-extraneous:not essencial
+extraneous:not essential
 extrapolation:the act of estimation by projecting known information
 extrinsic:not inherent of essential
 facetious:homorous
