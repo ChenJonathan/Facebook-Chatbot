@@ -90,6 +90,8 @@ def travel_to_location(client, user, text, thread_id):
 
 def explore_location(client, user, thread_id):
     seed = random.uniform(0.8, 1.2)
+    if user['location'] == 0:
+        seed = 0
 
     # Calculate gold gain
     delta_gold = int(seed * (60 + random.randint(-10, 10)))
@@ -110,8 +112,11 @@ def explore_location(client, user, thread_id):
     presence = False
     for i, time in enumerate(edges[current]):
         if time >= 0 and str(i) in progress_keys:
-            delta_progress = seed / edges[current][i] * random.uniform(0.8, 1.2)
-            total_progress = progress[str(i)] + delta_progress
+            if edges[current][i] > 0:
+                delta_progress = seed / edges[current][i] * random.uniform(0.8, 1.2)
+                total_progress = progress[str(i)] + delta_progress
+            else:
+                total_progress = 1
             if total_progress >= 1:
                 location_discover(user['_id'], i)
                 unlocked.append(i)

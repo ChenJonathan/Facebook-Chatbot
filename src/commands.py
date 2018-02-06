@@ -255,10 +255,10 @@ def run_group_command(client, command, text, author, thread_id):
                 return
             user = user_from_id(user.uid)
             if user['location'] == 0:
-                location_set(author_id, 1)
+                location_set(user['_id'], 1)
                 reply = user['name'] + ' has been freed from jail.'
             else:
-                location_set(author_id, 0)
+                location_set(user['_id'], 0)
                 reply = user['name'] + ' has been sent to jail!'
         else:
             reply = 'You don\'t have permission to do this.'
@@ -300,7 +300,10 @@ def run_group_command(client, command, text, author, thread_id):
         client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
 
     elif command == 'quest' or command == 'q':
-        if not check_busy(client, author, thread_id):
+        if author['location'] == 0:
+            message = Message('There are no quests to be found here.')
+            client.send(message, thread_id=thread_id, thread_type=ThreadType.GROUP)
+        elif not check_busy(client, author, thread_id):
             generate_quest(client, author, thread_id)
 
     elif command == 'random':
