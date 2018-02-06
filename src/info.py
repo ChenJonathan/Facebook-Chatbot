@@ -147,8 +147,7 @@ def generate_group_info(client, text, author, thread_id):
         reply += 'Usage: "!explore>"\n'
         reply += 'Toggles character exploration. Exploration will yield gold and newly '
         reply += 'discovered locations upon completion based on the amount of time elapsed. '
-        reply += 'Exploring for long periods of time will produce better results than '
-        reply += 'exploring in short bursts.'
+        reply += 'Exploring beyond 6 hours at a time will not grant additional rewards.'
 
     elif text == 'give':
         reply = '<<Give>>\n'

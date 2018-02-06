@@ -1,17 +1,14 @@
 from fbchat.models import *
 from datetime import datetime, timedelta
 import math
+import random
 import string
 
+from hearthstone import random_beast
 from mongo import *
+from util import location_names, name_to_location
 
-names = ['Maple Island', 'Lith Harbor', 'Henesys', 'Ellinia', 'Perion', 'Kerning City']
-names += ['Sleepywood', 'Cursed Sanctuary', 'New Leaf City', 'Krakian Jungle', 'Bigger Ben']
-names += ['Orbis', 'El Nath', 'Dead Mine', 'Zakum\'s Altar', 'Aqua Road', 'Cave of Pianus']
-names += ['Ludibrium', 'Path of Time', 'Papulatus Tower', 'Korean Folk Town', 'Omega Sector']
-names += ['Nihal Desert', 'Magatia', 'Leafre', 'Minar Forest', 'Cave of Life', 'Temple of Time']
-
-edges = [[-1 for _ in range(len(names))] for _ in range(len(names))]
+edges = [[-1 for _ in range(len(location_names))] for _ in range(len(location_names))]
 
 def _connect(a, b, time):
     edges[a][b] = time
@@ -60,24 +57,13 @@ _connect(24, 25, 5)
 _connect(25, 26, 0)
 _connect(24, 27, 60)
 
-def location_to_name(location):
-    return names[location] if location >= 0 and location < len(names) else None
-
-def name_to_location(text):
-    print(text)
-    text = text.lower()
-    for i, name in enumerate(names):
-        name = name.strip().lower().split()
-        if text in name:
-            return i
-    return None
-
 def check_locations(client, user, thread_id):
     current = user['location']
-    reply = ['You are in ' + names[current] + ' and can travel to the following places:']
+    reply = ['You are in ' + location_names[current]]
+    reply[0] += ' and can travel to the following places:'
     for i, time in enumerate(edges[current]):
-        if time >= 0 and i in user['locations_discovered']:
-            reply.append('- ' + names[i] + ': ' + str(time) + ' minutes away')
+        if time >= 0 and i not in user['location_progress']:
+            reply.append('- ' + location_names[i] + ': ' + str(time) + ' minutes away')
     reply = '\n'.join(reply) if reply else 'You cannot travel anywhere.'
     client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
 
@@ -86,14 +72,62 @@ def travel_to_location(client, user, text, thread_id):
     location = name_to_location(text)
     if location == None:
         reply = 'That location doesn\'t exist.'
-    elif edges[current][location] < 0 or location not in user['locations_discovered']:
+    elif edges[current][location] < 0 or location in user['location_progress']:
         reply = 'You cannot travel there.'
     else:
         record = (location, datetime.now() + timedelta(minutes=edges[current][location]))
         client.travel_record[user['_id']] = record
-        reply = user['name'] + ' is now traveling to ' + names[location] + '.'
+        reply = user['name'] + ' is now traveling to ' + location_names[location] + '.'
     client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
 
-def grant_treasures(client, user, elapsed, thread_id):
-    message = Message('You have explored for ' + str(elapsed) + ' minutes!')
+def grant_treasures(client, user, minutes, thread_id):
+    elapsed = min(minutes / 60 * random.uniform(0.8, 1.2), 6)
+
+    # Calculate gold gain
+    delta_gold = int(elapsed * (60 + random.randint(-10, 10)))
+    gold_add(user['_id'], delta_gold)
+
+    # Check for discovered hunting pet
+    beast = None
+    if elapsed / 100 > random.random():
+        beast = random_beast()
+        delta_rate = beast[1] * beast[2]
+        gold_rate_add(user['_id'], delta_rate)
+
+    # Check for discovered location
+    current = user['location']
+    progress = user['location_progress']
+    unlocked = []
+    presence = False
+    for i, time in enumerate(edges[current]):
+        if time >= 0 and str(i) in progress.keys():
+            delta_progress = elapsed / edges[current][i] * random.uniform(0.8, 1.2)
+            total_progress = progress[str(i)] + delta_progress
+            if total_progress >= 1:
+                location_discover(user['_id'], i)
+                unlocked.append(i)
+            else:
+                location_explore(user['_id'], i, total_progress)
+                presence = True
+
+    # Create message
+    reply = []
+    line = 'You finished exploring after ' + str(minutes)
+    line += ' minutes and found ' + str(delta_gold) + ' gold.'
+    reply.append(line)
+    if beast:
+        line = 'A wild ' + str(beast[1]) + '/' + str(beast[2]) + ' '
+        line += beast[0] + ' took a liking to you! It follows you around, '
+        line += 'granting you an additional ' + str(delta_rate) + ' gold per hour.'
+        reply.append(line)
+    if len(unlocked) > 0:
+        line = 'During this time, you randomly stumbled upon '
+        line += ' and '.join([location_names[new] for new in unlocked]) + '!'
+        reply.append(line)
+    if presence:
+        line = 'On the way back, you sensed the presence of an'
+        line += ('other' if unlocked else '') + ' undiscovered location nearby.'
+        reply.append(line)
+
+    message = Message(' '.join(reply))
     client.send(message, thread_id=thread_id, thread_type=ThreadType.GROUP)

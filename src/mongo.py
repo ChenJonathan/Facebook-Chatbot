@@ -1,3 +1,5 @@
+from util import location_names
+
 import os
 import pymongo
 
@@ -66,7 +68,7 @@ def user_try_add(user_id):
             'gold': 0,
             'gold_rate': 0,
             'location': 0,
-            'locations_discovered': [0, 1],
+            'location_progress': {str(i): 0 for i in range(2, len(location_names))},
             'images': []
         })
 
@@ -122,9 +124,14 @@ def location_set(user_id, location):
     update = {'$set': {'location': location}}
     db_users.update_one({'_id': user_id}, update)
 
+def location_explore(user_id, location, progress):
+    user_try_add(user_id)
+    update = {'$set': {('location_progress.' + str(location)): progress}}
+    db_users.update_one({'_id': user_id}, update)
+
 def location_discover(user_id, location):
     user_try_add(user_id)
-    update = {'$addToSet': {'locations_discovered': location}}
+    update = {'$unset': {('location_progress.' + str(location)): None}}
     db_users.update_one({'_id': user_id}, update)
 
 # Image methods

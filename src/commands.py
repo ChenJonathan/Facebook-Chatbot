@@ -9,19 +9,19 @@ from hearthstone import random_beast
 from info import generate_user_info, generate_group_info
 from mongo import *
 from quest import generate_quest
-from location import location_to_name, check_locations, travel_to_location, grant_treasures
-from util import master_id, priority_names
+from location import check_locations, travel_to_location, grant_treasures
+from util import master_id, priority_names, location_names
 
 def check_busy(client, user, thread_id):
     if user['_id'] in client.travel_record:
         record = client.travel_record[user['_id']]
         minutes = math.ceil((record[1] - datetime.now()).total_seconds() / 60)
-        reply = 'You\'re busy traveling to ' + location_to_name(record[0])
+        reply = 'You\'re busy traveling to ' + location_names[record[0]]
         reply += '. (' + str(minutes) + ' minutes remaining).'
     elif user['_id'] in client.explore_record:
         record = client.explore_record[user['_id']]
         minutes = math.floor((datetime.now() - record[1]).total_seconds() / 60)
-        reply = 'You\'re busy exploring in ' + location_to_name(record[0])
+        reply = 'You\'re busy exploring in ' + location_names[record[0]]
         reply += '. (' + str(minutes) + ' minutes total).'
     else:
         return False
@@ -62,11 +62,11 @@ def run_user_command(client, command, text, author):
             line = '<' + user['name'] + '> (' + user['alias'] + ')\n'
             line += 'Priority: ' + priority_names[user['priority']] + '\n'
             line += 'Gold: ' + str(user['gold']) + ' (+' + str(user['gold_rate']) + '/hour)\n'
-            line += 'Location: ' + location_to_name(user['location'])
+            line += 'Location: ' + location_names[user['location']]
             if user['_id'] in client.travel_record:
                 record = client.travel_record[user['_id']]
                 minutes = math.ceil((record[1] - datetime.now()).total_seconds() / 60)
-                line += ' -> ' + location_to_name(record[0]) + '\n'
+                line += ' -> ' + location_names[record[0]] + '\n'
                 line += '(' + str(minutes) + ' minutes remaining)'
             reply.append(line)
         reply = '\n\n'.join(reply) if reply else 'No aliases set.'
@@ -191,11 +191,11 @@ def run_group_command(client, command, text, author, thread_id):
             line = '<' + user['name'] + '>\n'
             line += 'Priority: ' + priority_names[user['priority']] + '\n'
             line += 'Gold: ' + str(user['gold']) + ' (+' + str(user['gold_rate']) + '/hour)\n'
-            line += 'Location: ' + location_to_name(user['location'])
+            line += 'Location: ' + location_names[user['location']]
             if user['_id'] in client.travel_record:
                 record = client.travel_record[user['_id']]
                 minutes = math.ceil((record[1] - datetime.now()).total_seconds() / 60)
-                line += ' -> ' + location_to_name(record[0]) + '\n'
+                line += ' -> ' + location_names[record[0]] + '\n'
                 line += '(' + str(minutes) + ' minutes remaining)'
             reply.append(line)
         reply = '\n\n'.join(reply)
@@ -217,12 +217,11 @@ def run_group_command(client, command, text, author, thread_id):
     elif command == 'explore' or command == 'e':
         if author_id in client.explore_record:
             elapsed = (datetime.now() - client.explore_record[author_id][1]).total_seconds()
-            elapsed = min(math.floor(elapsed / 60), 24 * 60)
-            grant_treasures(client, author, elapsed, thread_id)
+            grant_treasures(client, author, elapsed / 60, thread_id)
             del client.explore_record[author_id]
         elif not check_busy(client, author, thread_id):
             client.explore_record[author_id] = (author['location'], datetime.now())
-            location = location_to_name(author['location'])
+            location = location_names[author['location']]
             message = Message('You have begun exploring in ' + location + '!')
             client.send(message, thread_id=thread_id, thread_type=ThreadType.GROUP)
 
