@@ -112,7 +112,7 @@ def grant_treasures(client, user, minutes, thread_id):
 
     # Create message
     reply = []
-    line = 'You finished exploring after ' + "{0:.2f}".format(minutes)
+    line = 'You finished exploring after ' + "{0:.1f}".format(minutes)
     line += ' minutes and found ' + str(delta_gold) + ' gold.'
     reply.append(line)
     if beast:
