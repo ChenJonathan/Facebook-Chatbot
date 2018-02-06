@@ -20,7 +20,7 @@ def check_busy(client, user, thread_id):
         reply += '. (' + str(minutes) + ' minutes remaining).'
     elif user['_id'] in client.explore_record:
         record = client.explore_record[user['_id']]
-        minutes = math.ceil((datetime.now() - record[1]).total_seconds() / 60)
+        minutes = math.floor((datetime.now() - record[1]).total_seconds() / 60)
         reply = 'You\'re busy exploring in ' + location_to_name(record[0])
         reply += '. (' + str(minutes) + ' minutes total).'
     else:

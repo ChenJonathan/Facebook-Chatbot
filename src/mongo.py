@@ -66,6 +66,7 @@ def user_try_add(user_id):
             'gold': 0,
             'gold_rate': 0,
             'location': 0,
+            'locations_discovered': [0, 1],
             'images': []
         })
 
@@ -119,6 +120,11 @@ def gold_rate_add(user_id, rate):
 def location_set(user_id, location):
     user_try_add(user_id)
     update = {'$set': {'location': location}}
+    db_users.update_one({'_id': user_id}, update)
+
+def location_discover(user_id, location):
+    user_try_add(user_id)
+    update = {'$addToSet': {'locations_discovered': location}}
     db_users.update_one({'_id': user_id}, update)
 
 # Image methods

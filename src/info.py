@@ -97,9 +97,10 @@ def generate_group_info(client, text, author, thread_id):
         reply += '!bully: Harass someone\n'
         reply += '!check: See user statistics\n'
         reply += '!daily: Subscribe to daily events\n'
+        reply += '!explore: Discover new locations\n'
         reply += '!help: Read documentation\n'
         reply += '!image: Post stored images\n'
-        reply += '!mute: Kick someone\n'
+        reply += '!mute: Kick someone from the chat\n'
         if is_master:
             reply += '!perm: Change user priority\n'
         reply += '!quest: Earn gold through quizzes\n'
@@ -140,6 +141,14 @@ def generate_group_info(client, text, author, thread_id):
         reply += 'EST. Current events include:\n'
         reply += '"color" - Changes the chat color\n'
         reply += '"emoji" - Changes the chat emoji'
+
+    elif text == 'explore':
+        reply = '<<Explore>>\n'
+        reply += 'Usage: "!explore>"\n'
+        reply += 'Toggles character exploration. Exploration will yield gold and newly '
+        reply += 'discovered locations upon completion based on the amount of time elapsed. '
+        reply += 'Exploring for long periods of time will produce better results than '
+        reply += 'exploring in short bursts.'
 
     elif text == 'give':
         reply = '<<Give>>\n'
@@ -210,9 +219,10 @@ def generate_group_info(client, text, author, thread_id):
         reply = '<<Travel>>\n'
         reply += 'Usage: "!travel <location>"\n'
         reply += 'Example: "!travel Desert"\n'
-        reply += 'Sets your character on a journey to <location>.\n\n'
+        reply += 'Sets your character on a journey to <location>. You will be unable '
+        reply += 'to take any actions (such as questing or exploring) while traveling.\n\n'
         reply += 'Usage: "!travel"\n'
-        reply += 'Checks which locations you can travel to from your current location.'
+        reply += 'Check which locations you can travel to from your current location.'
 
     else:
         return
