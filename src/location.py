@@ -33,7 +33,7 @@ _connect(5, 8, 8)
 _connect(8, 9, 5)
 _connect(9, 10, 5)
 # - El Nath
-_connect(3, 11, 18)
+# _connect(3, 11, 18)
 _connect(11, 12, 6)
 _connect(12, 13, 9)
 _connect(13, 14, 0)
@@ -64,7 +64,7 @@ def check_locations(client, user, thread_id):
     for i, time in enumerate(edges[current]):
         if time >= 0 and i not in user['location_progress']:
             reply.append('- ' + location_names[i] + ': ' + str(time) + ' minutes away')
-    reply = '\n'.join(reply) if reply else 'You cannot travel anywhere.'
+    reply = '\n'.join(reply) if len(reply) > 1 else 'You cannot travel anywhere.'
     client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
 
 def travel_to_location(client, user, text, thread_id):
@@ -112,7 +112,7 @@ def grant_treasures(client, user, minutes, thread_id):
 
     # Create message
     reply = []
-    line = 'You finished exploring after ' + str(minutes)
+    line = 'You finished exploring after ' + "{0:.2f}".format(minutes)
     line += ' minutes and found ' + str(delta_gold) + ' gold.'
     reply.append(line)
     if beast:

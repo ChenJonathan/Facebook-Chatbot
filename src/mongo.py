@@ -67,7 +67,7 @@ def user_try_add(user_id):
             'priority': 1, 
             'gold': 0,
             'gold_rate': 0,
-            'location': 0,
+            'location': 1,
             'location_progress': {str(i): 0 for i in range(2, len(location_names))},
             'images': []
         })
