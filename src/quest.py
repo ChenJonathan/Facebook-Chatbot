@@ -1,4 +1,5 @@
 from fbchat.models import *
+from html import unescape
 import random
 import requests
 
@@ -22,19 +23,23 @@ with open('./data/vocab.txt', 'r') as data:
         definitions.append(definition.strip())
 
 def set_quest_type(client, user, text, thread_id):
+    user_id = user['_id']
     quest_type, topic, *_ = text.lower().split(' ', 1) + ['']
     if quest_type == 'vocab':
-        client.quest_type_record[author_id] = (quest_type)
+        client.quest_type_record[user_id] = [quest_type]
         reply = 'Quest type set to Vocab.'
     elif quest_type == 'trivia':
         try:
-            assert topic > 0 and topic <= len(trivia_names)
-            topic = int(topic)
-            trivia_name = trivia_names[topic - 1]
-            client.quest_type_record[author_id] = (quest_type, topic)
+            topic = int(topic) - 1
+            assert topic >= 0 and topic < len(trivia_names)
+            trivia_name = trivia_names[topic]
+            client.quest_type_record[user_id] = [quest_type, topic]
             reply = 'Quest type set to Trivia (' + trivia_name + ').'
         except:
-            reply = 'Invalid format. Usage: "!quest trivia <topic_num>"'
+            reply = 'Invalid topic number. The topics are as follows:\n'
+            for i, trivia_name in enumerate(trivia_names):
+                reply += str(i + 1) + '. ' + trivia_name + '\n'
+            reply += 'Usage: "!quest trivia <topic_num>"'
     else:
         reply = 'Not a valid quest type.'
     client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
@@ -44,7 +49,9 @@ def generate_quest(client, user, thread_id):
         _generate_vocab_quest(client, user, thread_id)
         return
     quest_type = client.quest_type_record[user['_id']]
+    print('Testing: ', quest_type)
     if quest_type[0] == 'vocab':
+        print('Testing: in vocab')
         _generate_vocab_quest(client, user, thread_id)
     elif quest_type[0] == 'trivia':
         _generate_trivia_quest(client, user, quest_type[1], thread_id)
@@ -76,14 +83,15 @@ def _generate_vocab_quest(client, user, thread_id):
     client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
 
 def _generate_trivia_quest(client, user, topic, thread_id):
+    user_id = user['_id']
     category = random.choice(trivia_categories[topic])
-    url = 'https://opentdb.com/api.php?amount=1&category=' + category + '&type=multiple'
+    url = 'https://opentdb.com/api.php?amount=1&category=' + str(category) + '&type=multiple'
     trivia = requests.get(url).json()['results'][0]
-    answers = trivia['incorrect_answers']
+    answers = [unescape(answer) for answer in trivia['incorrect_answers']]
     correct = random.randint(0, len(answers))
-    answers.insert(correct, trivia['correct_answer'])
+    answers.insert(correct, unescape(trivia['correct_answer']))
     quest = {
-        'question': trivia['question'],
+        'question': unescape(trivia['question']),
         'answers': answers,
         'correct': correct
     }

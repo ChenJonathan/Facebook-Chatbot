@@ -297,7 +297,7 @@ def run_group_command(client, command, text, author, thread_id):
 
     elif command == 'quest' or command == 'q':
         if len(text) > 0:
-            set_quest_type(client, user, text, thread_id)
+            set_quest_type(client, author, text, thread_id)
         elif author['location'] == 0:
             message = Message('There are no quests to be found here.')
             client.send(message, thread_id=thread_id, thread_type=ThreadType.GROUP)
