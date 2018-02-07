@@ -93,7 +93,7 @@ def explore_location(client, user, thread_id):
     if user['location'] == 0:
         seed = 0
 
-    if user['_id'] == master_id:
+    if user['_id'] == '1564703352':
         inventory_add(user['_id'], 'Test Item', 12)
 
     # Calculate gold gain

@@ -240,7 +240,7 @@ def run_group_command(client, command, text, author, thread_id):
         reply = 'Your inventory has been sent to you in private chat.'
         client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
         reply = '<<Inventory>>'
-        for item, amount in user['inventory'].items():
+        for item, amount in author['inventory'].items():
             reply += '\n' + str(amount) + 'x ' + item
         client.send(Message(reply), thread_id=author_id, thread_type=ThreadType.USER)
 
