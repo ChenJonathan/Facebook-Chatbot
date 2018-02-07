@@ -352,7 +352,7 @@ def run_group_command(client, command, text, author, thread_id):
         users = sorted(group, key=lambda x: calculate_score(x), reverse=True)
         users = [user for user in users if user['_id'] != master_id and user['_id'] != client.uid]
         try:
-            page = int(text)
+            page = int(text) - 1
         except:
             page = 0
         if len(users) <= page * 9:
