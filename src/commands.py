@@ -326,8 +326,8 @@ def run_group_command(client, command, text, author, thread_id):
 
     elif command == 'ranking':
         group = client.fetchGroupInfo(thread_id)[thread_id].participants
-        group = user_get_all_in(list(group)
-        users = sorted(group), key=lambda x: calculate_score(x), reverse=True)
+        group = user_get_all_in(list(group))
+        users = sorted(group, key=lambda x: calculate_score(x), reverse=True)
         if len(users) > 9:
             users = users[:9]
         reply = '<<Chat Ranking>>'
