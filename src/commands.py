@@ -10,7 +10,7 @@ from info import generate_user_info, generate_group_info
 from mongo import *
 from quest import generate_quest
 from location import check_locations, travel_to_location, explore_location
-from util import priority_names, master_priority, master_id, location_names
+from util import *
 
 def check_busy(client, user, thread_id):
     if user['_id'] in client.travel_record:
@@ -326,13 +326,14 @@ def run_group_command(client, command, text, author, thread_id):
 
     elif command == 'ranking':
         group = client.fetchGroupInfo(thread_id)[thread_id].participants
-        users = sorted(user_get_all_in(list(group)), key=lambda x: x['gold'], reverse=True)
+        group = user_get_all_in(list(group)
+        users = sorted(group), key=lambda x: calculate_score(x), reverse=True)
         if len(users) > 9:
             users = users[:9]
         reply = '<<Chat Ranking>>'
         for i, user in enumerate(users):
             reply += '\n' + str(i + 1) + '. ' + user['name']
-            reply += ' (' + str(user['gold']) + ' gold)'
+            reply += ' (' + str(calculate_score(user)) + ' points)'
         client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
 
     elif command == 'roll' or command == 'r':
@@ -376,12 +377,18 @@ def run_group_command(client, command, text, author, thread_id):
                     reply = 'You can\'t afford that.'
             elif text == 2:
                 if gold >= 500:
-                    gold_add(author_id, -500)
-                    image = random.randint(0, client.num_images - 1)
-                    image_add(author_id, image)
-                    reply = 'You\'ve received an image! It has been placed in slot '
-                    reply += str(len(author['images']) + 1) + '.\n'
-                    reply += '(Use it with "!image <slot>")'
+                    images = author['images']
+                    if len(images) == client.num_images:
+                        reply = 'You\'ve already bought all the images.'
+                    else:
+                        gold_add(author_id, -500)
+                        image = random.randint(0, client.num_images - 1)
+                        while image in images:
+                            image = random.randint(0, client.num_images - 1)
+                        image_add(author_id, image)
+                        reply = 'You\'ve received an image! It has been placed in slot '
+                        reply += str(len(author['images']) + 1) + '.\n'
+                        reply += '(Use it with "!image <slot>")'
                 else:
                     reply = 'You can\'t afford that.'
             elif text == 3:

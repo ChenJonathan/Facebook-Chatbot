@@ -13,7 +13,7 @@ from commands import run_group_command, run_user_command
 from emoji import random_emoji
 from mongo import *
 from quest import complete_quest
-from util import master_id
+from util import master_priority, master_id
 
 cb = cleverbot.Cleverbot(os.environ.get('CLEVERBOT_KEY'))
 
@@ -22,6 +22,7 @@ class ChatBot(Client):
     def __init__(self, email, password):
         super().__init__(email, password)
         init_db(self)
+        priority_set(self.uid, master_priority - 1):
 
         self.num_images = len(os.listdir('./images'))
         self.message_record = {}

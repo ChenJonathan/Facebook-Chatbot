@@ -126,7 +126,7 @@ def explore_location(client, user, thread_id):
 
     # Create message
     reply = []
-    line = 'You finished exploring ' + location_names[current]
+    line = 'You spent some time exploring ' + location_names[current]
     line += ' and found ' + str(delta_gold) + ' gold.'
     reply.append(line)
     if beast:

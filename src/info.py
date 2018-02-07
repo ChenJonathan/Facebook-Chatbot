@@ -108,7 +108,7 @@ def generate_group_info(client, text, author, thread_id):
         reply += '!random: Random chat emoji / color\n'
         reply += '!roll: Roll the dice\n'
         reply += '!shop: Spend gold\n'
-        reply += '!travel: Travel around the world'
+        reply += '!travel: Travel around the world\n'
         reply += '(See how commands work with "!help <command>")'
 
     elif text == 'alias':
