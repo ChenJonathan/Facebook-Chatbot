@@ -367,15 +367,11 @@ def run_group_command(client, command, text, author, thread_id):
                     reply = 'You can\'t afford that.'
             elif text == 2:
                 if gold >= 500:
-                    images = author['images']
-                    if len(images) == client.num_images:
-                        reply = 'You\'ve already bought all the images.'
-                    else:
-                        gold_add(author_id, -500)
-                        image = random.randint(0, client.num_images - 1)
-                        path = './images/' + str(image) + '.jpg'
-                        client.sendLocalImage(path, thread_id=thread_id, thread_type=ThreadType.GROUP)
-                        reply = 'Enjoy your stock photo!'
+                    gold_add(author_id, -500)
+                    image = random.randint(0, client.num_images - 1)
+                    path = './images/' + str(image) + '.jpg'
+                    client.sendLocalImage(path, thread_id=thread_id, thread_type=ThreadType.GROUP)
+                    reply = 'Enjoy your stock photo!'
                 else:
                     reply = 'You can\'t afford that.'
             elif text == 3:
