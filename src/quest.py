@@ -10,7 +10,7 @@ terms = []
 definitions = []
 
 # Trivia
-categories = list(range(0, 25) + [27])
+categories = list(range(0, 25)) + [27]
 
 with open('./data/vocab.txt', 'r') as data:
     for line in data.readlines():
