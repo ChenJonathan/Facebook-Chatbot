@@ -69,7 +69,7 @@ def user_try_add(user_id):
             'gold_rate': 0,
             'inventory': [],
             'location': 1,
-            'location_progress': {str(i): 0 for i in range(2, len(location_names))},
+            'location_progress': {str(i): 0 for i in range(6, len(location_names))},
             'images': []
         })
 
