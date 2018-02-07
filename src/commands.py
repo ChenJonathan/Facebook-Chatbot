@@ -8,7 +8,7 @@ from emoji import random_emoji
 from hearthstone import random_beast
 from info import generate_user_info, generate_group_info
 from mongo import *
-from quest import generate_quest
+from quest import trivia_names, set_quest_type, generate_quest
 from location import check_locations, travel_to_location, explore_location
 from util import *
 
@@ -296,7 +296,9 @@ def run_group_command(client, command, text, author, thread_id):
         client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
 
     elif command == 'quest' or command == 'q':
-        if author['location'] == 0:
+        if len(text) > 0:
+            set_quest_type(client, user, text, thread_id)
+        elif author['location'] == 0:
             message = Message('There are no quests to be found here.')
             client.send(message, thread_id=thread_id, thread_type=ThreadType.GROUP)
         elif not check_busy(client, author, thread_id):
@@ -333,7 +335,7 @@ def run_group_command(client, command, text, author, thread_id):
         group = client.fetchGroupInfo(thread_id)[thread_id].participants
         group = user_get_all_in(list(group))
         users = sorted(group, key=lambda x: calculate_score(x), reverse=True)
-        users = [user for user in users if user['_id'] != master_id]
+        users = [user for user in users if user['_id'] != master_id and user['_id'] != client.uid]
         if len(users) > 9:
             users = users[:9]
         reply = '<<Chat Scoreboard>>'

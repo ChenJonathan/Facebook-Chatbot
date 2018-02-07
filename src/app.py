@@ -10,7 +10,6 @@ import threading
 
 from clock import set_timer
 from commands import run_group_command, run_user_command
-from emoji import random_emoji
 from mongo import *
 from quest import complete_quest
 from util import master_priority, master_id
@@ -27,6 +26,7 @@ class ChatBot(Client):
         self.num_images = len(os.listdir('./images'))
         self.message_record = {}
         self.quest_record = {}
+        self.quest_type_record = {}
         self.travel_record = {}
         self.explore_record = set()
 
@@ -97,7 +97,7 @@ class ChatBot(Client):
             # Forward direct messages
             if thread_id != master_id:
                 user = self.fetchUserInfo(thread_id)[thread_id]
-                message = Message('<' + user.name + '>: ' + message_object.text)
+                message = Message('<' + user.name + '>: ' + (message_object.text or ''))
                 self.send(message, thread_id=master_id)
 
             # Chat commands - User
@@ -112,7 +112,7 @@ class ChatBot(Client):
                 if thread_id not in self.message_record:
                     self.message_record[thread_id] = [None, set()]
                 group_record = self.message_record[thread_id]
-                text_lower = message_object.text.lower()
+                text_lower = (message_object.text or '').lower()
                 if text_lower != group_record[0]:
                     group_record[0] = text_lower
                     group_record[1].clear()
@@ -128,7 +128,7 @@ class ChatBot(Client):
             # Cleverbot messaging
             if not command:
                 text = text.split()
-                if text[0].lower() == 'wong,':
+                if text and text[0].lower() == 'wong,':
                     try:
                         if author_id == master_id and self.responses:
                             reply = self.responses.pop(0)

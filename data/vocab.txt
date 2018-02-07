@@ -68,7 +68,7 @@ assiduous:diligent; hard-working
 assuage:to make less severe
 astringent:harsh; severe
 asylum:place of refuge or shelter
-atavism:in biology, the reappearance of a characteristic in an organism after several generations of absence; individual or a part that exhibits atavism; return of a trait after a period of absence
+atavism:in biology, the reappearance of a characteristic in an organism after several generations of absence; return of a trait after a period of absence
 attenuate:to weaken
 audacious:bold; daring
 austere:stern; unadorned; simple
@@ -268,8 +268,7 @@ enhance:to increase; improve
 entomology:the scientific study of insects
 enunciate:to pronounce clearly
 ephemeral:short-lived; fleeting
-epistemology:branch of philosophy tha texamines the nature of knowledge
-epistemology:branch of philosophy tha texamines the nature of knowledge
+epistemology:branch of philosophy that examines the nature of knowledge
 equable:steady; unvarying; serene
 equanimity:composure; calmness
 equivocate:intentionally use vague language
@@ -483,10 +482,10 @@ megalomania:delusions of power or importance
 menagerie:a variety of animals kept together
 mendacious:dishonest
 mendicant:beggar
-meretricious:gaudy; specious; flasely attractive
+meretricious:gaudy; specious; falsely attractive
 mesmerize:to hypnotize
 metamorphosis:change; transformation
-metaphysics:a branch of philosophy tha tinvestigates the ultimate nature of reality
+metaphysics:a branch of philosophy that investigates the ultimate nature of reality
 metereological:concerned with the weather
 meticulous:very careful; picky; fastidious
 mettle:courage; endurance
@@ -736,7 +735,7 @@ taxonomy:science of classification
 tenet:belief, doctrine
 tenuous:weak, insubstantial
 terrestrial:earthly, commonplace
-the act of cutting; the natural separation of a leaf or other part of a plant:abscission
+abscission:the act of cutting; the natural separation of a leaf or other part of a plant
 theocracy:government by priests representing a god
 thespian:an actor or actress
 timbre:voice tone color
@@ -757,7 +756,7 @@ treatise:article treating a subject systematically and thoroughly
 tremulous:trembling, frugal, timid
 trepidation:fear and anxiety
 truculence:aggressiveness, ferocity
-tryst:agreement between lovest to meet, rendez-vous
+tryst:agreement between lovers to meet, rendez-vous
 tumid:swollen, distended
 turbid:muddy, opaque, in a state of great confusion
 turgid:swollen, pompous
