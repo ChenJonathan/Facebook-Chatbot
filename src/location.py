@@ -181,7 +181,7 @@ def explore_location(client, user, thread_id):
             while rate > random.random():
                 amount += 1
             trials.append(amount)
-        final_amount = trials.sorted()[-2]
+        final_amount = sorted(trials)[-2]
         if final_amount > 0:
             item_drops[item] = final_amount
             inventory_add(user['_id'], item, final_amount)
