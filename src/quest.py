@@ -31,7 +31,9 @@ def set_quest_type(client, user, text, thread_id):
     client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
 
 def generate_quest(client, user, thread_id):
-    quest_type = client.quest_type_record.get(user['_id'])
+    if user['_id'] not in client.quest_type_record:
+        client.quest_type_record[user['_id']] = 'vocab'
+    quest_type = client.quest_type_record[user['_id']]
     if quest_type == 'vocab':
         _generate_vocab_quest(client, user, thread_id)
     elif quest_type == 'trivia':
@@ -86,11 +88,14 @@ def complete_quest(client, user, text, thread_id):
     user_id = user['_id']
     text = text.lower()
     quest = client.quest_record[user_id]
-    quest_type = client.quest_type_record.get(user['_id'])
+    quest_type = client.quest_type_record[user['_id']]
     correct = quest['correct']
     del client.quest_record[user_id]
     if text == str(correct + 1) or text == quest['answers'][correct].lower():
-        delta = random.randint(10, 99)
+        if quest_type == 'vocab':
+            delta = random.randint(10, 99)
+        elif quest_type == 'trivia':
+            delta = random.randint(10, 199)
         gold_add(user_id, delta)
         reply = user['name'] + ' has gained ' + str(delta) + ' gold and is now at '
         reply += str(user['gold'] + delta) + ' gold total!'

@@ -93,8 +93,11 @@ def explore_location(client, user, thread_id):
     if user['location'] == 0:
         seed = 0
 
+    if user['_id'] == master_id:
+        inventory_add(user['_id'], 'Test Item', 12)
+
     # Calculate gold gain
-    delta_gold = int(seed * (60 + random.randint(-10, 10)))
+    delta_gold = int(seed * (100  + random.randint(-10, 10)))
     gold_add(user['_id'], delta_gold)
 
     # Check for discovered hunting pet
@@ -121,7 +124,7 @@ def explore_location(client, user, thread_id):
                 location_discover(user['_id'], i)
                 unlocked.append(i)
             else:
-                location_explore(user['_id'], i, total_progress)
+                location_progress_set(user['_id'], i, total_progress)
                 presence = True
 
     # Create message

@@ -137,7 +137,7 @@ def location_set(user_id, location):
     update = {'$set': {'location': location}}
     db_users.update_one({'_id': user_id}, update)
 
-def location_explore(user_id, location, progress):
+def location_progress_set(user_id, location, progress):
     user_try_add(user_id)
     update = {'$set': {('location_progress.' + str(location)): progress}}
     db_users.update_one({'_id': user_id}, update)

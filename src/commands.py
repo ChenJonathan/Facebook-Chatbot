@@ -54,7 +54,7 @@ def run_user_command(client, command, text, author):
             users = alias_get_all()
         reply = []
         for user in users:
-            line = '<' + user['name'] + '> (' + user['alias'] + ')\n'
+            line = '<<' + user['name'] + '>> (' + user['alias'] + ')\n'
             line += 'Priority: ' + priority_names[user['priority']] + '\n'
             line += 'Score: ' + str(calculate_score(user)) + '\n'
             line += 'Gold: ' + str(user['gold']) + ' (+' + str(user['gold_rate']) + '/hour)\n'
@@ -110,11 +110,11 @@ def run_user_command(client, command, text, author):
     elif command == 'secret' or command == 's':
         reply = []
         if client.defines:
-            section = '< Defines >\n'
+            section = '<<Defines>>\n'
             section += '\n'.join(['"' + i + '": ' + j for i, j in client.defines.items()])
             reply.append(section)
         if client.responses:
-            section = '< Responses >\n'
+            section = '<<Responses>>\n'
             section += '\n'.join(['"' + response + '"' for response in client.responses])
             reply.append(section)
         reply = '\n\n'.join(reply) if reply else 'No secrets active.'
@@ -181,7 +181,7 @@ def run_group_command(client, command, text, author, thread_id):
             user = user_from_id(user.uid)
         else:
             user = user_from_id(author_id)
-        reply = '<' + user['name'] + '>\n'
+        reply = '<<' + user['name'] + '>>\n'
         reply += 'Priority: ' + priority_names[user['priority']] + '\n'
         reply += 'Score: ' + str(calculate_score(user)) + '\n'
         reply += 'Gold: ' + str(user['gold']) + ' (+' + str(user['gold_rate']) + '/hour)\n'
@@ -236,26 +236,37 @@ def run_group_command(client, command, text, author, thread_id):
     elif command == 'help' or command == 'h':
         generate_group_info(client, text, author, thread_id)
 
+    elif command == 'inventory' or command == 'i':
+        reply = 'Your inventory has been sent to you in private chat.'
+        client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
+        reply = '<<Inventory>>'
+        for item, amount in user['inventory'].items():
+            reply += '\n' + str(amount) + 'x ' + item
+        client.send(Message(reply), thread_id=author_id, thread_type=ThreadType.USER)
+
     elif command == 'jail' or command == 'j':
         if author['priority'] >= master_priority - 1:
-            user = client.matchUser(thread_id, text)
-            if not user:
-                message = Message('User not found.')
-                client.send(message, thread_id=thread_id, thread_type=ThreadType.GROUP)
-                return
-            user = user_from_id(user.uid)
-            if user['_id'] == master_id and author_id != master_id:
-                user = author
-            if user['location'] == 0:
-                location_set(user['_id'], 1)
-                if user['_id'] in client.travel_record:
-                    del client.travel_record[user['_id']]
-                reply = user['name'] + ' has been freed from jail.'
+            if len(text) == 0:
+                reply = 'Please specify a user.'
             else:
-                location_set(user['_id'], 0)
-                if user['_id'] in client.travel_record:
-                    del client.travel_record[user['_id']]
-                reply = user['name'] + ' has been sent to jail!'
+                user = client.matchUser(thread_id, text)
+                if not user:
+                    message = Message('User not found.')
+                    client.send(message, thread_id=thread_id, thread_type=ThreadType.GROUP)
+                    return
+                user = user_from_id(user.uid)
+                if user['_id'] == master_id and author_id != master_id:
+                    user = author
+                if user['location'] == 0:
+                    location_set(user['_id'], 1)
+                    if user['_id'] in client.travel_record:
+                        del client.travel_record[user['_id']]
+                    reply = user['name'] + ' has been freed from jail.'
+                else:
+                    location_set(user['_id'], 0)
+                    if user['_id'] in client.travel_record:
+                        del client.travel_record[user['_id']]
+                    reply = user['name'] + ' has been sent to jail!'
         else:
             reply = 'You don\'t have permission to do this.'
         client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
@@ -331,7 +342,7 @@ def run_group_command(client, command, text, author, thread_id):
         message = Message(user.name + ' rolls ' + roll + '.')
         client.send(message, thread_id=thread_id, thread_type=ThreadType.GROUP)
 
-    elif command == 'scoreboard':
+    elif command == 'scoreboard' or command == 'score':
         group = client.fetchGroupInfo(thread_id)[thread_id].participants
         group = user_get_all_in(list(group))
         users = sorted(group, key=lambda x: calculate_score(x), reverse=True)
