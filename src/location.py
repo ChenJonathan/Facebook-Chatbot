@@ -206,7 +206,7 @@ def explore_location(client, user, thread_id):
     for i, time in enumerate(edges[current]):
         if time >= 0 and str(i) in progress_keys:
             if edges[current][i] > 0:
-                delta_progress = seed / edges[current][i])
+                delta_progress = seed / edges[current][i]
                 total_progress = progress[str(i)] + delta_progress
             else:
                 total_progress = 1
