@@ -237,7 +237,7 @@ def explore_location(client, user, thread_id):
         reply.append(line)
     reply = ' '.join(reply)
     if len(item_drops) > 0:
-        singular = len(item_drops) == 1 and item_drops.values()[0] == 1
+        singular = len(item_drops) == 1 and list(item_drops.values())[0] == 1
         reply += '\n\nYou found the following item' + ('' if singular else 's') + ':'
         for item, amount in item_drops.items():
             reply += '\n-> ' + item + ' x ' + str(amount)

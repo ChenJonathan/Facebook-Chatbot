@@ -100,6 +100,7 @@ def generate_group_info(client, text, author, thread_id):
         reply += '!daily: Subscribe to daily events\n'
         reply += '!explore: Discover new locations\n'
         reply += '!help: Read documentation\n'
+        reply += '!inventory: Check your inventory\n'
         reply += '!jail: Send someone to jail\n'
         reply += '!mute: Kick someone from the chat\n'
         reply += '!perm: Change user priority\n'
@@ -162,6 +163,12 @@ def generate_group_info(client, text, author, thread_id):
         reply += 'Usage: "!help <command>"\n'
         reply += 'Example: "!help quest"\n'
         reply += 'Explains the syntax and effects of the provided group <command>.'
+
+    elif text == 'inventory':
+        reply = '<<Inventory>>\n'
+        reply += 'Usage: "!inventory"\n'
+        reply += 'Lists the contents of your inventory to you in a private message. '
+        reply += 'Items can be found through exploration.'
 
     elif text == 'jail':
         reply = '<<Jail>>\n'

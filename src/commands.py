@@ -214,8 +214,7 @@ def run_group_command(client, command, text, author, thread_id):
             reply = 'You can only explore once per hour.'
             client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
         elif not check_busy(client, author, thread_id):
-            if author_id != master_id:
-                client.explore_record.add(author_id)
+            client.explore_record.add(author_id)
             explore_location(client, author, thread_id)
 
     elif command == 'give' or command == 'g':

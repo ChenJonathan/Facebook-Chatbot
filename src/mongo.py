@@ -67,10 +67,9 @@ def user_try_add(user_id):
             'priority': 1, 
             'gold': 0,
             'gold_rate': 0,
-            'inventory': [],
+            'inventory': {},
             'location': 1,
-            'location_progress': {str(i): 0 for i in range(6, len(location_names))},
-            'images': []
+            'location_progress': {str(i): 0 for i in range(6, len(location_names))}
         })
 
 # Alias methods
