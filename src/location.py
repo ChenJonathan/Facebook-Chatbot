@@ -90,19 +90,109 @@ def travel_to_location(client, user, text, thread_id):
 
 def explore_location(client, user, thread_id):
     seed = random.uniform(0.8, 1.2)
-    if user['location'] == 0:
-        seed = 0
+    location = user['location']
 
-    if user['_id'] == '1564703352':
-        inventory_add(user['_id'], 'Test Item', 12)
+    # Apply location specific modifiers
+    gold_multiplier = 1
+    beast_multiplier = 1
+    item_drop_rates = {}
+    if location == 0:
+        gold_multiplier = 0
+        beast_multiplier = 0
+    elif location == 1:
+        gold_multiplier = 0.5
+        item_drop_rates['Bottled Light'] = 0.1
+    elif location == 2:
+        beast_multiplier = 3
+        item_drop_rates['Wild Essence'] = 0.7
+    elif location == 3:
+        item_drop_rates['Arcane Essence'] = 0.7
+        item_drop_rates['Breathing Wood'] = 0.5
+    elif location == 4:
+        item_drop_rates['Brutal Essence'] = 0.7
+        item_drop_rates['Drop of Earth'] = 0.2
+        item_drop_rates['Iron Shard'] = 0.5
+    elif location == 5:
+        item_drop_rates['Void Essence'] = 0.7
+        item_drop_rates['Bottled Darkness'] = 0.1
+    elif location == 6:
+        beast_multiplier = 0
+        item_drop_rates['Breathing Wood'] = 0.5
+        item_drop_rates['Shifting Vines'] = 0.2
+    elif location == 7:
+        beast_multiplier = 0
+        item_drop_rates['Arcane Essence'] = 0.3
+        item_drop_rates['Void Essence'] = 0.3
+        item_drop_rates['Bottled Darkness'] = 0.2
+        item_drop_rates['Touch of Death'] = 0.1
+        item_drop_rates['Warped Bones'] = 0.2
+    elif location == 8:
+        gold_multiplier = 2
+        beast_multiplier = 0
+    elif location == 9:
+        beast_multiplier = 5
+        item_drop_rates['Breathing Wood'] = 0.5
+        item_drop_rates['Shifting Vines'] = 0.5
+    elif location == 10:
+        item_drop_rates['Howling Wind'] = 0.1
+        item_drop_rates['Clockwork Shard'] = 0.6
+        item_drop_rates['Time Shard'] = 0.1
+    elif location == 11:
+        pass
+    elif location == 12:
+        pass
+    elif location == 13:
+        pass
+    elif location == 14:
+        pass
+    elif location == 15:
+        pass
+    elif location == 16:
+        pass
+    elif location == 17:
+        pass
+    elif location == 18:
+        pass
+    elif location == 19:
+        pass
+    elif location == 20:
+        pass
+    elif location == 21:
+        pass
+    elif location == 22:
+        pass
+    elif location == 23:
+        pass
+    elif location == 24:
+        pass
+    elif location == 25:
+        pass
+    elif location == 26:
+        pass
+    elif location == 27:
+        pass
+
+    # Calculate item drops
+    item_drops = {}
+    for item, rate in item_drop_rates.items():
+        trials = []
+        for _ in range(10):
+            amount = 0
+            while rate > random.random():
+                amount += 1
+            trials.append(amount)
+        final_amount = trials.sort()[-2]
+        if final_amount > 0:
+            item_drops[item] = final_amount
+            inventory_add(user['_id'], item, final_amount)
 
     # Calculate gold gain
-    delta_gold = int(seed * (100  + random.randint(-10, 10)))
+    delta_gold = int(seed * (100 + random.randint(-10, 10)) * gold_multiplier)
     gold_add(user['_id'], delta_gold)
 
     # Check for discovered hunting pet
     beast = None
-    if seed / 100 > random.random():
+    if seed / 100 * beast_multiplier > random.random():
         beast = random_beast()
         delta_rate = beast[1] * beast[2]
         gold_rate_add(user['_id'], delta_rate)
@@ -116,7 +206,7 @@ def explore_location(client, user, thread_id):
     for i, time in enumerate(edges[current]):
         if time >= 0 and str(i) in progress_keys:
             if edges[current][i] > 0:
-                delta_progress = seed / edges[current][i] * random.uniform(0.8, 1.2)
+                delta_progress = seed / edges[current][i])
                 total_progress = progress[str(i)] + delta_progress
             else:
                 total_progress = 1
@@ -143,9 +233,14 @@ def explore_location(client, user, thread_id):
         reply.append(line)
     if presence:
         line = 'On the way back, you sensed the presence of an'
-        line += ('other' if unlocked else '') + ' undiscovered location nearby. '
-        line += 'Maybe you\'ll find it next time.'
+        line += ('other' if unlocked else '') + ' undiscovered location nearby.'
         reply.append(line)
+    reply = ' '.join(reply)
+    if len(item_drops) > 0:
+        singular = len(item_drops) == 1 and item_drops.values()[0] == 1
+        reply += '\n\nYou found the following item' + ('' if singular else 's') + ':'
+        for item, amount in item_drops.items():
+            reply += '\n-> ' + item + ' x ' + str(amount)
 
-    message = Message(' '.join(reply))
+    message = Message(reply)
     client.send(message, thread_id=thread_id, thread_type=ThreadType.GROUP)
