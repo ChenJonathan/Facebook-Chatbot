@@ -229,7 +229,7 @@ def generate_group_info(client, text, author, thread_id):
     elif text == 'travel':
         reply = '<<Travel>>\n'
         reply += 'Usage: "!travel <location>"\n'
-        reply += 'Example: "!travel Desert"\n'
+        reply += 'Example: "!travel Ellinia"\n'
         reply += 'Sets your character on a journey to <location>. You will be unable '
         reply += 'to take any actions (such as questing or exploring) while traveling.\n\n'
         reply += 'Usage: "!travel"\n'

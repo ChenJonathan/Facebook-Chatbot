@@ -95,7 +95,7 @@ def complete_quest(client, user, text, thread_id):
         if quest_type == 'vocab':
             delta = random.randint(10, 99)
         elif quest_type == 'trivia':
-            delta = random.randint(10, 199)
+            delta = random.randint(10, 149)
         gold_add(user_id, delta)
         reply = user['name'] + ' has gained ' + str(delta) + ' gold and is now at '
         reply += str(user['gold'] + delta) + ' gold total!'

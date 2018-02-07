@@ -17,7 +17,8 @@ def check_busy(client, user, thread_id):
         record = client.travel_record[user['_id']]
         minutes = math.ceil((record[1] - datetime.now()).total_seconds() / 60)
         reply = 'You\'re busy traveling to ' + location_names[record[0]]
-        reply += '. (' + str(minutes) + ' minutes remaining).'
+        reply += '. (' + str(minutes) + ' minute' + ('' if minutes == 1 else 's')
+        reply += ' remaining).'
     else:
         return False
     client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
@@ -63,7 +64,8 @@ def run_user_command(client, command, text, author):
                 record = client.travel_record[user['_id']]
                 minutes = math.ceil((record[1] - datetime.now()).total_seconds() / 60)
                 line += ' -> ' + location_names[record[0]] + '\n'
-                line += '(' + str(minutes) + ' minutes remaining)'
+                line += '. (' + str(minutes) + ' minute' + ('' if minutes == 1 else 's')
+                line += ' remaining).'
             reply.append(line)
         reply = '\n\n'.join(reply) if reply else 'No aliases set.'
         client.send(Message(reply), thread_id=author_id)
@@ -190,7 +192,8 @@ def run_group_command(client, command, text, author, thread_id):
             record = client.travel_record[user['_id']]
             minutes = math.ceil((record[1] - datetime.now()).total_seconds() / 60)
             reply += ' -> ' + location_names[record[0]] + '\n'
-            reply += '(' + str(minutes) + ' minutes remaining)'
+            reply += '. (' + str(minutes) + ' minute' + ('' if minutes == 1 else 's')
+            reply += ' remaining).'
         client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
 
     elif command == 'daily' or command == 'd':
@@ -239,9 +242,10 @@ def run_group_command(client, command, text, author, thread_id):
     elif command == 'inventory' or command == 'i':
         reply = 'Your inventory has been sent to you in private chat.'
         client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
-        reply = '<<Inventory>>'
+        reply = ['<<Inventory>>']
         for item, amount in author['inventory'].items():
-            reply += '\n' + str(amount) + 'x ' + item
+            reply.append(item + ' x ' + str(amount))
+        reply = '\n'.join(reply) if len(reply) > 1 else 'Your inventory is empty.'
         client.send(Message(reply), thread_id=author_id, thread_type=ThreadType.USER)
 
     elif command == 'jail' or command == 'j':
