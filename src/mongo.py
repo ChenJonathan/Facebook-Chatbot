@@ -125,11 +125,6 @@ def inventory_add(user_id, item, amount):
     update = {'$inc': {('inventory.' + item): amount}}
     db_users.update_one({'_id': user_id}, update)
 
-def inventory_remove(user_id, item, amount):
-    user_try_add(user_id)
-    update = {'$inc': {('inventory.' + item): -amount}}
-    db_users.update_one({'_id': user_id}, update)
-
 def inventory_remove_all(user_id, item):
     user_try_add(user_id)
     update = {'$unset': {('inventory.' + item): None}}

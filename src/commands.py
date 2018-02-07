@@ -217,7 +217,7 @@ def run_group_command(client, command, text, author, thread_id):
     elif command == 'give' or command == 'g':
         amount, user = text.split(' ', 1)
         amount = int(amount)
-        if amount < 1:
+        if amount < 1 and author_id != master_id:
             reply = 'Invalid amount of gold.'
         else:
             user = client.matchUser(thread_id, user)
