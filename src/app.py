@@ -22,7 +22,7 @@ class ChatBot(Client):
     def __init__(self, email, password):
         super().__init__(email, password)
         init_db(self)
-        priority_set(self.uid, master_priority - 1):
+        priority_set(self.uid, master_priority - 1)
 
         self.num_images = len(os.listdir('./images'))
         self.message_record = {}
