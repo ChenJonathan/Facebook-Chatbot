@@ -104,9 +104,9 @@ def generate_group_info(client, text, author, thread_id):
         reply += '!mute: Kick someone from the chat\n'
         reply += '!perm: Change user priority\n'
         reply += '!quest: Earn gold through quizzes\n'
-        reply += '!ranking: Show group scoreboard\n'
         reply += '!random: Random chat emoji / color\n'
         reply += '!roll: Roll the dice\n'
+        reply += '!scoreboard: Show group rankings\n'
         reply += '!shop: Spend gold\n'
         reply += '!travel: Travel around the world\n'
         reply += '(See how commands work with "!help <command>")'
@@ -199,16 +199,17 @@ def generate_group_info(client, text, author, thread_id):
         reply += 'Usage: "!random"\n'
         reply += 'Randomly sets the group chat\'s color and emoji.'
 
-    elif text == 'ranking':
-        reply = '<<Ranking>>\n'
-        reply += 'Usage: "!ranking"\n'
-        reply += 'Shows the top 9 richest people in the group chat.'
-
     elif text == 'roll':
         reply = '<<Roll>>\n'
         reply += 'Usage: "!roll <sides>"\n'
         reply += 'Example: "!roll 10"\n'
         reply += 'Rolls a <sides> sided die. <sides> defaults to 6 if left blank.'
+
+    elif text == 'scoreboard':
+        reply = '<<Scoreboard>>\n'
+        reply += 'Usage: "!scoreboard"\n'
+        reply += 'Shows the top 9 people in the group chat by score. Score takes all '
+        reply += 'gameplay factors into account.'
 
     elif text == 'shop':
         reply = '<<Shop>>\n'

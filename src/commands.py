@@ -314,18 +314,6 @@ def run_group_command(client, command, text, author, thread_id):
             emoji = random_emoji()
         client.changeThreadEmoji(emoji, thread_id=thread_id)
 
-    elif command == 'ranking':
-        group = client.fetchGroupInfo(thread_id)[thread_id].participants
-        group = user_get_all_in(list(group))
-        users = sorted(group, key=lambda x: calculate_score(x), reverse=True)
-        if len(users) > 9:
-            users = users[:9]
-        reply = '<<Chat Ranking>>'
-        for i, user in enumerate(users):
-            reply += '\n' + str(i + 1) + '. ' + user['name']
-            reply += ' (' + str(calculate_score(user)) + ' points)'
-        client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
-
     elif command == 'roll' or command == 'r':
         user = client.fetchUserInfo(author_id)[author_id]
         if len(text) == 0:
@@ -340,6 +328,19 @@ def run_group_command(client, command, text, author, thread_id):
             return
         message = Message(user.name + ' rolls ' + roll + '.')
         client.send(message, thread_id=thread_id, thread_type=ThreadType.GROUP)
+
+    elif command == 'scoreboard':
+        group = client.fetchGroupInfo(thread_id)[thread_id].participants
+        group = user_get_all_in(list(group))
+        users = sorted(group, key=lambda x: calculate_score(x), reverse=True)
+        users = [user for user in users if user['_id'] != master_id]
+        if len(users) > 9:
+            users = users[:9]
+        reply = '<<Chat Scoreboard>>'
+        for i, user in enumerate(users):
+            reply += '\n' + str(i + 1) + '. ' + user['name']
+            reply += ' (' + str(calculate_score(user)) + ' points)'
+        client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
 
     elif command == 'shop' or command == 's':
         text = text.strip().lower()
@@ -366,8 +367,8 @@ def run_group_command(client, command, text, author, thread_id):
                 else:
                     reply = 'You can\'t afford that.'
             elif text == 2:
-                if gold >= 500:
-                    gold_add(author_id, -500)
+                if gold >= 250:
+                    gold_add(author_id, -250)
                     image = random.randint(0, client.num_images - 1)
                     path = './images/' + str(image) + '.jpg'
                     client.sendLocalImage(path, thread_id=thread_id, thread_type=ThreadType.GROUP)
