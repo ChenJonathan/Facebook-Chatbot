@@ -99,6 +99,7 @@ def generate_group_info(client, text, author, thread_id):
         reply += '!check: See user statistics\n'
         reply += '!daily: Subscribe to daily events\n'
         reply += '!explore: Discover new locations\n'
+        reply += '!give: Give someone gold\n'
         reply += '!help: Read documentation\n'
         reply += '!inventory: Check your inventory\n'
         reply += '!jail: Send someone to jail\n'

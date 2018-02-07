@@ -351,12 +351,20 @@ def run_group_command(client, command, text, author, thread_id):
         group = user_get_all_in(list(group))
         users = sorted(group, key=lambda x: calculate_score(x), reverse=True)
         users = [user for user in users if user['_id'] != master_id and user['_id'] != client.uid]
-        if len(users) > 9:
-            users = users[:9]
-        reply = '<<Chat Scoreboard>>'
-        for i, user in enumerate(users):
-            reply += '\n' + str(i + 1) + '. ' + user['name']
-            reply += ' (' + str(calculate_score(user)) + ' points)'
+        try:
+            page = int(text)
+        except:
+            page = 0
+        if len(users) <= page * 9:
+            reply = 'There aren\'t enough users in the chat.'
+        else:
+            users = users[(page * 9):]
+            if len(users) > 9:
+                users = users[:9]
+            reply = '<<Chat Scoreboard>>'
+            for i, user in enumerate(users):
+                reply += '\n' + str(page * 9 + i + 1) + '. ' + user['name']
+                reply += ' (' + str(calculate_score(user)) + ' points)'
         client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
 
     elif command == 'shop' or command == 's':
