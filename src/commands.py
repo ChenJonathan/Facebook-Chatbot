@@ -56,6 +56,7 @@ def run_user_command(client, command, text, author):
         for user in users:
             line = '<' + user['name'] + '> (' + user['alias'] + ')\n'
             line += 'Priority: ' + priority_names[user['priority']] + '\n'
+            line += 'Score: ' + str(calculate_score(user)) + '\n'
             line += 'Gold: ' + str(user['gold']) + ' (+' + str(user['gold_rate']) + '/hour)\n'
             line += 'Location: ' + location_names[user['location']]
             if user['_id'] in client.travel_record:
@@ -182,6 +183,7 @@ def run_group_command(client, command, text, author, thread_id):
             user = user_from_id(author_id)
         reply = '<' + user['name'] + '>\n'
         reply += 'Priority: ' + priority_names[user['priority']] + '\n'
+        reply += 'Score: ' + str(calculate_score(user)) + '\n'
         reply += 'Gold: ' + str(user['gold']) + ' (+' + str(user['gold_rate']) + '/hour)\n'
         reply += 'Location: ' + location_names[user['location']]
         if user['_id'] in client.travel_record:
@@ -233,18 +235,6 @@ def run_group_command(client, command, text, author, thread_id):
 
     elif command == 'help' or command == 'h':
         generate_group_info(client, text, author, thread_id)
-
-    elif command == 'image' or command == 'i':
-        if len(text) > 0:
-            slot = int(text)
-            images = author['images']
-            image = images[slot - 1] if slot > 0 and slot <= len(images) else None
-            if image:
-                path = './images/' + str(image) + '.jpg'
-                client.sendLocalImage(path, thread_id=thread_id, thread_type=ThreadType.GROUP)
-        else:
-            reply = 'You have ' + str(len(author['images'])) + ' images stored.'
-            client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
 
     elif command == 'jail' or command == 'j':
         if author['priority'] >= master_priority - 1:
@@ -356,7 +346,7 @@ def run_group_command(client, command, text, author, thread_id):
         if len(text) == 0:
             reply = ['<<The Wong Shoppe>>']
             reply.append('1. 0100 gold: Charity donation')
-            reply.append('2. 0500 gold: Reaction image')
+            reply.append('2. 0250 gold: Random stock image')
             reply.append('3. 1000 gold: Random hunting pet')
             reply.append('4. 9999 gold: Priority boost')
             reply.append('(Buy things with "!shop <item>")')
@@ -383,12 +373,9 @@ def run_group_command(client, command, text, author, thread_id):
                     else:
                         gold_add(author_id, -500)
                         image = random.randint(0, client.num_images - 1)
-                        while image in images:
-                            image = random.randint(0, client.num_images - 1)
-                        image_add(author_id, image)
-                        reply = 'You\'ve received an image! It has been placed in slot '
-                        reply += str(len(author['images']) + 1) + '.\n'
-                        reply += '(Use it with "!image <slot>")'
+                        path = './images/' + str(image) + '.jpg'
+                        client.sendLocalImage(path, thread_id=thread_id, thread_type=ThreadType.GROUP)
+                        reply = 'Enjoy your stock photo!'
                 else:
                     reply = 'You can\'t afford that.'
             elif text == 3:

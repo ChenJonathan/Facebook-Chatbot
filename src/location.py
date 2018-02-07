@@ -140,7 +140,8 @@ def explore_location(client, user, thread_id):
         reply.append(line)
     if presence:
         line = 'On the way back, you sensed the presence of an'
-        line += ('other' if unlocked else '') + ' undiscovered location nearby.'
+        line += ('other' if unlocked else '') + ' undiscovered location nearby. '
+        line += 'Maybe you\'ll find it next time.'
         reply.append(line)
 
     message = Message(' '.join(reply))

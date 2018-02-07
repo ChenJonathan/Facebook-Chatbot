@@ -100,11 +100,11 @@ def generate_group_info(client, text, author, thread_id):
         reply += '!daily: Subscribe to daily events\n'
         reply += '!explore: Discover new locations\n'
         reply += '!help: Read documentation\n'
-        reply += '!image: Post stored images\n'
         reply += '!jail: Send someone to jail\n'
         reply += '!mute: Kick someone from the chat\n'
         reply += '!perm: Change user priority\n'
         reply += '!quest: Earn gold through quizzes\n'
+        reply += '!ranking: Show group scoreboard\n'
         reply += '!random: Random chat emoji / color\n'
         reply += '!roll: Roll the dice\n'
         reply += '!shop: Spend gold\n'
@@ -162,15 +162,6 @@ def generate_group_info(client, text, author, thread_id):
         reply += 'Usage: "!help <command>"\n'
         reply += 'Example: "!help quest"\n'
         reply += 'Explains the syntax and effects of the provided group <command>.'
-
-    elif text == 'image':
-        reply = '<<Image>>\n'
-        reply += 'Usage: "!image <slot>"\n'
-        reply += 'Example: "!image 1"\n'
-        reply += 'Posts the image stored in <slot> to the group chat. Images can be '
-        reply += 'bought from the shop (!shop).\n\n'
-        reply += 'Usage: "!image"\n'
-        reply += 'Checks how many images you have stored in total.'
 
     elif text == 'jail':
         reply = '<<Jail>>\n'

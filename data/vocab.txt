@@ -453,7 +453,7 @@ lassitude:lethargy; sluggishness
 latent:dormant; potential not apparent
 laud:praise
 lethargic:inactive
-levee:en embankment that prevents a river from overflowing
+levee:an embankment that prevents a river from overflowing
 levity:light manner or attitude
 liberal:tolerant; broad-minded
 libertine:one without moral restraint
@@ -463,7 +463,7 @@ limn:to draw, describe
 limpid:clear; transparent
 linguistic:pertaining to language
 litany:lengthy recitation; repetitive chant
-literati:scholarly of learned persons
+literati:scholarly or learned persons
 litigation:legal proceedings
 log:record of a voyage; record of daily activities
 loquacious:talkative
@@ -501,7 +501,7 @@ miscellany:mixture of writtings on various subjects
 miscreant:villain; criminal
 misogynist:one who hates women
 mitigate:alleviate; to become less severe
-mnemonic:realated to memory; assisting memory
+mnemonic:related to memory; assisting memory
 modicum:limited quantity
 mollify:to soothe
 monolithic:solid and uniform; constituing a single, unified whole

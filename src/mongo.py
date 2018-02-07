@@ -118,7 +118,24 @@ def gold_rate_add(user_id, rate):
     update = {'$inc': {'gold_rate': rate}}
     db_users.update_one({'_id': user_id}, update)
 
-# Travel methods
+# Inventory methods
+
+def inventory_add(user_id, item, amount):
+    user_try_add(user_id)
+    update = {'$inc': {('inventory.' + item): amount}}
+    db_users.update_one({'_id': user_id}, update)
+
+def inventory_remove(user_id, item, amount):
+    user_try_add(user_id)
+    update = {'$inc': {('inventory.' + item): -amount}}
+    db_users.update_one({'_id': user_id}, update)
+
+def inventory_remove_all(user_id, item):
+    user_try_add(user_id)
+    update = {'$unset': {('inventory.' + item): None}}
+    db_users.update_one({'_id': user_id}, update)
+
+# Location methods
 
 def location_set(user_id, location):
     user_try_add(user_id)
@@ -133,11 +150,4 @@ def location_explore(user_id, location, progress):
 def location_discover(user_id, location):
     user_try_add(user_id)
     update = {'$unset': {('location_progress.' + str(location)): None}}
-    db_users.update_one({'_id': user_id}, update)
-
-# Image methods
-
-def image_add(user_id, image):
-    user_try_add(user_id)
-    update = {'$push': {'images': image}}
     db_users.update_one({'_id': user_id}, update)
