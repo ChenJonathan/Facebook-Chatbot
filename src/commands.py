@@ -8,7 +8,7 @@ from emoji import random_emoji
 from hearthstone import random_beast
 from info import generate_user_info, generate_group_info
 from mongo import *
-from quest import trivia_names, set_quest_type, generate_quest
+from quest import set_quest_type, generate_quest
 from location import check_locations, travel_to_location, explore_location
 from util import *
 

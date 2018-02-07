@@ -49,7 +49,7 @@ def generate_quest(client, user, thread_id):
     elif quest_type[0] == 'trivia':
         _generate_trivia_quest(client, user, quest_type[1], thread_id)
 
-def _generate_vocab_quest(client, user, thread_id)
+def _generate_vocab_quest(client, user, thread_id):
     user_id = user['_id']
     gold = user['gold']
     difficulty = 1 if gold < 0 else len(str(gold))
