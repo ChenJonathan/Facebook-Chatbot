@@ -8,7 +8,7 @@ from craft import generate_craft_info, craft_item
 from emoji import random_emoji
 from hearthstone import random_beast
 from info import generate_user_info, generate_group_info
-from location import location_has_feature, explore_location
+from location import location_features, explore_location
 from mongo import *
 from quest import set_quest_type, generate_quest
 from shop import generate_shop_info, shop_purchase
@@ -22,11 +22,10 @@ def check_busy(client, user, thread_id):
     # Check if traveling has expired
     record = client.travel_record[user['_id']]
     now = datetime.now()
-    for user_id, record in list(self.travel_record.items()):
-        if now > record[1]:
-            location_set(user_id, record[0])
-            del self.travel_record[user_id]
-            return False
+    if now > record[1]:
+        location_set(user['_id'], record[0])
+        del client.travel_record[user['_id']]
+        return False
 
     # Check travel time remaining
     minutes = math.ceil((record[1] - datetime.now()).total_seconds() / 60)
@@ -77,7 +76,7 @@ def run_user_command(client, author, command, text):
                 minutes = math.ceil((record[1] - datetime.now()).total_seconds() / 60)
                 line += ' -> ' + location_names[record[0]] + '\n'
                 line += '(' + str(minutes) + ' minute' + ('' if minutes == 1 else 's')
-                line += ' remaining).'
+                line += ' remaining)'
             reply.append(line)
         reply = '\n\n'.join(reply) if reply else 'No aliases set.'
         client.send(Message(reply), thread_id=author_id)
@@ -205,13 +204,13 @@ def run_group_command(client, author, command, text, thread_id):
             minutes = math.ceil((record[1] - datetime.now()).total_seconds() / 60)
             reply += ' -> ' + location_names[record[0]] + '\n'
             reply += '(' + str(minutes) + ' minute' + ('' if minutes == 1 else 's')
-            reply += ' remaining).'
+            reply += ' remaining)'
         client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
 
     elif command == 'craft':
         if check_busy(client, author, thread_id):
             return
-        elif not location_has_feature(client, author['location'], 'Craft', thread_id):
+        elif 'Crafting' not in location_features(author['location']):
             message = Message('There is no crafting station in this location.')
             client.send(message, thread_id=thread_id, thread_type=ThreadType.GROUP)
         elif len(text) == 0:
@@ -230,6 +229,20 @@ def run_group_command(client, author, command, text, thread_id):
         else:
             subscription_add(thread_id, text)
             reply = 'This conversation has been subscribed to daily ' + text + 's.'
+        client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
+
+    elif command == 'equip':
+        weapon = author['equipment']['Weapon']
+        armor = author['equipment']['Armor']
+        reply = '<<Equipment>>\n'
+        reply += 'Weapon: ' + weapon['Name'] + '\n'
+        reply += '-> ATK: ' + str(weapon['ATK']) + '\n'
+        reply += '-> DEF: ' + str(weapon['DEF']) + '\n'
+        reply += '-> SPD: ' + str(weapon['SPD']) + '\n'
+        reply += 'Armor: ' + armor['Name'] + '\n'
+        reply += '-> ATK: ' + str(armor['ATK']) + '\n'
+        reply += '-> DEF: ' + str(armor['DEF']) + '\n'
+        reply += '-> SPD: ' + str(armor['SPD'])
         client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
 
     elif command == 'explore' or command == 'e':
@@ -296,6 +309,15 @@ def run_group_command(client, author, command, text, thread_id):
                     reply = user['name'] + ' has been sent to jail!'
         else:
             reply = 'You don\'t have permission to do this.'
+        client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
+
+    elif command == 'location' or command == 'l':
+        features = location_features(author['location'])
+        reply = 'Welcome to ' + location_names[author['location']] + '!'
+        if features:
+            reply += ' The following services are available here:\n'
+            for feature in features:
+                reply += '-> ' + feature
         client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
 
     elif command == 'mute' or command == 'm':
@@ -393,7 +415,7 @@ def run_group_command(client, author, command, text, thread_id):
     elif command == 'shop' or command == 's':
         if check_busy(client, author, thread_id):
             return
-        elif not location_has_feature(client, author['location'], 'Shop', thread_id):
+        elif 'Shop' not in location_features(author['location']):
             message = Message('There is no shop in this location.')
             client.send(message, thread_id=thread_id, thread_type=ThreadType.GROUP)
         elif len(text) == 0:

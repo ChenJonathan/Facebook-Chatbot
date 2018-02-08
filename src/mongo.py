@@ -67,6 +67,20 @@ def user_try_add(user_id):
             'priority': 1, 
             'gold': 0,
             'gold_rate': 0,
+            'equipment': {
+                'Weapon': {
+                    'Name': 'Wooden Sword',
+                    'ATK': 2,
+                    'DEF': 0,
+                    'SPD': 0
+                },
+                'Armor': {
+                    'Name': 'Practice Armor',
+                    'ATK': 0,
+                    'DEF': 2,
+                    'SPD': 0
+                }
+            },
             'inventory': {},
             'location': 1,
             'location_progress': {str(i): 0 for i in range(6, len(location_names))}
@@ -115,6 +129,13 @@ def gold_add(user_id, gold):
 def gold_rate_add(user_id, rate):
     user_try_add(user_id)
     update = {'$inc': {'gold_rate': rate}}
+    db_users.update_one({'_id': user_id}, update)
+
+# Equipment methods
+
+def equip_item(user_id, slot, item):
+    user_try_add(user_id)
+    update = {'$set': {('equipment.' + slot): item}}
     db_users.update_one({'_id': user_id}, update)
 
 # Inventory methods

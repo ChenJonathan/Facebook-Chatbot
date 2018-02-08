@@ -16,19 +16,19 @@ def generate_shop_info(client, user, thread_id):
 
 def shop_purchase(client, user, slot, thread_id):
     try:
-        slot = int(slot)
+        slot = int(slot) - 1
     except:
         reply = 'Invalid slot number.'
     else:
         gold = gold_get(author_id)
-        if slot == 1:
+        if slot == 0:
             if gold >= 100:
                 gold_add(user['_id'], 100)
                 _charity_donation(client, thread_id)
                 return
             else:
                 reply = 'You can\'t afford that.'
-        elif slot == 2:
+        elif slot == 1:
             if gold >= 1000:
                 gold_add(user['_id'], 1000)
                 _random_hunting_pet(client, user, thread_id)

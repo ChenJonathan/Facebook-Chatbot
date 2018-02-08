@@ -31,9 +31,9 @@ def generate_user_info(client, text, author):
     elif text == 'check':
         reply = '<<Check>>\n'
         reply += 'Usage: "!check <alias>"\n'
-        reply += 'Returns some information on the user designated by <alias>.\n\n'
+        reply += 'Lists some information on the user designated by <alias>.\n\n'
         reply += 'Usage: "!check"\n'
-        reply += 'Returns some information on all users with aliases.'
+        reply += 'Lists some information on all users with aliases.'
 
     elif text == 'define':
         reply = '<<Define>>\n'
@@ -97,8 +97,10 @@ def generate_group_info(client, text, author, thread_id):
         reply += '!alias: Alias assignment\n'
         reply += '!bully: Harass someone\n'
         reply += '!check: See user statistics\n'
+        reply += '!craft: Craft items with materials\n'
         reply += '!daily: Subscribe to daily events\n'
         reply += '!explore: Discover new locations\n'
+        reply += '!equip: See user equipment\n'
         reply += '!give: Give someone gold\n'
         reply += '!help: Read documentation\n'
         reply += '!inventory: Check your inventory\n'
@@ -109,7 +111,7 @@ def generate_group_info(client, text, author, thread_id):
         reply += '!random: Random chat emoji / color\n'
         reply += '!roll: Roll the dice\n'
         reply += '!scoreboard: Show group rankings\n'
-        reply += '!shop: Spend gold\n'
+        reply += '!shop: Spend gold to buy things\n'
         reply += '!travel: Travel around the world\n'
         reply += '(See how commands work with "!help <command>")'
 
@@ -130,11 +132,20 @@ def generate_group_info(client, text, author, thread_id):
 
     elif text == 'check':
         reply = '<<Check>>\n'
+        reply += 'Usage: "!check"\n'
+        reply += 'Lists some information on yourself.\n\n'
         reply += 'Usage: "!check <search_string>"\n'
         reply += 'Example: "!check Raphael"\n'
-        reply += 'Returns some information on the user designated by <search_string>.\n\n'
-        reply += 'Usage: "!check"\n'
-        reply += 'Returns some information on yourself.'
+        reply += 'Lists some information on the user designated by <search_string>.'
+
+    elif text == 'craft':
+        reply = '<<Craft>>\n'
+        reply += 'Usage: "!craft"\n'
+        reply += 'Lists all the items available to craft. Differs by location.\n\n'
+        reply += 'Usage: "!craft <slot>"\n'
+        reply += 'Example: "!craft 1"\n'
+        reply += 'Crafts the item designated by <slot>. Make sure to check the craft list '
+        reply += 'first to see which item is in each slot.'
 
     elif text == 'daily':
         reply = '<<Daily>>\n'
@@ -150,6 +161,11 @@ def generate_group_info(client, text, author, thread_id):
         reply += 'Usage: "!explore"\n'
         reply += 'Explores the current location. Exploration will various rewards and '
         reply += 'gradually discover surrounding locations. Can be done once per hour.'
+
+    elif text == 'equip':
+        reply = '<<Equip>>\n'
+        reply += 'Usage: "!equip"\n'
+        reply += 'Lists your current equipment information.'
 
     elif text == 'give':
         reply = '<<Give>>\n'
@@ -230,7 +246,7 @@ def generate_group_info(client, text, author, thread_id):
     elif text == 'shop':
         reply = '<<Shop>>\n'
         reply += 'Usage: "!shop"\n'
-        reply += 'Lists all the items available in the shop. Differs per person.\n\n'
+        reply += 'Lists all the items available in the shop. Differs by location.\n\n'
         reply += 'Usage: "!shop <slot>"\n'
         reply += 'Example: "!shop 1"\n'
         reply += 'Purchases the shop item designated by <slot>. Make sure to check the '

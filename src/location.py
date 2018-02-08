@@ -5,18 +5,17 @@ from hearthstone import random_beast
 from mongo import *
 from util import location_names, name_to_location
 
-location_features = {
+feature_map = {
     'Henesys': ['Shop'],
-    'Ellinia': ['Meditate'],
-    'Perion': ['Craft'],
-    'Sleepywood': ['Craft'],
-    'Cursed Sanctuary': ['Boss'],
-    'New Leaf City': ['Gamble']
+    'Ellinia': ['Meditation - Coming soon!'],
+    'Perion': ['Crafting'],
+    'Sleepywood': ['Crafting'],
+    'Cursed Sanctuary': ['Boss Fight - Coming soon!'],
+    'New Leaf City': ['Gambling - Coming soon!']
 }
 
-def location_has_feature(client, location, feature, thread_id):
-    features = location_features.get(locations_names[location], [])
-    return feature in features
+def location_features(location):
+    return feature_map.get(location_names[location], [])
 
 def explore_location(client, user, thread_id):
     seed = random.uniform(0.8, 1.2)
