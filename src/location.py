@@ -7,10 +7,11 @@ from travel import edges
 from util import location_names, name_to_location
 
 feature_map = {
+    'Lith Harbor': ['Shop'],
     'Henesys': ['Shop'],
-    'Ellinia': ['Meditation - Coming soon!'],
-    'Perion': ['Crafting'],
-    'Sleepywood': ['Crafting'],
+    'Ellinia': ['Meditation - Coming soon!', 'Shop'],
+    'Perion': ['Crafting', 'Shop'],
+    'Sleepywood': ['Crafting', 'Shop'],
     'Cursed Sanctuary': ['Boss Fight - Coming soon!'],
     'New Leaf City': ['Gambling - Coming soon!', 'Shop']
 }
