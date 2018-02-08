@@ -11,23 +11,23 @@ def _connect(a, b, time):
     edges[b][a] = time
 
 # - Lith Harbor
-_connect(1, 2, 2)
-_connect(1, 5, 2)
+_connect(1, 2, 1)
+_connect(1, 5, 1)
 # - Victoria Island
-_connect(2, 3, 3)
-_connect(3, 4, 3)
-_connect(4, 5, 2)
-_connect(5, 2, 2)
+_connect(2, 3, 1)
+_connect(3, 4, 1)
+_connect(4, 5, 1)
+_connect(5, 2, 1)
 # - Sleepywood
-_connect(2, 6, 4)
-_connect(3, 6, 4)
-_connect(4, 6, 4)
-_connect(5, 6, 4)
-_connect(6, 7, 5)
+_connect(2, 6, 1)
+_connect(3, 6, 1)
+_connect(4, 6, 1)
+_connect(5, 6, 1)
+_connect(6, 7, 0)
 # - New Leaf City
-_connect(5, 8, 8)
-_connect(8, 9, 5)
-_connect(9, 10, 5)
+_connect(5, 8, 5)
+_connect(8, 9, 1)
+_connect(9, 10, 1)
 # - El Nath
 # _connect(3, 11, 18)
 _connect(11, 12, 6)

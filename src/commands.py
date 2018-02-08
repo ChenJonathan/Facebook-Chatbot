@@ -361,7 +361,7 @@ def run_group_command(client, author, command, text, thread_id):
         elif author['location'] == 0:
             message = Message('There are no quests to be found here.')
             client.send(message, thread_id=thread_id, thread_type=ThreadType.GROUP)
-        elif not check_busy(client, author, thread_id):
+        else:
             generate_quest(client, author, thread_id)
 
     elif command == 'random':
