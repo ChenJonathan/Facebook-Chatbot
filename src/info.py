@@ -201,8 +201,8 @@ def generate_group_info(client, text, author, thread_id):
     elif text == 'location':
         reply = '<<Location>>\n'
         reply += 'Usage: "!location"\n'
-        reply += 'Lists the services available in your current location. These can '
-        reply += 'things like shops, crafting stations, boss fights, and more.'
+        reply += 'Lists the services available in your current location. This can '
+        reply += 'include things like shops, crafting stations, boss fights, and more.'
 
     elif text == 'mute':
         reply = '<<Mute>>\n'
