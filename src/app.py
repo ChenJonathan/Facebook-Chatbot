@@ -72,12 +72,12 @@ class ChatBot(Client):
         if author_id == self.uid:
             return
 
-        # Update travel status - Unrelated to messaging
+        # Check if traveling has expired
         now = datetime.now()
-        for user_id, record in list(self.travel_record.items()):
+        for user_id, record in self.travel_record.items():
             if now > record[1]:
                 location_set(user_id, record[0])
-                del self.travel_record[user_id]
+                del client.travel_record[user_id]
 
         # Check for chat commands
         if message_object.text and message_object.text[0] == '!':

@@ -105,6 +105,7 @@ def generate_group_info(client, text, author, thread_id):
         reply += '!help: Read documentation\n'
         reply += '!inventory: Check your inventory\n'
         reply += '!jail: Send someone to jail\n'
+        reply += '!location: Current location details\n'
         reply += '!mute: Kick someone from the chat\n'
         reply += '!perm: Change user priority\n'
         reply += '!quest: Earn gold through quizzes\n'
@@ -196,6 +197,12 @@ def generate_group_info(client, text, author, thread_id):
         reply += 'they will be freed from jail instead and sent to Lith Harbor. '
         reply += 'Only usable by ' + priority_names[master_priority - 1]
         reply += ' priority and above.'
+
+    elif text == 'location':
+        reply = '<<Location>>\n'
+        reply += 'Usage: "!location"\n'
+        reply += 'Lists the services available in your current location. These can '
+        reply += 'things like shops, crafting stations, boss fights, and more.'
 
     elif text == 'mute':
         reply = '<<Mute>>\n'

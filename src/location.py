@@ -3,6 +3,7 @@ import random
 
 from hearthstone import random_beast
 from mongo import *
+from travel import edges
 from util import location_names, name_to_location
 
 feature_map = {
