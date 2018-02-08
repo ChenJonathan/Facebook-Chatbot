@@ -99,7 +99,7 @@ def generate_group_info(client, text, author, thread_id):
         reply += '!check: See user statistics\n'
         reply += '!craft: Craft items with materials\n'
         reply += '!daily: Subscribe to daily events\n'
-        reply += '!explore: Discover new locations\n'
+        reply += '!explore: Gather materials\n'
         reply += '!equip: See user equipment\n'
         reply += '!give: Give someone gold\n'
         reply += '!help: Read documentation\n'
@@ -266,7 +266,8 @@ def generate_group_info(client, text, author, thread_id):
         reply += 'Sets your character on a journey to <location>. You will be unable '
         reply += 'to take any actions (such as questing or exploring) while traveling.\n\n'
         reply += 'Usage: "!travel"\n'
-        reply += 'Check which locations you can travel to from your current location.'
+        reply += 'Check which locations you can travel to from your current location. '
+        reply += 'New locations can be found through exploration.'
 
     else:
         return

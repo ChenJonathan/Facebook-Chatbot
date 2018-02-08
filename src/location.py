@@ -12,7 +12,7 @@ feature_map = {
     'Perion': ['Crafting'],
     'Sleepywood': ['Crafting'],
     'Cursed Sanctuary': ['Boss Fight - Coming soon!'],
-    'New Leaf City': ['Gambling - Coming soon!']
+    'New Leaf City': ['Gambling - Coming soon!', 'Shop']
 }
 
 def location_features(location):

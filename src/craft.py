@@ -12,10 +12,10 @@ craft_data = {
             'DEF': 0,
             'SPD': -2,
             'Materials': {
-                'Brutal Essence': 40,
-                'Breathing Wood': 20,
-                'Drop of Earth': 4,
-                'Iron Shard': 20
+                'Brutal Essence': 20,
+                'Breathing Wood': 10,
+                'Drop of Earth': 2,
+                'Iron Shard': 10
             }
         },
         {
@@ -25,9 +25,9 @@ craft_data = {
             'DEF': 2,
             'SPD': 4,
             'Materials': {
-                'Wild Essence': 40,
-                'Shifting Vines': 20,
-                'Crystal Shard': 2
+                'Wild Essence': 20,
+                'Shifting Vines': 10,
+                'Crystal Shard': 1
             }
         }
     ],
@@ -37,12 +37,12 @@ craft_data = {
             'Type': 'Item',
             'Description': 'Summons Crimson Balrog in Cursed Sanctuary.',
             'Materials': {
-                'Brutal Essence': 50,
-                'Wild Essence': 50,
-                'Arcane Essence': 50,
-                'Void Essence': 50,
-                'Bottled Light': 5,
-                'Bottled Darkness': 5
+                'Brutal Essence': 25,
+                'Wild Essence': 25,
+                'Arcane Essence': 25,
+                'Void Essence': 25,
+                'Bottled Light': 1,
+                'Bottled Darkness': 1
             }
         },
         {
@@ -52,9 +52,9 @@ craft_data = {
             'DEF': 6,
             'SPD': 6,
             'Materials': {
-                'Void Essence': 40,
-                'Touch of Death': 2,
-                'Time Shard': 2,
+                'Void Essence': 20,
+                'Touch of Death': 1,
+                'Time Shard': 1
             }
         }
     ]
