@@ -20,7 +20,7 @@ def shop_purchase(client, user, slot, thread_id):
     except:
         reply = 'Invalid slot number.'
     else:
-        gold = gold_get(author_id)
+        gold = gold_get(user['_id'])
         if slot == 0:
             if gold >= 100:
                 gold_add(user['_id'], 100)
