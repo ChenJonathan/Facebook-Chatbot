@@ -23,14 +23,14 @@ def shop_purchase(client, user, slot, thread_id):
         gold = gold_get(user['_id'])
         if slot == 0:
             if gold >= 100:
-                gold_add(user['_id'], 100)
+                gold_add(user['_id'], -100)
                 _charity_donation(client, thread_id)
                 return
             else:
                 reply = 'You can\'t afford that.'
         elif slot == 1:
             if gold >= 1000:
-                gold_add(user['_id'], 1000)
+                gold_add(user['_id'], -1000)
                 _random_hunting_pet(client, user, thread_id)
                 return
             else:
