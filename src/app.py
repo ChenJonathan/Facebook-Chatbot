@@ -77,7 +77,7 @@ class ChatBot(Client):
         for user_id, record in self.travel_record.items():
             if now > record[1]:
                 location_set(user_id, record[0])
-                del client.travel_record[user_id]
+                del self.travel_record[user_id]
 
         # Check for chat commands
         if message_object.text and message_object.text[0] == '!':
