@@ -313,11 +313,13 @@ def run_group_command(client, author, command, text, thread_id):
 
     elif command == 'location' or command == 'l':
         features = location_features(author['location'])
-        reply = 'Welcome to ' + location_names[author['location']] + '!'
+        reply = 'Welcome to ' + location_names[author['location']] + '! '
         if features:
-            reply += ' The following services are available here:\n'
+            reply += 'The following services are available here:'
             for feature in features:
-                reply += '-> ' + feature
+                reply += '\n-> ' + feature
+        else:
+            reply += 'There are no services available here.'
         client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
 
     elif command == 'mute' or command == 'm':

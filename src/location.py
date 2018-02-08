@@ -11,6 +11,7 @@ feature_map = {
     'Henesys': ['Shop'],
     'Ellinia': ['Meditation - Coming soon!', 'Shop'],
     'Perion': ['Crafting', 'Shop'],
+    'Kerning City': ['Shop'],
     'Sleepywood': ['Crafting', 'Shop'],
     'Cursed Sanctuary': ['Boss Fight - Coming soon!'],
     'New Leaf City': ['Gambling - Coming soon!', 'Shop']

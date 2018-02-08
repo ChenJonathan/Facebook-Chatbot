@@ -19,7 +19,7 @@ def generate_user_info(client, text, author):
         reply += '!perm: Change user priority\n'
         reply += '!secret: List active secrets\n'
         reply += '!wong: Response priming\n'
-        reply += '(See what commands do with "!help <command>")'
+        reply += '(See how commands work with "!help <command>")'
     
     elif text == 'alias':
         reply = '<<Alias>>\n'
