@@ -101,7 +101,7 @@ class ChatBot(Client):
                 self.send(message, thread_id=master_id)
 
             # Chat commands - User
-            run_user_command(self, command, text, user_from_id(author_id))
+            run_user_command(self, user_from_id(author_id), command, text)
 
         elif thread_type == ThreadType.GROUP:
 
@@ -154,7 +154,7 @@ class ChatBot(Client):
                     return
 
             # Chat commands - Group
-            run_group_command(self, command, text, user_from_id(author_id), thread_id)
+            run_group_command(self, user_from_id(author_id), command, text, thread_id)
 
     def onPersonRemoved(self, removed_id, author_id, thread_id, **kwargs):
         if exceeds_priority(removed_id, author_id):

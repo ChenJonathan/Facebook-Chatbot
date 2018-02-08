@@ -4,27 +4,39 @@ import math
 import random
 import requests
 
+from craft import generate_craft_info, craft_item
 from emoji import random_emoji
 from hearthstone import random_beast
 from info import generate_user_info, generate_group_info
+from location import location_has_feature, explore_location
 from mongo import *
 from quest import set_quest_type, generate_quest
-from location import check_locations, travel_to_location, explore_location
+from shop import generate_shop_info, shop_purchase
+from travel import check_travel, travel_to_location
 from util import *
 
 def check_busy(client, user, thread_id):
-    if user['_id'] in client.travel_record:
-        record = client.travel_record[user['_id']]
-        minutes = math.ceil((record[1] - datetime.now()).total_seconds() / 60)
-        reply = 'You\'re busy traveling to ' + location_names[record[0]]
-        reply += '. (' + str(minutes) + ' minute' + ('' if minutes == 1 else 's')
-        reply += ' remaining).'
-    else:
+    if user['_id'] not in client.travel_record:
         return False
+
+    # Check if traveling has expired
+    record = client.travel_record[user['_id']]
+    now = datetime.now()
+    for user_id, record in list(self.travel_record.items()):
+        if now > record[1]:
+            location_set(user_id, record[0])
+            del self.travel_record[user_id]
+            return False
+
+    # Check travel time remaining
+    minutes = math.ceil((record[1] - datetime.now()).total_seconds() / 60)
+    reply = 'You\'re busy traveling to ' + location_names[record[0]]
+    reply += '. (' + str(minutes) + ' minute' + ('' if minutes == 1 else 's')
+    reply += ' remaining).'
     client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
     return True
 
-def run_user_command(client, command, text, author):
+def run_user_command(client, author, command, text):
     author_id = author['_id']
     if author_id != master_id:
         return
@@ -64,7 +76,7 @@ def run_user_command(client, command, text, author):
                 record = client.travel_record[user['_id']]
                 minutes = math.ceil((record[1] - datetime.now()).total_seconds() / 60)
                 line += ' -> ' + location_names[record[0]] + '\n'
-                line += '. (' + str(minutes) + ' minute' + ('' if minutes == 1 else 's')
+                line += '(' + str(minutes) + ' minute' + ('' if minutes == 1 else 's')
                 line += ' remaining).'
             reply.append(line)
         reply = '\n\n'.join(reply) if reply else 'No aliases set.'
@@ -128,7 +140,7 @@ def run_user_command(client, command, text, author):
         elif len(text) == 1:
             client.responses.clear()
 
-def run_group_command(client, command, text, author, thread_id):
+def run_group_command(client, author, command, text, thread_id):
     author_id = author['_id']
 
     if command == 'alias' or command == 'a':
@@ -192,9 +204,20 @@ def run_group_command(client, command, text, author, thread_id):
             record = client.travel_record[user['_id']]
             minutes = math.ceil((record[1] - datetime.now()).total_seconds() / 60)
             reply += ' -> ' + location_names[record[0]] + '\n'
-            reply += '. (' + str(minutes) + ' minute' + ('' if minutes == 1 else 's')
+            reply += '(' + str(minutes) + ' minute' + ('' if minutes == 1 else 's')
             reply += ' remaining).'
         client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
+
+    elif command == 'craft':
+        if check_busy(client, author, thread_id):
+            return
+        elif not location_has_feature(client, author['location'], 'Craft', thread_id):
+            message = Message('There is no crafting station in this location.')
+            client.send(message, thread_id=thread_id, thread_type=ThreadType.GROUP)
+        elif len(text) == 0:
+            generate_craft_info(client, author, thread_id)
+        else:
+            craft_item(client, author, text, thread_id)
 
     elif command == 'daily' or command == 'd':
         text = text.strip().lower()
@@ -368,68 +391,19 @@ def run_group_command(client, command, text, author, thread_id):
         client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
 
     elif command == 'shop' or command == 's':
-        text = text.strip().lower()
-        if len(text) == 0:
-            reply = ['<<The Wong Shoppe>>']
-            reply.append('1. 0100 gold: Charity donation')
-            reply.append('2. 0250 gold: Random stock image')
-            reply.append('3. 1000 gold: Random hunting pet')
-            reply.append('4. 9999 gold: Priority boost')
-            reply.append('(Buy things with "!shop <item>")')
-            reply = '\n'.join(reply)
+        if check_busy(client, author, thread_id):
+            return
+        elif not location_has_feature(client, author['location'], 'Shop', thread_id):
+            message = Message('There is no shop in this location.')
+            client.send(message, thread_id=thread_id, thread_type=ThreadType.GROUP)
+        elif len(text) == 0:
+            generate_shop_info(client, author, thread_id)
         else:
-            text = int(text)
-            gold = gold_get(author_id)
-            if text == 1:
-                if gold >= 100:
-                    charities = [
-                        'Flat Earth Society', 
-                        'Westboro Baptist Church', 
-                        'Church of Scientology'
-                    ]
-                    gold_add(author_id, -100)
-                    reply = 'The ' + random.choice(charities) + ' thanks you for your donation.'
-                else:
-                    reply = 'You can\'t afford that.'
-            elif text == 2:
-                if gold >= 250:
-                    gold_add(author_id, -250)
-                    image = random.randint(0, client.num_images - 1)
-                    path = './images/' + str(image) + '.jpg'
-                    client.sendLocalImage(path, thread_id=thread_id, thread_type=ThreadType.GROUP)
-                    reply = 'Enjoy your stock photo!'
-                else:
-                    reply = 'You can\'t afford that.'
-            elif text == 3:
-                if gold >= 1000:
-                    beast = random_beast()
-                    delta_rate = beast[1] * beast[2]
-                    gold_add(author_id, -1000)
-                    gold_rate_add(author_id, delta_rate)
-                    reply = 'You\'ve bought a ' + str(beast[1]) + '/' + str(beast[2])
-                    reply += ' ' + beast[0] + '! It grants you an additional '
-                    reply += str(delta_rate) + ' gold per hour.'
-                else:
-                    reply = 'You can\'t afford that.'
-            elif text == 4:
-                if gold >= 9999:
-                    priority = priority_get(author_id) + 1
-                    if priority < master_priority:
-                        gold_add(author_id, -9999)
-                        priority_set(author_id, priority)
-                        name = author['name']
-                        reply = name + '\'s rank is now ' + priority_names[priority] + '!'
-                    else:
-                        reply = 'You\'ve already reached the highest rank.'
-                else:
-                    reply = 'You can\'t afford that.'
-            else:
-                return
-        client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
+            shop_purchase(client, author, text, thread_id)
 
     elif command == 'travel' or command == 't':
         if not check_busy(client, author, thread_id):
             if len(text) == 0:
-                check_locations(client, author, thread_id)
+                check_travel(client, author, thread_id)
             else:
                 travel_to_location(client, author, text, thread_id)

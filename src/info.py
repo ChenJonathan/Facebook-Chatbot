@@ -86,7 +86,7 @@ def generate_user_info(client, text, author):
 
     else:
         return
-    client.send(Message(reply), thread_id=author_id, thread_type=ThreadType.USER)
+    client.send(Message(reply), thread_id=author['_id'], thread_type=ThreadType.USER)
 
 def generate_group_info(client, text, author, thread_id):
     text = text.lower()
@@ -169,7 +169,8 @@ def generate_group_info(client, text, author, thread_id):
         reply = '<<Inventory>>\n'
         reply += 'Usage: "!inventory"\n'
         reply += 'Lists the contents of your inventory to you in a private message. '
-        reply += 'Items can be found through exploration.'
+        reply += 'Items can be found through exploration. There is no limit to '
+        reply += 'inventory size.'
 
     elif text == 'jail':
         reply = '<<Jail>>\n'
@@ -221,9 +222,10 @@ def generate_group_info(client, text, author, thread_id):
 
     elif text == 'scoreboard':
         reply = '<<Scoreboard>>\n'
-        reply += 'Usage: "!scoreboard"\n'
-        reply += 'Shows the top 9 people in the group chat by score. Score takes all '
-        reply += 'gameplay factors into account.'
+        reply += 'Usage: "!scoreboard <page>"\n'
+        reply += 'Example: "!scoreboard 2"\n'
+        reply += 'Lists the top people in the group chat by score. Score takes all '
+        reply += 'gameplay factors into account. Each page lists 9 people.'
 
     elif text == 'shop':
         reply = '<<Shop>>\n'

@@ -281,7 +281,7 @@ ethnocentric:based on the attitude that one's group is superior
 etiology:causes or origins
 etymology:origin and history of a word
 eugenics:study of factors that influence the hereditary qualities of the human race and ways to improve those qualities
-eulogy:high praise to a death person
+eulogy:high praise to a dead person
 euphemism:use of agreeable or inoffensive language in place of offensive language
 euphoria:feeling of extreme happiness
 euthanasia:mercy killing
@@ -608,7 +608,7 @@ puissant:powerful
 punctilious:careful in observing rules fo behavior
 pungent:penetrating, caustic, to the point
 purport:to profess, suppose, claim
-pusillanimous:cowerdly
+pusillanimous:cowardly
 quagmire:marsh, difficult situation
 quail:to cower, lose heart
 qualified:limited, restricted
@@ -645,7 +645,7 @@ repudiate:to reject as having no authority
 rescind:to cancel
 resolution:determination, resolve
 resolve:determination, firmness of purpose
-reticent:nor speaking freely, reserved, reluctant
+reticent:not speaking freely, reserved, reluctant
 reverent:expressing deep respect, worshipful
 riposte:retaliatory action or retort
 rococo:excessively ornate

@@ -26,5 +26,5 @@ def name_to_location(text):
 
 def calculate_score(user):
     score = user['gold'] + user['gold_rate'] * 50
-    score += (len(location_names) - len(user['location_progress'])) * 2500
-    return score - 15000
+    score += (len(location_names) - len(user['location_progress'])) * 2000
+    return score - 12000
