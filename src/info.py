@@ -94,27 +94,30 @@ def generate_group_info(client, text, author, thread_id):
 
     if len(text) == 0:
         reply = '<<Command List>>\n'
+        reply += 'See how commands work with "!help <command>".\n'
+        reply += '\n<Master Commands>\n'
         reply += '!alias: Alias assignment\n'
-        reply += '!bully: Harass someone\n'
+        reply += '!perm: Change user priority\n'
+        reply += '\n<Game Commands>\n'
         reply += '!check: See user statistics\n'
         reply += '!craft: Craft items with materials\n'
-        reply += '!daily: Subscribe to daily events\n'
         reply += '!explore: Gather materials\n'
         reply += '!equip: See user equipment\n'
         reply += '!give: Give someone gold\n'
-        reply += '!help: Read documentation\n'
         reply += '!inventory: Check your inventory\n'
         reply += '!jail: Send someone to jail\n'
         reply += '!location: Current location details\n'
-        reply += '!mute: Kick someone from the chat\n'
-        reply += '!perm: Change user priority\n'
-        reply += '!quest: Earn gold through quizzes\n'
-        reply += '!random: Random chat emoji / color\n'
-        reply += '!roll: Roll the dice\n'
-        reply += '!scoreboard: Show group rankings\n'
+        reply += '!quest: Solve quizzes for gold\n'
+        reply += '!score: Show group rankings\n'
         reply += '!shop: Spend gold to buy things\n'
         reply += '!travel: Travel around the world\n'
-        reply += '(See how commands work with "!help <command>")'
+        reply += '\n<Miscellaneous Commands>\n'
+        reply += '!bully: Harass someone\n'
+        reply += '!daily: Subscribe to daily events\n'
+        reply += '!help: Read documentation\n'
+        reply += '!mute: Remove from group\n'
+        reply += '!random: Random emoji / color\n'
+        reply += '!roll: Roll the dice'
 
     elif text == 'alias':
         reply = '<<Alias>>\n'
@@ -162,7 +165,7 @@ def generate_group_info(client, text, author, thread_id):
         reply += 'Usage: "!explore"\n'
         reply += 'Explores the current location. Exploration will various rewards and '
         reply += 'gradually discover surrounding locations. Can be done once per hour; '
-        reply += 'resets on the hour.'
+        reply += 'the explore timer resets on the hour.'
 
     elif text == 'equip':
         reply = '<<Equip>>\n'
@@ -244,7 +247,7 @@ def generate_group_info(client, text, author, thread_id):
         reply += 'Example: "!roll 10"\n'
         reply += 'Rolls a <sides> sided die. <sides> defaults to 6 if left blank.'
 
-    elif text == 'scoreboard':
+    elif text == 'score':
         reply = '<<Scoreboard>>\n'
         reply += 'Usage: "!scoreboard <page>"\n'
         reply += 'Example: "!scoreboard 2"\n'

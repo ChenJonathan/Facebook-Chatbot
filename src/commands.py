@@ -403,7 +403,7 @@ def run_group_command(client, author, command, text, thread_id):
         message = Message(user.name + ' rolls ' + roll + '.')
         client.send(message, thread_id=thread_id, thread_type=ThreadType.GROUP)
 
-    elif command == 'scoreboard' or command == 'score':
+    elif command == 'score':
         group = client.fetchGroupInfo(thread_id)[thread_id].participants
         group = user_get_all_in(list(group))
         users = sorted(group, key=lambda x: calculate_score(x), reverse=True)

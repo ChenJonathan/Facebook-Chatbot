@@ -8,9 +8,9 @@ def generate_shop_info(client, user, thread_id):
     reply = 'Shop information been sent to you in private chat.'
     client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
     reply = ['<<The Wong Shoppe>>']
+    reply.append('Buy things with "!shop <item>" in a group chat.\n')
     reply.append('1. 0100 gold: Charity donation')
     reply.append('2. 2500 gold: Random hunting pet')
-    reply.append('(Buy things with "!shop <item>" in a group chat)')
     reply = '\n'.join(reply)
     client.send(Message(reply), thread_id=user['_id'])
 
