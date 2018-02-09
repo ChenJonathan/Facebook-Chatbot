@@ -408,12 +408,14 @@ def run_group_command(client, author, command, text, thread_id):
         group = user_get_all_in(list(group))
         users = sorted(group, key=lambda x: calculate_score(x), reverse=True)
         users = [user for user in users if user['_id'] != master_id and user['_id'] != client.uid]
+        while calculate_score(users[-1]) == 0:
+            users.pop()
         try:
             page = int(text) - 1
         except:
             page = 0
         if len(users) <= page * 9:
-            reply = 'There aren\'t enough users in the chat.'
+            reply = 'There aren\'t enough players in the chat.'
         else:
             users = users[(page * 9):]
             if len(users) > 9:

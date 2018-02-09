@@ -145,7 +145,8 @@ def generate_group_info(client, text, author, thread_id):
     elif text == 'craft':
         reply = '<<Craft>>\n'
         reply += 'Usage: "!craft"\n'
-        reply += 'Lists all the items available to craft. Differs by location.\n\n'
+        reply += 'Lists all the items available to craft. Different locations will offer 
+        reply += 'different crafting recipes.\n\n'
         reply += 'Usage: "!craft <slot>"\n'
         reply += 'Example: "!craft 1"\n'
         reply += 'Crafts the item designated by <slot>. Make sure to check the craft list '
@@ -248,16 +249,17 @@ def generate_group_info(client, text, author, thread_id):
         reply += 'Rolls a <sides> sided die. <sides> defaults to 6 if left blank.'
 
     elif text == 'score':
-        reply = '<<Scoreboard>>\n'
-        reply += 'Usage: "!scoreboard <page>"\n'
-        reply += 'Example: "!scoreboard 2"\n'
+        reply = '<<Score>>\n'
+        reply += 'Usage: "!score <page>"\n'
+        reply += 'Example: "!score 2"\n'
         reply += 'Lists the top people in the group chat by score. Score takes all '
         reply += 'gameplay factors into account. Each page lists 9 people.'
 
     elif text == 'shop':
         reply = '<<Shop>>\n'
         reply += 'Usage: "!shop"\n'
-        reply += 'Lists all the items available in the shop. Differs by location.\n\n'
+        reply += 'Lists all the items available in the shop. Shop items are the same 
+        reply += 'in every location that has a shop.\n\n'
         reply += 'Usage: "!shop <slot>"\n'
         reply += 'Example: "!shop 1"\n'
         reply += 'Purchases the shop item designated by <slot>. Make sure to check the '
@@ -267,8 +269,8 @@ def generate_group_info(client, text, author, thread_id):
         reply = '<<Travel>>\n'
         reply += 'Usage: "!travel <location>"\n'
         reply += 'Example: "!travel Ellinia"\n'
-        reply += 'Sets your character on a journey to <location>. You will be unable '
-        reply += 'to take any actions (such as questing or exploring) while traveling.\n\n'
+        reply += 'Sets your character on a journey to <location>. You will be unable to '
+        reply += 'take most actions (such as shopping or exploring) while traveling.\n\n'
         reply += 'Usage: "!travel"\n'
         reply += 'Check which locations you can travel to from your current location. '
         reply += 'New locations can be found through exploration.'
