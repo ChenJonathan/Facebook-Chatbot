@@ -210,8 +210,9 @@ def run_group_command(client, author, command, text, thread_id):
         if check_busy(client, author, thread_id):
             return
         elif 'Crafting' not in location_features(author['location']):
-            message = Message('There is no crafting station in this location.')
-            client.send(message, thread_id=thread_id, thread_type=ThreadType.GROUP)
+            reply = 'There is no crafting station in this location. '
+            reply += 'Try going to Perion or Sleepywood.'
+            client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
         elif len(text) == 0:
             generate_craft_info(client, author, thread_id)
         else:
