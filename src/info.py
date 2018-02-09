@@ -145,7 +145,7 @@ def generate_group_info(client, text, author, thread_id):
     elif text == 'craft':
         reply = '<<Craft>>\n'
         reply += 'Usage: "!craft"\n'
-        reply += 'Lists all the items available to craft. Different locations will offer 
+        reply += 'Lists all the items available to craft. Different locations will offer '
         reply += 'different crafting recipes.\n\n'
         reply += 'Usage: "!craft <slot>"\n'
         reply += 'Example: "!craft 1"\n'
@@ -258,7 +258,7 @@ def generate_group_info(client, text, author, thread_id):
     elif text == 'shop':
         reply = '<<Shop>>\n'
         reply += 'Usage: "!shop"\n'
-        reply += 'Lists all the items available in the shop. Shop items are the same 
+        reply += 'Lists all the items available in the shop. Shop items are the same '
         reply += 'in every location that has a shop.\n\n'
         reply += 'Usage: "!shop <slot>"\n'
         reply += 'Example: "!shop 1"\n'
