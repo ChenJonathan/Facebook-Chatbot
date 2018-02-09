@@ -95,9 +95,10 @@ def generate_group_info(client, text, author, thread_id):
     if len(text) == 0:
         reply = '<<Command List>>\n'
         reply += 'See how commands work with "!help <command>".\n'
-        reply += '\n<Master Commands>\n'
-        reply += '!alias: Alias assignment\n'
-        reply += '!perm: Change user priority\n'
+        if is_master:
+            reply += '\n<Master Commands>\n'
+            reply += '!alias: Alias assignment\n'
+            reply += '!perm: Change user priority\n'
         reply += '\n<Game Commands>\n'
         reply += '!check: See user statistics\n'
         reply += '!craft: Craft items with materials\n'
