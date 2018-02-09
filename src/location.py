@@ -56,9 +56,9 @@ def explore_location(client, user, thread_id):
         beast_multiplier = 0
         item_drop_rates['Arcane Essence'] = 0.3
         item_drop_rates['Void Essence'] = 0.3
-        item_drop_rates['Bottled Darkness'] = 0.2
-        item_drop_rates['Touch of Death'] = 0.1
-        item_drop_rates['Warped Bones'] = 0.2
+        item_drop_rates['Bottled Darkness'] = 0.1
+        item_drop_rates['Touch of Death'] = 0.05
+        item_drop_rates['Warped Bones'] = 0.1
     elif location == 8:
         gold_multiplier = 2
         beast_multiplier = 0
@@ -69,7 +69,7 @@ def explore_location(client, user, thread_id):
     elif location == 10:
         item_drop_rates['Howling Wind'] = 0.1
         item_drop_rates['Clockwork Shard'] = 0.6
-        item_drop_rates['Time Shard'] = 0.1
+        item_drop_rates['Time Shard'] = 0.05
     elif location == 11:
         pass
     elif location == 12:

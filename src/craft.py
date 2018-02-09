@@ -41,8 +41,8 @@ craft_data = {
                 'Wild Essence': 25,
                 'Arcane Essence': 25,
                 'Void Essence': 25,
-                'Bottled Light': 1,
-                'Bottled Darkness': 1
+                'Bottled Light': 2,
+                'Bottled Darkness': 2
             }
         },
         {

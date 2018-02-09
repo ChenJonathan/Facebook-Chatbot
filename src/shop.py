@@ -9,7 +9,7 @@ def generate_shop_info(client, user, thread_id):
     client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
     reply = ['<<The Wong Shoppe>>']
     reply.append('1. 0100 gold: Charity donation')
-    reply.append('2. 1000 gold: Random hunting pet')
+    reply.append('2. 2500 gold: Random hunting pet')
     reply.append('(Buy things with "!shop <item>" in a group chat)')
     reply = '\n'.join(reply)
     client.send(Message(reply), thread_id=user['_id'])
@@ -29,8 +29,8 @@ def shop_purchase(client, user, slot, thread_id):
             else:
                 reply = 'You can\'t afford that.'
         elif slot == 1:
-            if gold >= 1000:
-                gold_add(user['_id'], -1000)
+            if gold >= 2500:
+                gold_add(user['_id'], -2500)
                 _random_hunting_pet(client, user, thread_id)
                 return
             else:

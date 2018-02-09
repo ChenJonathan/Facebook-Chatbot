@@ -80,17 +80,17 @@ def complete_quest(client, user, text, thread_id):
     del client.quest_record[user_id]
     if text == str(correct + 1):
         if quest_type == 'vocab':
-            delta = random.randint(10, 99)
+            delta = random.randint(20, 200)
         elif quest_type == 'trivia':
-            delta = random.randint(10, 149)
+            delta = random.randint(30, 300)
         gold_add(user_id, delta)
         reply = user['name'] + ' has gained ' + str(delta) + ' gold and is now at '
         reply += str(user['gold'] + delta) + ' gold total!'
     else:
         if quest_type == 'vocab':
-            delta = random.randint(-99, -10)
+            delta = random.randint(-200, -20)
         elif quest_type == 'trivia':
-            delta = random.randint(-49, -10)
+            delta = random.randint(-100, -10)
         gold_add(user_id, delta)
         reply = user['name'] + ' has lost ' + str(-delta) + ' gold and is now at '
         reply += str(user['gold'] + delta) + ' gold total. The correct answer was '
