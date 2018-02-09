@@ -31,5 +31,5 @@ def name_to_location(query):
 
 def calculate_score(user):
     score = user['gold'] + user['gold_rate'] * 125
-    score += (len(location_names) - len(user['location_progress'])) * 5000
-    return score - 12000
+    score += (len(location_names) - 6 - len(user['location_progress'])) * 5000
+    return score
