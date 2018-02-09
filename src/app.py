@@ -10,9 +10,10 @@ import threading
 
 from clock import set_timer
 from commands import run_group_command, run_user_command
+from location import location_features
 from mongo import *
 from quest import complete_quest
-from util import master_priority, master_id
+from util import master_priority, master_id, location_names
 
 cb = cleverbot.Cleverbot(os.environ.get('CLEVERBOT_KEY'))
 
@@ -72,12 +73,22 @@ class ChatBot(Client):
         if author_id == self.uid:
             return
 
-        # Check if traveling has expired
+        # Notify any users that have finished traveling
         now = datetime.now()
         for user_id, record in list(self.travel_record.items()):
             if now > record[1]:
                 location_set(user_id, record[0])
                 del self.travel_record[user_id]
+                user = user_from_id(user_id)
+                features = location_features(user['location'])
+                reply = 'You have reached ' + location_names[user['location']] + '! '
+                if features:
+                    reply += 'The following services are available here:'
+                    for feature in features:
+                        reply += '\n-> ' + feature
+                else:
+                    reply += 'There are no services available here.'
+                self.send(Message(reply), thread_id=user_id)
 
         # Check for chat commands
         if message_object.text and message_object.text[0] == '!':

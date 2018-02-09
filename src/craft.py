@@ -61,9 +61,9 @@ craft_data = {
 }
 
 def generate_craft_info(client, user, thread_id):
-    reply = 'Crafting information been sent to you in private chat.'
+    reply = 'Crafting information has been sent to you in private chat.'
     client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
-    reply = '<<The Workbench>>\n'
+    reply = '<<' + location_names[user['location']] + ' Workshop>>\n'
     reply += 'Craft things with "!craft <item>" in a group chat. '
     reply += 'Crafted equipment is automatically equipped.'
     for i, item_data in enumerate(craft_data[location_names[user['location']]]):
@@ -78,7 +78,7 @@ def generate_craft_info(client, user, thread_id):
         reply += '\n-> Materials:'
         for material, amount in item_data['Materials'].items():
             reply += '\n---> ' + material + ' x ' + str(amount)
-    client.send(Message(reply), thread_id=user['_id'], thread_type=ThreadType.USER)
+    client.send(Message(reply), thread_id=user['_id'])
 
 def craft_item(client, user, slot, thread_id):
     try:

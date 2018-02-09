@@ -11,23 +11,23 @@ def _connect(a, b, time):
     edges[b][a] = time
 
 # - Lith Harbor
-_connect(1, 2, 1)
-_connect(1, 5, 1)
+_connect(1, 2, 2)
+_connect(1, 5, 2)
 # - Victoria Island
-_connect(2, 3, 1)
-_connect(3, 4, 1)
-_connect(4, 5, 1)
-_connect(5, 2, 1)
+_connect(2, 3, 3)
+_connect(3, 4, 3)
+_connect(4, 5, 3)
+_connect(5, 2, 2)
 # - Sleepywood
-_connect(2, 6, 1)
-_connect(3, 6, 1)
-_connect(4, 6, 1)
-_connect(5, 6, 1)
+_connect(2, 6, 2)
+_connect(3, 6, 2)
+_connect(4, 6, 2)
+_connect(5, 6, 2)
 _connect(6, 7, 0)
 # - New Leaf City
-_connect(5, 8, 5)
-_connect(8, 9, 1)
-_connect(9, 10, 1)
+_connect(5, 8, 4)
+_connect(8, 9, 3)
+_connect(9, 10, 3)
 # - El Nath
 # _connect(3, 11, 18)
 _connect(11, 12, 6)
@@ -63,7 +63,7 @@ def check_travel(client, user, thread_id):
         reply[0] += ' and can travel to the following places:'
         for i, time in enumerate(edges[current]):
             if time >= 0 and str(i) not in progress_keys:
-                reply.append('- ' + location_names[i] + ': ' + str(time) + ' minutes away')
+                reply.append('-> ' + location_names[i] + ': ' + str(time) + ' minutes away')
         if len(reply) > 1:
             reply = '\n'.join(reply)
         else:

@@ -5,8 +5,7 @@ import random
 import requests
 
 from craft import generate_craft_info, craft_item
-from emoji import random_emoji
-from hearthstone import random_beast
+from data import random_emoji
 from info import generate_user_info, generate_group_info
 from location import location_features, explore_location
 from mongo import *
@@ -193,7 +192,7 @@ def run_group_command(client, author, command, text, thread_id):
                 return
             user = user_from_id(user.uid)
         else:
-            user = user_from_id(author_id)
+            user = author
         reply = '<<' + user['name'] + '>>\n'
         reply += 'Priority: ' + priority_names[user['priority']] + '\n'
         reply += 'Score: ' + str(calculate_score(user)) + '\n'
@@ -232,8 +231,17 @@ def run_group_command(client, author, command, text, thread_id):
         client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
 
     elif command == 'equip':
-        weapon = author['equipment']['Weapon']
-        armor = author['equipment']['Armor']
+        if len(text) > 0:
+            user = client.matchUser(thread_id, text)
+            if not user:
+                message = Message('User not found.')
+                client.send(message, thread_id=thread_id, thread_type=ThreadType.GROUP)
+                return
+            user = user_from_id(user.uid)
+        else:
+            user = author
+        weapon = user['equipment']['Weapon']
+        armor = user['equipment']['Armor']
         reply = '<<Equipment>>\n'
         reply += 'Weapon: ' + weapon['Name'] + '\n'
         reply += '-> ATK: ' + str(weapon['ATK']) + '\n'
@@ -250,7 +258,8 @@ def run_group_command(client, author, command, text, thread_id):
             reply = 'You can only explore once per hour.'
             client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
         elif not check_busy(client, author, thread_id):
-            client.explore_record.add(author_id)
+            if author_id != master_id:
+                client.explore_record.add(author_id)
             explore_location(client, author, thread_id)
 
     elif command == 'give' or command == 'g':
@@ -282,7 +291,7 @@ def run_group_command(client, author, command, text, thread_id):
         for item, amount in author['inventory'].items():
             reply.append(item + ' x ' + str(amount))
         reply = '\n'.join(reply) if len(reply) > 1 else 'Your inventory is empty.'
-        client.send(Message(reply), thread_id=author_id, thread_type=ThreadType.USER)
+        client.send(Message(reply), thread_id=author_id)
 
     elif command == 'jail' or command == 'j':
         if author['priority'] >= master_priority - 1:

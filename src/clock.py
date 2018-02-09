@@ -3,7 +3,7 @@ from datetime import datetime
 import random
 import threading
 
-from emoji import random_emoji
+from data import random_emoji
 from mongo import *
 
 def apply_gold_rates():

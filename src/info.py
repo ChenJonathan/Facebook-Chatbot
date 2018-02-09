@@ -86,7 +86,7 @@ def generate_user_info(client, text, author):
 
     else:
         return
-    client.send(Message(reply), thread_id=author['_id'], thread_type=ThreadType.USER)
+    client.send(Message(reply), thread_id=author['_id'])
 
 def generate_group_info(client, text, author, thread_id):
     text = text.lower()
@@ -161,7 +161,8 @@ def generate_group_info(client, text, author, thread_id):
         reply = '<<Explore>>\n'
         reply += 'Usage: "!explore"\n'
         reply += 'Explores the current location. Exploration will various rewards and '
-        reply += 'gradually discover surrounding locations. Can be done once per hour.'
+        reply += 'gradually discover surrounding locations. Can be done once per hour; '
+        reply += 'resets on the hour.'
 
     elif text == 'equip':
         reply = '<<Equip>>\n'

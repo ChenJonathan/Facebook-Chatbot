@@ -16,11 +16,16 @@ item_names += ['Howling Wind', 'Formless Ice', 'Drop of Earth', 'Living Flame']
 item_names += ['Clockwork Shard', 'Crystal Shard', 'Iron Shard', 'Time Shard']
 item_names += ['Breathing Wood', 'Shifting Vines', 'Astral Coral', 'Warped Bones']
 
-def name_to_location(text):
-    text = text.lower()
+def name_to_location(query):
+    query = query.lower()
     for i, name in enumerate(location_names):
-        name = name.strip().lower()
-        if text == name or text in name.split():
+        if query == name.lower():
+            return i
+    for i, name in enumerate(location_names):
+        if query in name.lower().split():
+            return i
+    for i, name in enumerate(location_names):
+        if name.lower().startswith(query):
             return i
     return None
 

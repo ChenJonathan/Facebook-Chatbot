@@ -1,7 +1,7 @@
 from fbchat.models import *
 import random
 
-from hearthstone import random_beast
+from data import random_beast
 from mongo import *
 
 def generate_shop_info(client, user, thread_id):
@@ -12,7 +12,7 @@ def generate_shop_info(client, user, thread_id):
     reply.append('2. 1000 gold: Random hunting pet')
     reply.append('(Buy things with "!shop <item>" in a group chat)')
     reply = '\n'.join(reply)
-    client.send(Message(reply), thread_id=user['_id'], thread_type=ThreadType.USER)
+    client.send(Message(reply), thread_id=user['_id'])
 
 def shop_purchase(client, user, slot, thread_id):
     try:

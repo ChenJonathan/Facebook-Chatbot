@@ -6,7 +6,7 @@ Captured Jormungar, 5, 9
 Cave Hydra, 2, 4
 Charged Devilsaur, 7, 7
 Core Hound, 9, 5
-Corridor Creeper, 5, 5
+Corridor Creeper, 2, 5
 Crackling Razormaw, 3, 2
 Desert Camel, 2, 4
 Dire Mole, 1, 3

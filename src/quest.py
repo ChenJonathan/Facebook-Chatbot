@@ -3,22 +3,10 @@ from html import unescape
 import random
 import requests
 
+from data import terms, definitions
 from mongo import *
 
-# Vocab
-terms = []
-definitions = []
-
-# Trivia
-categories = list(range(9, 25)) + list(range(27, 31)) + [32]
-
-with open('./data/vocab.txt', 'r') as data:
-    for line in data.readlines():
-        term, definition = line.split(':', 1)
-        term = term[0].upper() + term[1:]
-        definition = definition[0].upper() + definition[1:]
-        terms.append(term.strip())
-        definitions.append(definition.strip())
+trivia_categories = list(range(9, 25)) + list(range(27, 31)) + [32]
 
 def set_quest_type(client, user, text, thread_id):
     user_id = user['_id']
@@ -67,7 +55,7 @@ def _generate_vocab_quest(client, user, thread_id):
 
 def _generate_trivia_quest(client, user, thread_id):
     user_id = user['_id']
-    category = random.choice(categories)
+    category = random.choice(trivia_categories)
     url = 'https://opentdb.com/api.php?amount=1&category=' + str(category) + '&type=multiple'
     trivia = requests.get(url).json()['results'][0]
     answers = [unescape(answer) for answer in trivia['incorrect_answers']]
@@ -86,12 +74,11 @@ def _generate_trivia_quest(client, user, thread_id):
 
 def complete_quest(client, user, text, thread_id):
     user_id = user['_id']
-    text = text.lower()
     quest = client.quest_record[user_id]
     quest_type = client.quest_type_record[user['_id']]
     correct = quest['correct']
     del client.quest_record[user_id]
-    if text == str(correct + 1) or text == quest['answers'][correct].lower():
+    if text == str(correct + 1):
         if quest_type == 'vocab':
             delta = random.randint(10, 99)
         elif quest_type == 'trivia':
