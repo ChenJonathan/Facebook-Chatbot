@@ -373,7 +373,9 @@ def run_group_command(client, author, command, text, thread_id):
             message = Message('There are no quests to be found here.')
             client.send(message, thread_id=thread_id, thread_type=ThreadType.GROUP)
         else:
-            generate_quest(client, author, thread_id)
+            quest = generate_quest(client, author)
+            client.quest_record[author_id] = quest
+            client.send(Message(quest['Question']), thread_id=thread_id, thread_type=ThreadType.GROUP)
 
     elif command == 'random':
         colors = list(ThreadColor)

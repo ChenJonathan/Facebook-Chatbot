@@ -78,7 +78,7 @@ def user_try_add(user_id):
             'Gold': 0,
             'GoldFlow': 0,
             'Location': 'Lith Harbor',
-            'LocationProgress': {location_names[i]: 1 for i in range(0, 7)},
+            'LocationProgress': {location_names[i]: 1 for i in range(0, 6)},
             'Stats': {
                 'ATK': 10,
                 'DEF': 10,
@@ -170,7 +170,7 @@ def gold_add(user_id, gold):
 
 def gold_rate_add(user_id, rate):
     user_try_add(user_id)
-    update = {'$inc': {'GoldRate': rate}}
+    update = {'$inc': {'GoldFlow': rate}}
     db_users.update_one({'_id': user_id}, update)
 
 

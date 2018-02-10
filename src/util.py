@@ -1,7 +1,16 @@
+from enum import Enum
+
 priority_names = ['Peasant', 'User', 'Mod', 'Admin', 'Master']
 
 master_priority = len(priority_names) - 1
 master_id = '1564703352'
+
+
+class UserStates(Enum):
+    Idle = 0
+    Travel = 1
+    Battle = 2
+
 
 location_names = ['Maple Island', 'Lith Harbor', 'Henesys', 'Ellinia', 'Perion', 'Kerning City']
 location_names += ['Sleepywood', 'Cursed Sanctuary', 'New Leaf City', 'Krakian Jungle', 'Bigger Ben']
@@ -35,5 +44,8 @@ def query_location(query):
 
 def calculate_score(user):
     score = user['Gold'] + user['GoldFlow'] * 125
-    score += (len(location_names) - 6 - len(user['LocationProgress'])) * 5000
+    for location, progress in user['LocationProgress'].items():
+        if progress == 1:
+            score += 5000
+    score -= 6 * 5000
     return int(score / 10)

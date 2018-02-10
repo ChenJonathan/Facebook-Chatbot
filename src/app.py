@@ -187,12 +187,19 @@ class ServerThread(threading.Thread):
             app.run(host='0.0.0.0', port=port)
 
 
-class ChatThread(threading.Thread):
+class ReactiveThread(threading.Thread):
 
     def run(self):
         client = ChatBot('jonathanchen1025@gmail.com', b64decode(os.environ.get('PASSWORD')))
         client.listen()
 
 
-ChatThread().start()
+class ActiveThread(threading.Thread):
+
+    def run(self):
+        pass
+
+
 ServerThread().start()
+ReactiveThread().start()
+ActiveThread().start()

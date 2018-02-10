@@ -20,61 +20,52 @@ def set_quest_type(client, user, text, thread_id):
     client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
 
 
-def generate_quest(client, user, thread_id):
+def generate_quest(client, user):
     if user['_id'] not in client.quest_type_record:
         client.quest_type_record[user['_id']] = 'vocab'
     quest_type = client.quest_type_record[user['_id']]
     if quest_type == 'vocab':
-        _generate_vocab_quest(client, user, thread_id)
+        gold = user['Gold']
+        return _generate_vocab_quest(user['Name'], (1 if gold < 0 else len(str(gold))) + 1)
     elif quest_type == 'trivia':
-        _generate_trivia_quest(client, user, thread_id)
+        return _generate_trivia_quest(user['Name'])
 
 
-def _generate_vocab_quest(client, user, thread_id):
-    user_id = user['_id']
-    gold = user['Gold']
-    difficulty = 1 if gold < 0 else len(str(gold))
-    indices = random.sample(range(0, len(terms)), difficulty + 1)
-    correct = random.randint(0, difficulty)
+def _generate_vocab_quest(name, choices):
+    indices = random.sample(range(0, len(terms)), choices)
+    correct = random.randint(0, choices - 1)
     if random.random() > 0.5:
         quest = {
-            'Question': definitions[indices[correct]],
+            'Question': name + ': Which word means "' + definitions[indices[correct]] + '"?',
             'Answers': [terms[index] for index in indices],
             'Correct': correct
         }
-        client.quest_record[user_id] = quest
-        reply = user['Name'] + ': Which word means "' + quest['Question'] + '"?'
     else:
         quest = {
-            'Question': terms[indices[correct]],
+            'Question': name + ': What does "' + terms[indices[correct]] + '" mean?',
             'Answers': [definitions[index] for index in indices],
             'Correct': correct
         }
-        client.quest_record[user_id] = quest
-        reply = user['Name'] + ': What does "' + quest['Question'] + '" mean?'
     for i, answer in enumerate(quest['Answers']):
-        reply += '\n' + str(i + 1) + '. ' + quest['Answers'][i]
-    client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
+        quest['Question'] += '\n' + str(i + 1) + '. ' + quest['Answers'][i]
+    return quest
 
 
-def _generate_trivia_quest(client, user, thread_id):
-    user_id = user['_id']
+def _generate_trivia_quest(name):
     category = random.choice(trivia_categories)
     url = 'https://opentdb.com/api.php?amount=1&category=' + str(category) + '&type=multiple'
     trivia = requests.get(url).json()['results'][0]
     answers = [unescape(answer) for answer in trivia['incorrect_answers']]
     correct = random.randint(0, len(answers))
     answers.insert(correct, unescape(trivia['correct_answer']))
-    quest = {
-        'Question': unescape(trivia['question']),
+    reply = name + ': ' + unescape(trivia['question'])
+    for i, answer in enumerate(answers):
+        reply += '\n' + str(i + 1) + '. ' + answers[i]
+    return {
+        'Question': reply,
         'Answers': answers,
         'Correct': correct
     }
-    client.quest_record[user_id] = quest
-    reply = user['Name'] + ': ' + quest['Question']
-    for i, answer in enumerate(quest['Answers']):
-        reply += '\n' + str(i + 1) + '. ' + quest['Answers'][i]
-    client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
 
 
 def complete_quest(client, user, text, thread_id):
