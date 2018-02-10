@@ -174,6 +174,20 @@ def gold_rate_add(user_id, rate):
     db_users.update_one({'_id': user_id}, update)
 
 
+# Location methods
+
+def location_set(user_id, location):
+    user_try_add(user_id)
+    update = {'$set': {'Location': location}}
+    db_users.update_one({'_id': user_id}, update)
+
+
+def location_progress_set(user_id, location, progress):
+    user_try_add(user_id)
+    update = {'$set': {('LocationProgress.' + str(location)): progress}}
+    db_users.update_one({'_id': user_id}, update)
+
+
 # Equipment methods
 
 def equip_item(user_id, slot, item):
@@ -196,15 +210,18 @@ def inventory_remove_all(user_id, item):
     db_users.update_one({'_id': user_id}, update)
 
 
-# Location methods
+# Quest methods
 
-def location_set(user_id, location):
+def quest_type_set(user_id, type):
     user_try_add(user_id)
-    update = {'$set': {'Location': location}}
+    update = {'$set': {'Quest.Type': type}}
     db_users.update_one({'_id': user_id}, update)
 
 
-def location_progress_set(user_id, location, progress):
+def quest_stat_track(user_id, type, correct):
     user_try_add(user_id)
-    update = {'$set': {('LocationProgress.' + str(location)): progress}}
+    update = {'$inc': {
+        ('Quest.' + type + '.Correct'): 1 if correct else 0,
+        ('Quest.' + type + '.Total'): 1
+    }}
     db_users.update_one({'_id': user_id}, update)

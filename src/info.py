@@ -160,8 +160,8 @@ def generate_group_info(client, text, author, thread_id):
         reply += 'Example: "!daily emoji"\n'
         reply += 'Toggles the group\'s subscription to <event>. Events occur at midnight '
         reply += 'EST. Current events include the following:\n'
-        reply += '"color" - Changes the chat color\n'
-        reply += '"emoji" - Changes the chat emoji'
+        reply += '"Color" - Changes the chat color\n'
+        reply += '"Emoji" - Changes the chat emoji'
 
     elif text == 'explore':
         reply = '<<Explore>>\n'
@@ -202,8 +202,7 @@ def generate_group_info(client, text, author, thread_id):
         reply += 'Sends a person to jail, preventing them from taking any actions '
         reply += '(such as questing or exploring). If the person is already in jail, '
         reply += 'they will be freed from jail instead and sent to Lith Harbor. '
-        reply += 'Only usable by ' + priority_names[master_priority - 1]
-        reply += ' priority and above.'
+        reply += 'Only usable by ' + priority_names[master_priority - 1] + ' priority and above.'
 
     elif text == 'location':
         reply = '<<Location>>\n'
@@ -222,9 +221,8 @@ def generate_group_info(client, text, author, thread_id):
         reply = '<<Perm>>\n'
         reply += 'Usage: "!perm <priority> <search_string>"\n'
         reply += 'Example: "!perm 0 Raphael"\n'
-        reply += 'Sets the priority of the user designated by <search_string> '
-        reply += 'to <priority>. Only usable by ' + priority_names[master_priority]
-        reply += ' priority.'
+        reply += 'Sets the priority of the user designated by <search_string> to '
+        reply += '<priority>. Only usable by ' + priority_names[master_priority] + ' priority.'
 
     elif text == 'quest':
         reply = '<<Quest>>\n'
@@ -236,8 +234,8 @@ def generate_group_info(client, text, author, thread_id):
         reply += 'Example: "!quest trivia"\n'
         reply += 'Sets the type of multiple choice question that will be generated '
         reply += 'for you. Current quest types include the following:\n'
-        reply += '"vocab" - GRE vocabulary questions\n'
-        reply += '"trivia" - Trivia questions from various topics'
+        reply += '"Vocab" - GRE vocabulary questions\n'
+        reply += '"Trivia" - Trivia questions from various topics'
 
     elif text == 'random':
         reply = '<<Random>>\n'

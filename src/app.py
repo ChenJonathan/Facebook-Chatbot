@@ -23,11 +23,11 @@ class ChatBot(Client):
         init_db(self)
         priority_set(self.uid, master_priority - 1)
 
-        self.message_record = {}
         self.quest_record = {}
-        self.quest_type_record = {}
         self.travel_record = {}
         self.explore_record = set()
+        self.message_record = {}
+        self.user_states = {}
 
         self.defines = {}
         self.responses = []

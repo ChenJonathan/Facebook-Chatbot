@@ -192,7 +192,7 @@ def run_group_command(client, author, command, text, thread_id):
             user = user_from_id(user.uid)
         else:
             user = author
-        reply = '<<' + user['Name'] + '>>\n'
+        reply = '<<' + user['Name'] + '>>' + ((' (' + user['Alias'] + ')\n') if 'Alias' in user else '\n')
         reply += 'Priority: ' + priority_names[user['Priority']] + '\n'
         reply += 'Score: ' + str(calculate_score(user)) + '\n'
         reply += 'Gold: ' + str(user['Gold']) + ' (+' + str(user['GoldFlow']) + '/hour)\n'
@@ -368,14 +368,14 @@ def run_group_command(client, author, command, text, thread_id):
 
     elif command == 'quest' or command == 'q':
         if len(text) > 0:
-            set_quest_type(client, author, text, thread_id)
+            reply = set_quest_type(author, text)
         elif location_names_reverse[author['Location']] == 0:
-            message = Message('There are no quests to be found here.')
-            client.send(message, thread_id=thread_id, thread_type=ThreadType.GROUP)
+            reply = 'There are no quests to be found here.'
         else:
-            quest = generate_quest(client, author)
+            quest = generate_quest(author)
             client.quest_record[author_id] = quest
-            client.send(Message(quest['Question']), thread_id=thread_id, thread_type=ThreadType.GROUP)
+            reply = quest['Question']
+        client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
 
     elif command == 'random':
         colors = list(ThreadColor)
