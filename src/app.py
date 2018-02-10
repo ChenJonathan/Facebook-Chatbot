@@ -10,6 +10,7 @@ from clock import set_timer
 from commands import run_group_command, run_user_command
 from location import location_features
 from mongo import *
+from polling import loop
 from quest import complete_quest
 from util import master_priority, master_id, location_names
 
@@ -179,6 +180,9 @@ def index():
     return 'Welcome!'
 
 
+client = ChatBot('jonathanchen1025@gmail.com', b64decode(os.environ.get('PASSWORD')))
+
+
 class ServerThread(threading.Thread):
 
     def run(self):
@@ -190,14 +194,14 @@ class ServerThread(threading.Thread):
 class ReactiveThread(threading.Thread):
 
     def run(self):
-        client = ChatBot('jonathanchen1025@gmail.com', b64decode(os.environ.get('PASSWORD')))
         client.listen()
 
 
 class ActiveThread(threading.Thread):
 
     def run(self):
-        pass
+        while True:
+            loop(client)
 
 
 ServerThread().start()

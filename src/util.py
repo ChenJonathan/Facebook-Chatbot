@@ -6,7 +6,7 @@ master_priority = len(priority_names) - 1
 master_id = '1564703352'
 
 
-class UserStates(Enum):
+class UserState(Enum):
     Idle = 0
     Travel = 1
     Battle = 2

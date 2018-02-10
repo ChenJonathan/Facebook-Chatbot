@@ -28,10 +28,10 @@ def check_busy(client, user, thread_id):
         return False
 
     # Check travel time remaining
-    minutes = math.ceil((record[1] - datetime.now()).total_seconds() / 60)
+    seconds = (record[1] - datetime.now()).total_seconds()
+    minutes, seconds = int(seconds // 60), int(seconds % 60)
     reply = 'You\'re busy traveling to ' + record[0]
-    reply += '. (' + str(minutes) + ' minute' + ('' if minutes == 1 else 's')
-    reply += ' remaining).'
+    reply += ' (' + str(minutes) + ' min ' + str(seconds) + ' secs remaining).'
     client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
     return True
 

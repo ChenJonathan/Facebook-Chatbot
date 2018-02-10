@@ -25,7 +25,7 @@ def location_features(location):
 
 def explore_location(client, user, thread_id):
     seed = random.uniform(0.8, 1.2)
-    location = user['Location']
+    location = location_names_reverse[user['Location']]
 
     # Apply location specific modifiers
     gold_multiplier = 1

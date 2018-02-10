@@ -2,7 +2,6 @@ from fbchat.models import *
 
 from items import item_data
 from mongo import *
-from util import location_names
 
 
 def generate_craft_info(client, user, thread_id):
