@@ -4,8 +4,9 @@ import random
 from data import random_beast
 from mongo import *
 
+
 def generate_shop_info(client, user, thread_id):
-    reply = 'Shop information been sent to you in private chat.'
+    reply = 'Shop information has been sent to you in private chat.'
     client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
     reply = ['<<The Wong Shoppe>>']
     reply.append('Buy things with "!shop <item>" in a group chat.\n')
@@ -13,6 +14,7 @@ def generate_shop_info(client, user, thread_id):
     reply.append('2. 2500 gold: Random hunting pet')
     reply = '\n'.join(reply)
     client.send(Message(reply), thread_id=user['_id'])
+
 
 def shop_purchase(client, user, slot, thread_id):
     try:
@@ -39,6 +41,7 @@ def shop_purchase(client, user, slot, thread_id):
             reply = 'Invalid slot number.'
     client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
 
+
 def _charity_donation(client, thread_id):
     charities = [
         'Flat Earth Society', 
@@ -47,6 +50,7 @@ def _charity_donation(client, thread_id):
     ]
     reply = 'The ' + random.choice(charities) + ' thanks you for your donation.'
     client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
+
 
 def _random_hunting_pet(client, user, thread_id):
     beast = random_beast()

@@ -1,118 +1,64 @@
 from fbchat.models import *
 
+from items import item_data
 from mongo import *
 from util import location_names
 
-craft_data = {
-    'Perion': [
-        {
-            'Name': 'Earthborn Warhammer',
-            'Type': 'Weapon',
-            'ATK': 12,
-            'DEF': 0,
-            'SPD': -2,
-            'Materials': {
-                'Brutal Essence': 20,
-                'Breathing Wood': 10,
-                'Drop of Earth': 2,
-                'Iron Shard': 10
-            }
-        },
-        {
-            'Name': 'Cloak of Thorns',
-            'Type': 'Armor',
-            'ATK': 4,
-            'DEF': 2,
-            'SPD': 4,
-            'Materials': {
-                'Wild Essence': 20,
-                'Shifting Vines': 10,
-                'Crystal Shard': 1
-            }
-        }
-    ],
-    'Sleepywood': [
-        {
-            'Name': 'Demon Soul',
-            'Type': 'Item',
-            'Description': 'Summons Crimson Balrog in Cursed Sanctuary.',
-            'Materials': {
-                'Brutal Essence': 25,
-                'Wild Essence': 25,
-                'Arcane Essence': 25,
-                'Void Essence': 25,
-                'Bottled Light': 2,
-                'Bottled Darkness': 2
-            }
-        },
-        {
-            'Name': 'Decaying Shroud',
-            'Type': 'Armor',
-            'ATK': 0,
-            'DEF': 6,
-            'SPD': 6,
-            'Materials': {
-                'Void Essence': 20,
-                'Touch of Death': 1,
-                'Time Shard': 1
-            }
-        }
-    ]
-}
 
 def generate_craft_info(client, user, thread_id):
     reply = 'Crafting information has been sent to you in private chat.'
     client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
-    reply = '<<' + location_names[user['location']] + ' Workshop>>\n'
+    reply = '<<' + user['Location'] + ' Workshop>>\n'
     reply += 'Craft things with "!craft <item>" in a group chat. '
     reply += 'Crafted equipment is automatically equipped.'
-    for i, item_data in enumerate(craft_data[location_names[user['location']]]):
-        reply += '\n\n' + str(i + 1) + '. ' + item_data['Name']
-        reply += '\n-> Type: ' + item_data['Type']
-        if item_data['Type'] == 'Item':
-            reply += '\n-> Description: ' + item_data['Description']
+    for i, item_datum in enumerate(item_data[user['Location']]):
+        reply += '\n\n' + str(i + 1) + '. ' + item_datum['Name']
+        reply += '\n-> Type: ' + item_datum['Type']
+        if item_datum['Type'] == 'Item':
+            reply += '\n-> Description: ' + item_datum['Description']
         else:
-            reply += '\n-> ATK: ' + str(item_data['ATK'])
-            reply += '\n-> DEF: ' + str(item_data['DEF'])
-            reply += '\n-> SPD: ' + str(item_data['SPD'])
+            reply += '\n-> ATK: ' + str(item_datum['ATK'])
+            reply += '\n-> DEF: ' + str(item_datum['DEF'])
+            reply += '\n-> SPD: ' + str(item_datum['SPD'])
         reply += '\n-> Materials:'
-        for material, amount in item_data['Materials'].items():
+        for material, amount in item_datum['Materials'].items():
             reply += '\n---> ' + material + ' x ' + str(amount)
     client.send(Message(reply), thread_id=user['_id'])
+
 
 def craft_item(client, user, slot, thread_id):
     try:
         slot = int(slot) - 1
-        item_data_all = craft_data[location_names[user['location']]]
-        assert slot >= 0 and slot < len(item_data_all)
+        item_list = item_data[user['Location']]
+        assert 0 >= slot < len(item_list)
     except:
         reply = 'Invalid slot number.'
     else:
-        item_data = item_data_all[slot]
+        item_datum = item_list[slot]
 
         # Check and deduct required materials
         materials_owned = True
-        for material, amount in item_data['Materials'].items():
-            if material not in user['inventory'] or user['inventory'][material] < amount:
+        for material, amount in item_datum['Materials'].items():
+            if material not in user['Inventory'] or user['Inventory'][material] < amount:
                 materials_owned = False
         if not materials_owned:
             reply = 'You don\'t have the materials necessary to craft this.'
         else:
-            for material, amount in item_data['Materials'].items():
-                if user['inventory'][material] > amount:
+            for material, amount in item_datum['Materials'].items():
+                if user['Inventory'][material] > amount:
                     inventory_add(user['_id'], material, -amount)
                 else:
                     inventory_remove_all(user['_id'], material)
 
             # Equip the item and send a message
-            item_type = item_data['Type']
+            item_type = item_datum['Type']
             if item_type == 'Item':
-                inventory_add(user['_id'], item_data['Name'], 1)
-                reply = user['name'] + ' has crafted the ' + item_data['Name'] + '!'
+                inventory_add(user['_id'], item_datum['Name'], 1)
+                reply = user['Name'] + ' has crafted the ' + item_datum['Name'] + '!'
             else:
-                item_data = item_data.copy()
-                del item_data['Type']
-                del item_data['Materials']
-                equip_item(user['_id'], item_type, item_data)
-                reply = user['name'] + ' has crafted and equipped the ' + item_data['Name'] + '!'
+                item_datum = item_datum.copy()
+                del item_datum['Type']
+                del item_datum['Materials']
+                equip_item(user['_id'], item_type, item_datum)
+                reply = user['Name'] + ' has crafted and equipped the ' + item_datum['Name'] + '!'
     client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)

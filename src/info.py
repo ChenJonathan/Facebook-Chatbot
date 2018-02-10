@@ -1,7 +1,7 @@
 from fbchat.models import *
 
-from mongo import *
 from util import priority_names, master_priority, master_id
+
 
 def generate_user_info(client, text, author):
     text = text.lower()
@@ -88,6 +88,7 @@ def generate_user_info(client, text, author):
         return
     client.send(Message(reply), thread_id=author['_id'])
 
+
 def generate_group_info(client, text, author, thread_id):
     text = text.lower()
     is_master = author['_id'] == master_id
@@ -165,8 +166,8 @@ def generate_group_info(client, text, author, thread_id):
     elif text == 'explore':
         reply = '<<Explore>>\n'
         reply += 'Usage: "!explore"\n'
-        reply += 'Explores the current location. Exploration will various rewards and '
-        reply += 'gradually discover surrounding locations. Can be done once per hour; '
+        reply += 'Explores the current location. Exploration will grant various rewards '
+        reply += 'and gradually discover surrounding locations. Can be done once per hour; '
         reply += 'the explore timer resets on the hour.'
 
     elif text == 'equip':
@@ -253,8 +254,9 @@ def generate_group_info(client, text, author, thread_id):
         reply = '<<Score>>\n'
         reply += 'Usage: "!score <page>"\n'
         reply += 'Example: "!score 2"\n'
-        reply += 'Lists the top people in the group chat by score. Score takes all '
-        reply += 'gameplay factors into account. Each page lists 9 people.'
+        reply += 'Lists the top people in the group chat by score. Score takes gold, '
+        reply += 'gold generation, and number of locations discovered into account. '
+        reply += 'Each page lists 9 people.'
 
     elif text == 'shop':
         reply = '<<Shop>>\n'

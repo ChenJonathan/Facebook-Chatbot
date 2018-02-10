@@ -46,10 +46,12 @@ with open('./data/vocab.txt', 'r') as data:
         terms.append(term.strip())
         definitions.append(definition.strip())
 
+
 # Methods
 
 def random_beast():
     return random.choice(beasts)
+
 
 def random_emoji():
     emoji_decimal = random.choice(emojis)

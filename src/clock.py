@@ -6,9 +6,11 @@ import threading
 from data import random_emoji
 from mongo import *
 
+
 def apply_gold_rates():
     for user in user_get_all():
-        gold_add(user['_id'], user['gold_rate'])
+        gold_add(user['_id'], user['GoldFlow'])
+
 
 def manage_subscriptions(client):
     colors = list(ThreadColor)
@@ -25,6 +27,7 @@ def manage_subscriptions(client):
                 emoji = random_emoji()
             client.changeThreadEmoji(emoji, thread_id=group_id)
 
+
 def reset_timer(client):
     client.explore_record.clear()
     apply_gold_rates()
@@ -32,6 +35,7 @@ def reset_timer(client):
         manage_subscriptions(client)
 
     set_timer(client)
+
 
 def set_timer(client):
     now = datetime.today()

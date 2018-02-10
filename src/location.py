@@ -1,10 +1,11 @@
 from fbchat.models import *
+import math
 import random
 
 from data import random_beast
 from mongo import *
 from travel import edges
-from util import location_names, name_to_location
+from util import location_names, location_names_reverse
 
 feature_map = {
     'Lith Harbor': ['Shop'],
@@ -17,12 +18,14 @@ feature_map = {
     'New Leaf City': ['Gambling - Coming soon!', 'Shop']
 }
 
+
 def location_features(location):
-    return feature_map.get(location_names[location], [])
+    return feature_map.get(location, [])
+
 
 def explore_location(client, user, thread_id):
     seed = random.uniform(0.8, 1.2)
-    location = user['location']
+    location = user['Location']
 
     # Apply location specific modifiers
     gold_multiplier = 1
@@ -64,6 +67,7 @@ def explore_location(client, user, thread_id):
         beast_multiplier = 0
     elif location == 9:
         beast_multiplier = 5
+        item_drop_rates['Wild Essence'] = 0.4
         item_drop_rates['Breathing Wood'] = 0.5
         item_drop_rates['Shifting Vines'] = 0.5
     elif location == 10:
@@ -131,23 +135,18 @@ def explore_location(client, user, thread_id):
         gold_rate_add(user['_id'], delta_rate)
 
     # Check for discovered location
-    current = user['location']
-    progress = user['location_progress']
-    progress_keys = progress.keys()
+    current = location_names_reverse[user['Location']]
+    progress = user['LocationProgress']
     unlocked = []
     presence = False
     for i, time in enumerate(edges[current]):
-        if time >= 0 and str(i) in progress_keys:
-            if edges[current][i] > 0:
-                delta_progress = seed / edges[current][i]
-                total_progress = progress[str(i)] + delta_progress
-            else:
-                total_progress = 1
-            if total_progress >= 1:
-                location_discover(user['_id'], i)
+        if time >= 0 and progress.get(location_names[i], 0) < 1:
+            new_progress = progress.get(location_names[i], 0) + seed / edges[current][i]
+            if new_progress >= 1:
+                location_progress_set(user['_id'], location_names[i], 1)
                 unlocked.append(i)
             else:
-                location_progress_set(user['_id'], i, total_progress)
+                location_progress_set(user['_id'], location_names[i], new_progress)
                 presence = True
 
     # Create message

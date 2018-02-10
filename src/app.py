@@ -4,8 +4,6 @@ from flask import Flask
 from base64 import b64decode
 from datetime import datetime
 import cleverbot
-import os
-import random
 import threading
 
 from clock import set_timer
@@ -17,6 +15,7 @@ from util import master_priority, master_id, location_names
 
 cb = cleverbot.Cleverbot(os.environ.get('CLEVERBOT_KEY'))
 
+
 class ChatBot(Client):
 
     def __init__(self, email, password):
@@ -24,7 +23,6 @@ class ChatBot(Client):
         init_db(self)
         priority_set(self.uid, master_priority - 1)
 
-        self.num_images = len(os.listdir('./images'))
         self.message_record = {}
         self.quest_record = {}
         self.quest_type_record = {}
@@ -36,7 +34,7 @@ class ChatBot(Client):
 
         set_timer(self)
 
-    def send(self, message, thread_id, thread_type=ThreadType.USER):
+    def send(self, message, thread_id=None, thread_type=ThreadType.USER):
         super().send(message, thread_id=thread_id, thread_type=thread_type)
         
         # Avoid repeating own messages
@@ -50,7 +48,7 @@ class ChatBot(Client):
                 group_record[1].clear()
             group_record[1].add(self.uid)
 
-    def matchUser(self, group_id, query):
+    def match_user(self, group_id, query):
         group = self.fetchGroupInfo(group_id)[group_id]
         users = self.fetchUserInfo(*group.participants)
         query = query.strip().lower()
@@ -69,7 +67,7 @@ class ChatBot(Client):
                 return user
         return None
 
-    def onMessage(self, author_id, message_object, thread_id, thread_type, **kwargs):
+    def onMessage(self, mid=None, author_id=None, message=None, message_object=None, thread_id=None, thread_type=ThreadType.USER, ts=None, metadata=None, msg=None):
         if author_id == self.uid:
             return
 
@@ -80,8 +78,8 @@ class ChatBot(Client):
                 location_set(user_id, record[0])
                 del self.travel_record[user_id]
                 user = user_from_id(user_id)
-                features = location_features(user['location'])
-                reply = 'You have reached ' + location_names[user['location']] + '! '
+                features = location_features(user['Location'])
+                reply = 'You have reached ' + user['Location'] + '! '
                 if features:
                     reply += 'The following services are available here:'
                     for feature in features:
@@ -167,7 +165,7 @@ class ChatBot(Client):
             # Chat commands - Group
             run_group_command(self, user_from_id(author_id), command, text, thread_id)
 
-    def onPersonRemoved(self, removed_id, author_id, thread_id, **kwargs):
+    def onPersonRemoved(self, mid=None, removed_id=None, author_id=None, thread_id=None, ts=None, msg=None):
         if exceeds_priority(removed_id, author_id):
             self.removeUserFromGroup(author_id, thread_id)
             self.addUsersToGroup([removed_id], thread_id)
@@ -175,9 +173,11 @@ class ChatBot(Client):
 
 app = Flask(__name__)
 
+
 @app.route('/')
 def index():
     return 'Welcome!'
+
 
 class ServerThread(threading.Thread):
 
@@ -186,10 +186,11 @@ class ServerThread(threading.Thread):
             port = int(os.environ.get('PORT', 5000))
             app.run(host='0.0.0.0', port=port)
 
+
 class ChatThread(threading.Thread):
 
     def run(self):
-        client = ChatBot('jonathanchen1025@gmail.com', b64decode(os.environ.get('PASSWORD')))
+        client = ChatBot('Avenlokh@gmail.com', b64decode(os.environ.get('PASSWORD')))
         client.listen()
 
 

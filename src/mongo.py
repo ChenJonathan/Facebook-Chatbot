@@ -8,9 +8,10 @@ db_users = None
 
 chatbot = None
 
+
 def init_db(client):
     db = pymongo.MongoClient(os.environ.get('MONGODB_URI'))
-    db = db.get_default_database()
+    db = db.get_database()
 
     global db_groups
     global db_users
@@ -20,42 +21,51 @@ def init_db(client):
     global chatbot
     chatbot = client
 
+
 # Subscription methods
 
 def subscription_get(group_id):
     group = db_groups.find_one(group_id)
-    return group.get('subscriptions', []) if group else []
+    return group.get('Subscriptions', []) if group else []
+
 
 def subscription_get_all():
-    groups = db_groups.find({'subscriptions': {'$exists': True}})
-    return {group['_id']: group['subscriptions'] for group in groups}
+    groups = db_groups.find({'Subscriptions': {'$exists': True}})
+    return {group['_id']: group['Subscriptions'] for group in groups}
+
 
 def subscription_add(group_id, subscription):
     subscription = subscription.lower()
-    update = {'$addToSet': {'subscriptions': subscription}}
+    update = {'$addToSet': {'Subscriptions': subscription}}
     db_groups.update_one({'_id': group_id}, update, upsert=True)
+
 
 def subscription_remove(group_id, subscription):
     subscription = subscription.lower()
-    update = {'$pull': {'subscriptions': subscription}}
+    update = {'$pull': {'Subscriptions': subscription}}
     db_groups.update_one({'_id': group_id}, update)
-    update = {'$unset': {'subscriptions': None}}
-    db_groups.update_one({'_id': group_id, 'subscriptions': []}, update)
+    update = {'$unset': {'Subscriptions': None}}
+    db_groups.update_one({'_id': group_id, 'Subscriptions': []}, update)
+
 
 # User methods
 
 def user_from_alias(alias):
-    return db_users.find_one({'alias': alias})
+    return db_users.find_one({'Alias': alias})
+
 
 def user_from_id(user_id):
     user_try_add(user_id)
     return db_users.find_one(user_id)
 
+
 def user_get_all_in(user_ids):
     return db_users.find({'_id': {'$in': user_ids}})
 
+
 def user_get_all():
     return db_users.find()
+
 
 # - Must be used to add users so that attribute constraints are enforced
 def user_try_add(user_id):
@@ -63,11 +73,19 @@ def user_try_add(user_id):
         name = chatbot.fetchThreadInfo(user_id)[user_id].name
         db_users.insert_one({
             '_id': user_id, 
-            'name': name, 
-            'priority': 1, 
-            'gold': 0,
-            'gold_rate': 0,
-            'equipment': {
+            'Name': name,
+            'Priority': 1,
+            'Gold': 0,
+            'GoldFlow': 0,
+            'Location': 'Lith Harbor',
+            'LocationProgress': {location_names[i]: 1 for i in range(0, 7)},
+            'Stats': {
+                'ATK': 10,
+                'DEF': 10,
+                'SPD': 10,
+                'HP': 100
+            },
+            'Equipment': {
                 'Weapon': {
                     'Name': 'Wooden Sword',
                     'ATK': 2,
@@ -79,90 +97,114 @@ def user_try_add(user_id):
                     'ATK': 0,
                     'DEF': 2,
                     'SPD': 0
+                },
+                'Accessory': {
+                    'Name': 'Silver Pendant',
+                    'ATK': 0,
+                    'DEF': 0,
+                    'SPD': 2
                 }
             },
-            'inventory': {},
-            'location': 1,
-            'location_progress': {str(i): 0 for i in range(6, len(location_names))}
+            'Inventory': {},
+            'Quest': {
+                'Type': 'Vocab',
+                'Vocab': {
+                    'Correct': 0,
+                    'Total': 0
+                },
+                'Trivia': {
+                    'Correct': 0,
+                    'Total': 0
+                }
+            }
         })
+
 
 # Alias methods
 
 def alias_get_all():
-    return db_users.find({'alias': {'$exists': True}})
+    return db_users.find({'Alias': {'$exists': True}})
+
 
 def alias_add(user_id, alias):
     user_try_add(user_id)
     alias_remove(alias)
-    update = {'$set': {'alias': alias}}
+    update = {'$set': {'Alias': alias}}
     db_users.update_one({'_id': user_id}, update)
 
+
 def alias_remove(alias):
-    update = {'$unset': {'alias': None}}
-    db_users.update_one({'alias': alias}, update)
+    update = {'$unset': {'Alias': None}}
+    db_users.update_one({'Alias': alias}, update)
+
 
 # Priority methods
 
 def priority_get(user_id):
     user_try_add(user_id)
-    return db_users.find_one(user_id)['priority']
+    return db_users.find_one(user_id)['Priority']
+
 
 def exceeds_priority(user_id_1, user_id_2):
     return priority_get(user_id_1) > priority_get(user_id_2)
 
+
 def priority_set(user_id, priority):
     user_try_add(user_id)
-    update = {'$set': {'priority': priority}}
+    update = {'$set': {'Priority': priority}}
     db_users.update_one({'_id': user_id}, update)
+
 
 # Gold methods
 
 def gold_get(user_id):
     user_try_add(user_id)
-    return db_users.find_one(user_id)['gold']
+    return db_users.find_one(user_id)['Gold']
+
 
 def gold_add(user_id, gold):
     user_try_add(user_id)
-    update = {'$inc': {'gold': gold}}
+    update = {'$inc': {'Gold': gold}}
     db_users.update_one({'_id': user_id}, update)
+
 
 def gold_rate_add(user_id, rate):
     user_try_add(user_id)
-    update = {'$inc': {'gold_rate': rate}}
+    update = {'$inc': {'GoldRate': rate}}
     db_users.update_one({'_id': user_id}, update)
+
 
 # Equipment methods
 
 def equip_item(user_id, slot, item):
     user_try_add(user_id)
-    update = {'$set': {('equipment.' + slot): item}}
+    update = {'$set': {('Equipment.' + slot): item}}
     db_users.update_one({'_id': user_id}, update)
+
 
 # Inventory methods
 
 def inventory_add(user_id, item, amount):
     user_try_add(user_id)
-    update = {'$inc': {('inventory.' + item): amount}}
+    update = {'$inc': {('Inventory.' + item): amount}}
     db_users.update_one({'_id': user_id}, update)
+
 
 def inventory_remove_all(user_id, item):
     user_try_add(user_id)
-    update = {'$unset': {('inventory.' + item): None}}
+    update = {'$unset': {('Inventory.' + item): None}}
     db_users.update_one({'_id': user_id}, update)
+
 
 # Location methods
 
 def location_set(user_id, location):
     user_try_add(user_id)
-    update = {'$set': {'location': location}}
+    update = {'$set': {'Location': location}}
     db_users.update_one({'_id': user_id}, update)
+
 
 def location_progress_set(user_id, location, progress):
     user_try_add(user_id)
-    update = {'$set': {('location_progress.' + str(location)): progress}}
-    db_users.update_one({'_id': user_id}, update)
-
-def location_discover(user_id, location):
-    user_try_add(user_id)
-    update = {'$unset': {('location_progress.' + str(location)): None}}
+    update = {'$set': {('LocationProgress.' + str(location)): progress}}
     db_users.update_one({'_id': user_id}, update)

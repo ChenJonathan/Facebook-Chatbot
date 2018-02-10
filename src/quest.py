@@ -8,6 +8,7 @@ from mongo import *
 
 trivia_categories = list(range(9, 25)) + list(range(27, 31)) + [32]
 
+
 def set_quest_type(client, user, text, thread_id):
     user_id = user['_id']
     quest_type = text.lower()
@@ -18,6 +19,7 @@ def set_quest_type(client, user, text, thread_id):
         reply = 'Not a valid quest type.'
     client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
 
+
 def generate_quest(client, user, thread_id):
     if user['_id'] not in client.quest_type_record:
         client.quest_type_record[user['_id']] = 'vocab'
@@ -27,31 +29,33 @@ def generate_quest(client, user, thread_id):
     elif quest_type == 'trivia':
         _generate_trivia_quest(client, user, thread_id)
 
+
 def _generate_vocab_quest(client, user, thread_id):
     user_id = user['_id']
-    gold = user['gold']
+    gold = user['Gold']
     difficulty = 1 if gold < 0 else len(str(gold))
     indices = random.sample(range(0, len(terms)), difficulty + 1)
     correct = random.randint(0, difficulty)
     if random.random() > 0.5:
         quest = {
-            'question': definitions[indices[correct]],
-            'answers': [terms[index] for index in indices],
-            'correct': correct
+            'Question': definitions[indices[correct]],
+            'Answers': [terms[index] for index in indices],
+            'Correct': correct
         }
         client.quest_record[user_id] = quest
-        reply = user['name'] + ': Which word means "' + quest['question'] + '"?'
+        reply = user['Name'] + ': Which word means "' + quest['Question'] + '"?'
     else:
         quest = {
-            'question': terms[indices[correct]],
-            'answers': [definitions[index] for index in indices],
-            'correct': correct
+            'Question': terms[indices[correct]],
+            'Answers': [definitions[index] for index in indices],
+            'Correct': correct
         }
         client.quest_record[user_id] = quest
-        reply = user['name'] + ': What does "' + quest['question'] + '" mean?'
-    for i, answer in enumerate(quest['answers']):
-        reply += '\n' + str(i + 1) + '. ' + quest['answers'][i]
+        reply = user['Name'] + ': What does "' + quest['Question'] + '" mean?'
+    for i, answer in enumerate(quest['Answers']):
+        reply += '\n' + str(i + 1) + '. ' + quest['Answers'][i]
     client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
+
 
 def _generate_trivia_quest(client, user, thread_id):
     user_id = user['_id']
@@ -62,21 +66,22 @@ def _generate_trivia_quest(client, user, thread_id):
     correct = random.randint(0, len(answers))
     answers.insert(correct, unescape(trivia['correct_answer']))
     quest = {
-        'question': unescape(trivia['question']),
-        'answers': answers,
-        'correct': correct
+        'Question': unescape(trivia['question']),
+        'Answers': answers,
+        'Correct': correct
     }
     client.quest_record[user_id] = quest
-    reply = user['name'] + ': ' + quest['question']
-    for i, answer in enumerate(quest['answers']):
-        reply += '\n' + str(i + 1) + '. ' + quest['answers'][i]
+    reply = user['Name'] + ': ' + quest['Question']
+    for i, answer in enumerate(quest['Answers']):
+        reply += '\n' + str(i + 1) + '. ' + quest['Answers'][i]
     client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
+
 
 def complete_quest(client, user, text, thread_id):
     user_id = user['_id']
     quest = client.quest_record[user_id]
     quest_type = client.quest_type_record[user['_id']]
-    correct = quest['correct']
+    correct = quest['Correct']
     del client.quest_record[user_id]
     if text == str(correct + 1):
         if quest_type == 'vocab':
@@ -84,15 +89,15 @@ def complete_quest(client, user, text, thread_id):
         elif quest_type == 'trivia':
             delta = random.randint(30, 300)
         gold_add(user_id, delta)
-        reply = user['name'] + ' has gained ' + str(delta) + ' gold and is now at '
-        reply += str(user['gold'] + delta) + ' gold total!'
+        reply = user['Name'] + ' has gained ' + str(delta) + ' gold and is now at '
+        reply += str(user['Gold'] + delta) + ' gold total!'
     else:
         if quest_type == 'vocab':
             delta = random.randint(-200, -20)
         elif quest_type == 'trivia':
             delta = random.randint(-100, -10)
         gold_add(user_id, delta)
-        reply = user['name'] + ' has lost ' + str(-delta) + ' gold and is now at '
-        reply += str(user['gold'] + delta) + ' gold total. The correct answer was '
-        reply += '"' + quest['answers'][correct] + '".'
+        reply = user['Name'] + ' has lost ' + str(-delta) + ' gold and is now at '
+        reply += str(user['Gold'] + delta) + ' gold total. The correct answer was '
+        reply += '"' + quest['Answers'][correct] + '".'
     client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
