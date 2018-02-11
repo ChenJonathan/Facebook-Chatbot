@@ -1,9 +1,10 @@
 from fbchat.models import *
 from datetime import datetime
 
+from battle import complete_monster_quest
 from location import location_features
 from mongo import *
-from util import UserState
+from util import UserState, BattleState
 
 
 def loop(client):
@@ -26,3 +27,7 @@ def loop(client):
                 else:
                     reply += 'There are no services available here.'
                 client.send(Message(reply), thread_id=user_id)
+
+        elif state == UserState.Battle:
+            if details['Status'] == BattleState.Battle and now > details['EndTime']:
+                complete_monster_quest(client, user_from_id(user_id), None)

@@ -1,5 +1,4 @@
 from fbchat.models import *
-import math
 import random
 
 from data import random_beast

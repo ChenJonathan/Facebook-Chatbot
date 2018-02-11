@@ -1,9 +1,9 @@
 from fbchat.models import *
 from datetime import datetime
-import math
 import random
 import requests
 
+from battle import generate_battle
 from craft import generate_craft_info, craft_item
 from data import random_emoji
 from info import generate_user_info, generate_group_info
@@ -16,23 +16,26 @@ from util import *
 
 
 def check_busy(client, user, thread_id):
-    if user['_id'] not in client.travel_record:
+    user_id = user['_id']
+    if user_id not in client.user_states:
         return False
 
-    # Check if traveling has expired
-    record = client.travel_record[user['_id']]
+    state, details = client.user_states[user_id]
     now = datetime.now()
-    if now > record[1]:
-        location_set(user['_id'], record[0])
-        del client.travel_record[user['_id']]
-        return False
 
-    # Check travel time remaining
-    seconds = (record[1] - datetime.now()).total_seconds()
-    minutes, seconds = int(seconds // 60), int(seconds % 60)
-    reply = 'You\'re busy traveling to ' + record[0]
-    reply += ' (' + str(minutes) + ' min ' + str(seconds) + ' secs remaining).'
-    client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
+    # Check if user has finished traveling
+    if state == UserState.Travel:
+        seconds = (details['EndTime'] - datetime.now()).total_seconds()
+        minutes, seconds = int(seconds // 60), int(seconds % 60)
+        reply = 'You\'re busy traveling to ' + details['Destination']
+        reply += '. (' + str(minutes) + ' min ' + str(seconds) + ' secs remaining)'
+        client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
+
+    # Check if user is in battle
+    elif state == UserState.Battle:
+        reply = 'You\'re busy fighting a monster!'
+        client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
+
     return True
 
 
@@ -72,12 +75,12 @@ def run_user_command(client, author, command, text):
             line += 'Score: ' + str(calculate_score(user)) + '\n'
             line += 'Gold: ' + str(user['Gold']) + ' (+' + str(user['GoldFlow']) + '/hour)\n'
             line += 'Location: ' + user['Location']
-            if user['_id'] in client.travel_record:
-                record = client.travel_record[user['_id']]
-                minutes = math.ceil((record[1] - datetime.now()).total_seconds() / 60)
-                line += ' -> ' + record[0] + '\n'
-                line += '(' + str(minutes) + ' minute' + ('' if minutes == 1 else 's')
-                line += ' remaining)'
+            state, details = client.user_states.get(user['_id'], (UserState.Idle, {}))
+            if state == UserState.Travel:
+                seconds = (details['EndTime'] - datetime.now()).total_seconds()
+                minutes, seconds = int(seconds // 60), int(seconds % 60)
+                line += ' -> ' + details['Destination'] + '\n'
+                line += '(' + str(minutes) + ' min ' + str(seconds) + ' secs remaining)'
             reply.append(line)
         reply = '\n\n'.join(reply) if reply else 'No aliases set.'
         client.send(Message(reply), thread_id=author_id)
@@ -166,6 +169,11 @@ def run_group_command(client, author, command, text, thread_id):
             reply = 'You don\'t have permission to do this.'
         client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
 
+    elif command == 'battle':
+        if author_id != master_id:
+            return
+        generate_battle(client, author, thread_id)
+
     elif command == 'bully' or command == 'b':
         if len(text) == 0:
             user = client.fetchUserInfo(author_id)[author_id]
@@ -197,12 +205,12 @@ def run_group_command(client, author, command, text, thread_id):
         reply += 'Score: ' + str(calculate_score(user)) + '\n'
         reply += 'Gold: ' + str(user['Gold']) + ' (+' + str(user['GoldFlow']) + '/hour)\n'
         reply += 'Location: ' + user['Location']
-        if user['_id'] in client.travel_record:
-            record = client.travel_record[user['_id']]
-            minutes = math.ceil((record[1] - datetime.now()).total_seconds() / 60)
-            reply += ' -> ' + record[0] + '\n'
-            reply += '(' + str(minutes) + ' minute' + ('' if minutes == 1 else 's')
-            reply += ' remaining)'
+        state, details = client.user_states.get(user['_id'], (UserState.Idle, {}))
+        if state == UserState.Travel:
+            seconds = (details['EndTime'] - datetime.now()).total_seconds()
+            minutes, seconds = int(seconds // 60), int(seconds % 60)
+            reply += ' -> ' + details['Destination'] + '\n'
+            reply += '(' + str(minutes) + ' min ' + str(seconds) + ' secs remaining)'
         client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
 
     elif command == 'craft':
@@ -307,13 +315,13 @@ def run_group_command(client, author, command, text, thread_id):
                 if user['_id'] == master_id and author_id != master_id:
                     user = author
                 if location_names_reverse[user['Location']] == 0:
-                    location_set(user['_id'], 1)
-                    if user['_id'] in client.travel_record:
+                    location_set(user['_id'], location_names[1])
+                    if client.user_states.get(user['_id'], UserState.Idle)[0] == UserState.Travel:
                         del client.travel_record[user['_id']]
                     reply = user['Name'] + ' has been freed from jail.'
                 else:
-                    location_set(user['_id'], 0)
-                    if user['_id'] in client.travel_record:
+                    location_set(user['_id'], location_names[0])
+                    if client.user_states.get(user['_id'], UserState.Idle)[0] == UserState.Travel:
                         del client.travel_record[user['_id']]
                     reply = user['Name'] + ' has been sent to jail!'
         else:
@@ -321,6 +329,8 @@ def run_group_command(client, author, command, text, thread_id):
         client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
 
     elif command == 'location' or command == 'l':
+        if check_busy(client, author, thread_id):
+            return
         features = location_features(author['Location'])
         reply = 'Welcome to ' + author['Location'] + '! '
         if features:
@@ -372,9 +382,9 @@ def run_group_command(client, author, command, text, thread_id):
         elif location_names_reverse[author['Location']] == 0:
             reply = 'There are no quests to be found here.'
         else:
-            quest = generate_quest(author)
+            quest = generate_quest(author['Quest']['Type'])
             client.quest_record[author_id] = quest
-            reply = quest['Question']
+            reply = author['Name'] + ': ' + quest['Question']
         client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
 
     elif command == 'random':

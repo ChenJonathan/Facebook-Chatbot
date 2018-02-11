@@ -1,7 +1,7 @@
 from fbchat.models import *
 from datetime import datetime, timedelta
 
-from util import location_names, location_names_reverse, query_location
+from util import UserState, location_names, location_names_reverse, query_location
 
 edges = [[-1 for _ in range(len(location_names))] for _ in range(len(location_names))]
 
@@ -82,7 +82,9 @@ def travel_to_location(client, user, text, thread_id):
     elif edges[current][location] < 0 or progress.get(location_names[location], 0) < 1:
         reply = 'You cannot travel there.'
     else:
-        record = (location_names[location], datetime.now() + timedelta(minutes=edges[current][location]))
-        client.travel_record[user['_id']] = record
+        client.user_states[user['_id']] = (UserState.Travel, {
+            'Destination': location_names[location],
+            'EndTime': datetime.now() + timedelta(minutes=edges[current][location])
+        })
         reply = user['Name'] + ' is now traveling to ' + location_names[location] + '.'
     client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)

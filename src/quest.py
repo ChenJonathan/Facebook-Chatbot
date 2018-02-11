@@ -20,27 +20,26 @@ def set_quest_type(user, text):
     return reply
 
 
-def generate_quest(user):
-    quest_type = user['Quest']['Type']
+def generate_quest(quest_type):
     if quest_type == 'Vocab':
-        gold = user['Gold']
-        return _generate_vocab_quest(user['Name'], (1 if gold < 0 else len(str(gold))) + 1)
+        return _generate_vocab_quest(5)
     elif quest_type == 'Trivia':
-        return _generate_trivia_quest(user['Name'])
+        return _generate_trivia_quest()
+    return None
 
 
-def _generate_vocab_quest(name, choices):
+def _generate_vocab_quest(choices):
     indices = random.sample(range(0, len(terms)), choices)
     correct = random.randint(0, choices - 1)
     if random.random() > 0.5:
         quest = {
-            'Question': name + ': Which word means "' + definitions[indices[correct]] + '"?',
+            'Question': 'Which word means "' + definitions[indices[correct]] + '"?',
             'Answers': [terms[index] for index in indices],
             'Correct': correct
         }
     else:
         quest = {
-            'Question': name + ': What does "' + terms[indices[correct]] + '" mean?',
+            'Question': 'What does "' + terms[indices[correct]] + '" mean?',
             'Answers': [definitions[index] for index in indices],
             'Correct': correct
         }
@@ -49,14 +48,14 @@ def _generate_vocab_quest(name, choices):
     return quest
 
 
-def _generate_trivia_quest(name):
+def _generate_trivia_quest():
     category = random.choice(trivia_categories)
     url = 'https://opentdb.com/api.php?amount=1&category=' + str(category) + '&type=multiple'
     trivia = requests.get(url).json()['results'][0]
     answers = [unescape(answer) for answer in trivia['incorrect_answers']]
     correct = random.randint(0, len(answers))
     answers.insert(correct, unescape(trivia['correct_answer']))
-    reply = name + ': ' + unescape(trivia['question'])
+    reply = unescape(trivia['question'])
     for i, answer in enumerate(answers):
         reply += '\n' + str(i + 1) + '. ' + answers[i]
     return {

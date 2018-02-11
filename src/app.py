@@ -2,17 +2,16 @@ from fbchat import Client
 from fbchat.models import *
 from flask import Flask
 from base64 import b64decode
-from datetime import datetime
 import cleverbot
 import threading
 
+from battle import generate_battle, begin_battle, cancel_battle, complete_monster_quest
 from clock import set_timer
 from commands import run_group_command, run_user_command
-from location import location_features
 from mongo import *
 from polling import loop
 from quest import complete_quest
-from util import master_priority, master_id, location_names
+from util import master_priority, master_id, UserState, BattleState
 
 cb = cleverbot.Cleverbot(os.environ.get('CLEVERBOT_KEY'))
 
@@ -25,9 +24,9 @@ class ChatBot(Client):
         priority_set(self.uid, master_priority - 1)
 
         self.quest_record = {}
-        self.travel_record = {}
         self.explore_record = set()
         self.message_record = {}
+        self.user_health = {}
         self.user_states = {}
 
         self.defines = {}
@@ -72,23 +71,6 @@ class ChatBot(Client):
         if author_id == self.uid:
             return
 
-        # Notify any users that have finished traveling
-        now = datetime.now()
-        for user_id, record in list(self.travel_record.items()):
-            if now > record[1]:
-                location_set(user_id, record[0])
-                del self.travel_record[user_id]
-                user = user_from_id(user_id)
-                features = location_features(user['Location'])
-                reply = 'You have reached ' + user['Location'] + '! '
-                if features:
-                    reply += 'The following services are available here:'
-                    for feature in features:
-                        reply += '\n-> ' + feature
-                else:
-                    reply += 'There are no services available here.'
-                self.send(Message(reply), thread_id=user_id)
-
         # Check for chat commands
         if message_object.text and message_object.text[0] == '!':
             command, text, *_ = message_object.text.split(' ', 1) + ['']
@@ -103,6 +85,19 @@ class ChatBot(Client):
             mentions.append(mention.thread_id)
 
         if thread_type == ThreadType.USER:
+
+            # Handle battle messages
+            state, details = self.user_states.get(author_id, (UserState.Idle, {}))
+            if state == UserState.Battle:
+                author = user_from_id(author_id)
+                if details['Status'] == BattleState.Preparation:
+                    if command == 'ready':
+                        begin_battle(self, author)
+                    elif command == 'flee':
+                        cancel_battle(self, author)
+                elif details['Status'] == BattleState.Battle:
+                    complete_monster_quest(self, author, text)
+                return
 
             # Forward direct messages
             if thread_id != master_id:
