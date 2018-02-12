@@ -1,3 +1,4 @@
+import json
 import random
 
 # Beasts
@@ -8,6 +9,10 @@ with open('./data/beasts.txt', 'r') as data:
     for line in data.readlines():
         line = line.split(',')
         beasts.append((line[0].strip(), int(line[1]), int(line[2])))
+
+# Crafting
+
+craft_data = json.load(open('./data/craft.json', 'r'))
 
 # Emojis
 
@@ -33,6 +38,10 @@ emojis = []
 for r in EMOJI_RANGES_UNICODE:
     emojis += range(r[0], r[-1])
 
+# Item drops
+
+item_drop_data = json.load(open('./data/drops.json', 'r'))
+
 # Vocab
 
 terms = []
@@ -45,6 +54,10 @@ with open('./data/vocab.txt', 'r') as data:
         definition = definition[0].upper() + definition[1:]
         terms.append(term.strip())
         definitions.append(definition.strip())
+
+# Monsters
+
+monster_data = json.load(open('./data/monsters.json', 'r'))
 
 
 # Methods

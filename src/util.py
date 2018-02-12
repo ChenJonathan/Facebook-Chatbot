@@ -1,4 +1,5 @@
 from enum import Enum
+import math
 
 priority_names = ['Peasant', 'User', 'Mod', 'Admin', 'Master']
 
@@ -14,7 +15,9 @@ class UserState(Enum):
 
 class BattleState(Enum):
     Preparation = 0
-    Battle = 1
+    Delay = 1
+    Quest = 2
+
 
 location_names = ['Maple Island', 'Lith Harbor', 'Henesys', 'Ellinia', 'Perion', 'Kerning City']
 location_names += ['Sleepywood', 'Cursed Sanctuary', 'New Leaf City', 'Krakian Jungle', 'Bigger Ben']
@@ -44,6 +47,10 @@ def query_location(query):
         if name.lower().startswith(query):
             return i
     return None
+
+
+def level_to_stat_scale(level):
+    return (math.sqrt(level + 64) - 7) * 10
 
 
 def calculate_score(user):

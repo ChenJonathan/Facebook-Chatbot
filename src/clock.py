@@ -12,6 +12,10 @@ def apply_gold_rates():
         gold_add(user['_id'], user['GoldFlow'])
 
 
+def restore_health(client):
+    client.user_health.clear()
+
+
 def manage_subscriptions(client):
     colors = list(ThreadColor)
     for group_id, subscriptions in subscription_get_all().items():
@@ -31,6 +35,7 @@ def manage_subscriptions(client):
 def reset_timer(client):
     client.explore_record.clear()
     apply_gold_rates()
+    restore_health(client)
     if datetime.today().hour == 0:
         manage_subscriptions(client)
 

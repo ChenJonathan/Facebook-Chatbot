@@ -1,7 +1,7 @@
 from fbchat.models import *
 from datetime import datetime
 
-from battle import complete_monster_quest
+from battle import begin_monster_quest, complete_monster_quest
 from location import location_features
 from mongo import *
 from util import UserState, BattleState
@@ -29,5 +29,9 @@ def loop(client):
                 client.send(Message(reply), thread_id=user_id)
 
         elif state == UserState.Battle:
-            if details['Status'] == BattleState.Battle and now > details['EndTime']:
-                complete_monster_quest(client, user_from_id(user_id), None)
+            if details['Status'] == BattleState.Delay:
+                if now > details['EndTime']:
+                    begin_monster_quest(client, user_from_id(user_id))
+            elif details['Status'] == BattleState.Quest:
+                if now > details['EndTime']:
+                    complete_monster_quest(client, user_from_id(user_id), None)

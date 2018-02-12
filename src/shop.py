@@ -6,12 +6,16 @@ from mongo import *
 
 
 def generate_shop_info(client, user, thread_id):
-    reply = 'Shop information has been sent to you in private chat.'
+    reply = 'Shop information has been sent to you. Check your private messages (or message requests).'
     client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
     reply = ['<<The Wong Shoppe>>']
     reply.append('Buy things with "!shop <item>" in a group chat.\n')
     reply.append('1. 0100 gold: Charity donation')
-    reply.append('2. 2500 gold: Random hunting pet')
+    reply.append('-> Donates some gold to your local charity.\n')
+    reply.append('2. 1000 gold: Life Elixir')
+    reply.append('-> Restores your life to its maximum.\n')
+    reply.append('3. 2500 gold: Hunting pet')
+    reply.append('-> Hunts monsters for you, granting some gold every hour.')
     reply = '\n'.join(reply)
     client.send(Message(reply), thread_id=user['_id'])
 
@@ -22,7 +26,7 @@ def shop_purchase(client, user, slot, thread_id):
     except:
         reply = 'Invalid slot number.'
     else:
-        gold = gold_get(user['_id'])
+        gold = user['Gold']
         if slot == 0:
             if gold >= 100:
                 gold_add(user['_id'], -100)
@@ -31,9 +35,18 @@ def shop_purchase(client, user, slot, thread_id):
             else:
                 reply = 'You can\'t afford that.'
         elif slot == 1:
+            if user['_id'] not in client.user_health or client.user_health[user['_id']] == user['Stats']['HP']:
+                reply = 'You already have full health.'
+            elif gold >= 1000:
+                gold_add(user['_id'], -1000)
+                _life_elixir(client, user, thread_id)
+                return
+            else:
+                reply = 'You can\'t afford that.'
+        elif slot == 2:
             if gold >= 2500:
                 gold_add(user['_id'], -2500)
-                _random_hunting_pet(client, user, thread_id)
+                _hunting_pet(client, user, thread_id)
                 return
             else:
                 reply = 'You can\'t afford that.'
@@ -52,7 +65,13 @@ def _charity_donation(client, thread_id):
     client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
 
 
-def _random_hunting_pet(client, user, thread_id):
+def _life_elixir(client, user, thread_id):
+    client.user_health[user['_id']] = user['Stats']['HP']
+    reply = 'Your health has been restored to its maximum!'
+    client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
+
+
+def _hunting_pet(client, user, thread_id):
     beast = random_beast()
     delta_rate = beast[1] * beast[2]
     gold_rate_add(user['_id'], delta_rate)

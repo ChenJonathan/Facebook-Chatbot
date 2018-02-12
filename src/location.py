@@ -1,7 +1,7 @@
 from fbchat.models import *
 import random
 
-from data import random_beast
+from data import item_drop_data, random_beast
 from mongo import *
 from travel import edges
 from util import location_names, location_names_reverse
@@ -29,88 +29,22 @@ def explore_location(client, user, thread_id):
     # Apply location specific modifiers
     gold_multiplier = 1
     beast_multiplier = 1
-    item_drop_rates = {}
     if location == 0:
         gold_multiplier = 0
         beast_multiplier = 0
     elif location == 1:
         gold_multiplier = 0.5
-        item_drop_rates['Bottled Light'] = 0.1
     elif location == 2:
         beast_multiplier = 3
-        item_drop_rates['Wild Essence'] = 0.7
-    elif location == 3:
-        item_drop_rates['Arcane Essence'] = 0.7
-        item_drop_rates['Crystal Shard'] = 0.1
-        item_drop_rates['Breathing Wood'] = 0.5
-    elif location == 4:
-        item_drop_rates['Brutal Essence'] = 0.7
-        item_drop_rates['Drop of Earth'] = 0.2
-        item_drop_rates['Iron Shard'] = 0.5
-    elif location == 5:
-        item_drop_rates['Void Essence'] = 0.7
-        item_drop_rates['Bottled Darkness'] = 0.1
-    elif location == 6:
-        beast_multiplier = 0
-        item_drop_rates['Breathing Wood'] = 0.5
-        item_drop_rates['Shifting Vines'] = 0.2
-    elif location == 7:
-        beast_multiplier = 0
-        item_drop_rates['Arcane Essence'] = 0.3
-        item_drop_rates['Void Essence'] = 0.3
-        item_drop_rates['Bottled Darkness'] = 0.1
-        item_drop_rates['Touch of Death'] = 0.05
-        item_drop_rates['Warped Bones'] = 0.1
     elif location == 8:
         gold_multiplier = 2
         beast_multiplier = 0
     elif location == 9:
         beast_multiplier = 5
-        item_drop_rates['Wild Essence'] = 0.4
-        item_drop_rates['Breathing Wood'] = 0.5
-        item_drop_rates['Shifting Vines'] = 0.5
-    elif location == 10:
-        item_drop_rates['Howling Wind'] = 0.1
-        item_drop_rates['Clockwork Shard'] = 0.6
-        item_drop_rates['Time Shard'] = 0.05
-    elif location == 11:
-        pass
-    elif location == 12:
-        pass
-    elif location == 13:
-        pass
-    elif location == 14:
-        pass
-    elif location == 15:
-        pass
-    elif location == 16:
-        pass
-    elif location == 17:
-        pass
-    elif location == 18:
-        pass
-    elif location == 19:
-        pass
-    elif location == 20:
-        pass
-    elif location == 21:
-        pass
-    elif location == 22:
-        pass
-    elif location == 23:
-        pass
-    elif location == 24:
-        pass
-    elif location == 25:
-        pass
-    elif location == 26:
-        pass
-    elif location == 27:
-        pass
 
     # Calculate item drops
     item_drops = {}
-    for item, rate in item_drop_rates.items():
+    for item, rate in item_drop_data.get(user['Location'], {}).items():
         trials = []
         for _ in range(9):
             amount = 0
@@ -128,6 +62,7 @@ def explore_location(client, user, thread_id):
 
     # Check for discovered hunting pet
     beast = None
+    delta_rate = 0
     if seed / 100 * beast_multiplier > random.random():
         beast = random_beast()
         delta_rate = beast[1] * beast[2]

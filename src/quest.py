@@ -1,5 +1,6 @@
 from fbchat.models import *
 from html import unescape
+import math
 import random
 import requests
 import string
@@ -71,20 +72,23 @@ def complete_quest(client, user, text, thread_id):
     quest = client.quest_record[user_id]
     correct = quest['Correct']
     del client.quest_record[user_id]
+    delta = math.sqrt(user['Stats']['Level'] + 64) - 7
     if text == str(correct + 1):
         if quest_type == 'Vocab':
-            delta = random.randint(20, 200)
+            delta *= random.uniform(20, 200)
         elif quest_type == 'Trivia':
-            delta = random.randint(30, 300)
+            delta *= random.uniform(30, 300)
+        delta = int(delta)
         gold_add(user_id, delta)
         quest_stat_track(user_id, quest_type, True)
         reply = user['Name'] + ' has gained ' + str(delta) + ' gold and is now at '
         reply += str(user['Gold'] + delta) + ' gold total!'
     else:
         if quest_type == 'Vocab':
-            delta = random.randint(-200, -20)
+            delta *= random.uniform(-200, -20)
         elif quest_type == 'Trivia':
-            delta = random.randint(-100, -10)
+            delta *= random.uniform(-100, -10)
+        delta = int(delta)
         gold_add(user_id, delta)
         quest_stat_track(user_id, quest_type, False)
         reply = user['Name'] + ' has lost ' + str(-delta) + ' gold and is now at '

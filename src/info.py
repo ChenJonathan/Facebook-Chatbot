@@ -101,6 +101,7 @@ def generate_group_info(client, text, author, thread_id):
             reply += '!alias: Alias assignment\n'
             reply += '!perm: Change user priority\n'
         reply += '\n<Game Commands>\n'
+        reply += '!battle: Fight monsters\n'
         reply += '!check: See user statistics\n'
         reply += '!craft: Craft items with materials\n'
         reply += '!explore: Gather materials\n'
@@ -128,6 +129,13 @@ def generate_group_info(client, text, author, thread_id):
         reply += 'Assigns an alias to a user (found using <search_string>) for '
         reply += 'use in other private chat commands. Aliases must be a single word. '
         reply += 'Only usable by ' + priority_names[master_priority] + ' priority.'
+
+    elif text == 'battle':
+        reply = '<<Battle>>\n'
+        reply += 'Usage: "!battle"\n'
+        reply += 'Generates a random monster for you to fight. The monster\'s strength is based '
+        reply += 'on the current location and your level. Defeating monsters will reward you with '
+        reply += 'experience and gold. Quest and battle gold rewards scale up with your level.'
 
     elif text == 'bully':
         reply = '<<Bully>>\n'
@@ -174,6 +182,9 @@ def generate_group_info(client, text, author, thread_id):
         reply = '<<Equip>>\n'
         reply += 'Usage: "!equip"\n'
         reply += 'Lists your current equipment information.'
+        reply += 'Usage: "!equip <search_string>"\n'
+        reply += 'Example: "!equip Raphael"\n'
+        reply += 'Lists equipment information on the user designated by <search_string>.'
 
     elif text == 'give':
         reply = '<<Give>>\n'
@@ -184,7 +195,7 @@ def generate_group_info(client, text, author, thread_id):
     elif text == 'help':
         reply = '<<Help>>\n'
         reply += 'Usage: "!help"\n'
-        reply += 'Lists all the group commands that you can use. Differs per person.\n\n'
+        reply += 'Lists all the group commands that you can use.\n\n'
         reply += 'Usage: "!help <command>"\n'
         reply += 'Example: "!help quest"\n'
         reply += 'Explains the syntax and effects of the provided group <command>.'
@@ -229,7 +240,8 @@ def generate_group_info(client, text, author, thread_id):
         reply += 'Usage: "!quest"\n'
         reply += 'Generates a multiple choice question for you. You can answer by '
         reply += 'replying with either the answer itself or the choice number. '
-        reply += 'Correct responses increase gold while incorrect responses decrease it.\n\n'
+        reply += 'Correct responses will reward gold but incorrect ones will cost you. '
+        reply += 'The amount of gold scales up with your level.\n\n'
         reply += 'Usage: "!quest <type>"\n'
         reply += 'Example: "!quest trivia"\n'
         reply += 'Sets the type of multiple choice question that will be generated '

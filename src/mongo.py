@@ -1,4 +1,4 @@
-from util import location_names
+from util import location_names, level_to_stat_scale
 
 import os
 import pymongo
@@ -80,10 +80,12 @@ def user_try_add(user_id):
             'Location': 'Lith Harbor',
             'LocationProgress': {location_names[i]: 1 for i in range(0, 6)},
             'Stats': {
+                'Level': 1,
+                'EXP': 0,
+                'HP': 100,
                 'ATK': 10,
                 'DEF': 10,
-                'SPD': 10,
-                'HP': 100
+                'SPD': 10
             },
             'Equipment': {
                 'Weapon': {
@@ -157,11 +159,6 @@ def priority_set(user_id, priority):
 
 # Gold methods
 
-def gold_get(user_id):
-    user_try_add(user_id)
-    return db_users.find_one(user_id)['Gold']
-
-
 def gold_add(user_id, gold):
     user_try_add(user_id)
     update = {'$inc': {'Gold': gold}}
@@ -185,6 +182,26 @@ def location_set(user_id, location):
 def location_progress_set(user_id, location, progress):
     user_try_add(user_id)
     update = {'$set': {('LocationProgress.' + str(location)): progress}}
+    db_users.update_one({'_id': user_id}, update)
+
+
+# Level methods
+
+def level_set(user_id, level):
+    value = int(level_to_stat_scale(level))
+    user_try_add(user_id)
+    update = {'$set': {
+        'Stats.Level': level,
+        'Stats.ATK': value,
+        'Stats.DEF': value,
+        'Stats.SPD': value
+    }}
+    db_users.update_one({'_id': user_id}, update)
+
+
+def experience_set(user_id, experience):
+    user_try_add(user_id)
+    update = {'$set': {'Stats.EXP': experience}}
     db_users.update_one({'_id': user_id}, update)
 
 

@@ -1,0 +1,172 @@
+{
+    "Lith Harbor": [
+        {
+            "Name": "Blue Snail",
+            "Level": [1, 5],
+            "ATK": 1.0,
+            "DEF": 1.3,
+            "SPD": 0.7,
+            "HP":  1.0
+        },
+        {
+            "Name": "Red Snail",
+            "Level": [1, 5],
+            "ATK": 1.0,
+            "DEF": 1.3,
+            "SPD": 0.7,
+            "HP":  1.0
+        }
+    ],
+    "Henesys": [
+        {
+            "Name": "Orange Mushroom",
+            "Level": [1, 10],
+            "ATK": 1.0,
+            "DEF": 0.7,
+            "SPD": 1.0,
+            "HP":  1.3
+        },
+        {
+            "Name": "Iron Hog",
+            "Level": [1, 15],
+            "ATK": 0.8,
+            "DEF": 1.4,
+            "SPD": 1.0,
+            "HP":  0.8
+        }
+    ],
+    "Ellinia": [
+        {
+            "Name": "Slime",
+            "Level": [1, 10],
+            "ATK": 1.0,
+            "DEF": 0.6,
+            "SPD": 1.0,
+            "HP":  1.4
+        },
+        {
+            "Name": "Lupin",
+            "Level": [1, 15],
+            "ATK": 1.2,
+            "DEF": 0.8,
+            "SPD": 1.2,
+            "HP":  0.8
+        }
+    ],
+    "Perion": [
+        {
+            "Name": "Axe Stump",
+            "Level": [1, 10],
+            "ATK": 0.9,
+            "DEF": 1.2,
+            "SPD": 0.9,
+            "HP":  1.0
+        },
+        {
+            "Name": "Wild Boar",
+            "Level": [1, 15],
+            "ATK": 1.0,
+            "DEF": 0.7,
+            "SPD": 1.1,
+            "HP":  1.2
+        }
+    ],
+    "Kerning City": [
+        {
+            "Name": "Stirge",
+            "Level": [1, 10],
+            "ATK": 0.9,
+            "DEF": 0.9,
+            "SPD": 1.4,
+            "HP":  0.8
+        },
+        {
+            "Name": "Wraith",
+            "Level": [1, 15],
+            "ATK": 0.8,
+            "DEF": 1.3,
+            "SPD": 1.0,
+            "HP":  0.9
+        }
+    ],
+    "Sleepywood": [
+        {
+            "Name": "Zombie Mushroom",
+            "Level": [5, 15],
+            "ATK": 1.0,
+            "DEF": 0.7,
+            "SPD": 1.0,
+            "HP":  1.3
+        },
+        {
+            "Name": "Dark Drake",
+            "Level": [5, 20],
+            "ATK": 1.2,
+            "DEF": 1.0,
+            "SPD": 0.8,
+            "HP":  1.0
+        }
+    ],
+    "Cursed Sanctuary": [
+        {
+            "Name": "Tauromacis",
+            "Level": [10, 25],
+            "ATK": 1.0,
+            "DEF": 1.0,
+            "SPD": 0.8,
+            "HP":  1.2
+        },
+        {
+            "Name": "Taurospear",
+            "Level": [10, 25],
+            "ATK": 1.2,
+            "DEF": 0.8,
+            "SPD": 0.8,
+            "HP":  1.2
+        }
+    ],
+    "Krakian Jungle": [
+        {
+            "Name": "Electrophant",
+            "Level": [5, 25],
+            "ATK": 1.0,
+            "DEF": 1.0,
+            "SPD": 0.8,
+            "HP":  1.2
+        },
+        {
+            "Name": "Mighty Maple Eater",
+            "Level": [5, 25],
+            "ATK": 1.2,
+            "DEF": 0.8,
+            "SPD": 0.8,
+            "HP":  1.2
+        }
+    ],
+    "Bigger Ben": [
+        {
+            "Name": "Killa Bee",
+            "Level": [10, 25],
+            "ATK": 0.8,
+            "DEF": 0.9,
+            "SPD": 1.4,
+            "HP":  0.9
+        },
+        {
+            "Name": "Electrophant",
+            "Level": [10, 25],
+            "ATK": 1.0,
+            "DEF": 1.0,
+            "SPD": 0.8,
+            "HP":  1.2
+        },
+        {
+            "Name": "Wolf Spider",
+            "Level": [10, 25],
+            "ATK": 1.2,
+            "DEF": 0.8,
+            "SPD": 1.2,
+            "HP":  0.8
+        }
+    ]
+}

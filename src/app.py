@@ -5,7 +5,7 @@ from base64 import b64decode
 import cleverbot
 import threading
 
-from battle import generate_battle, begin_battle, cancel_battle, complete_monster_quest
+from battle import begin_battle, cancel_battle, complete_monster_quest
 from clock import set_timer
 from commands import run_group_command, run_user_command
 from mongo import *
@@ -90,12 +90,12 @@ class ChatBot(Client):
             state, details = self.user_states.get(author_id, (UserState.Idle, {}))
             if state == UserState.Battle:
                 author = user_from_id(author_id)
-                if details['Status'] == BattleState.Preparation:
-                    if command == 'ready':
+                if command == 'flee' or command == 'f':
+                    cancel_battle(self, author)
+                elif details['Status'] == BattleState.Preparation:
+                    if command == 'ready' or command == 'r':
                         begin_battle(self, author)
-                    elif command == 'flee':
-                        cancel_battle(self, author)
-                elif details['Status'] == BattleState.Battle:
+                elif details['Status'] == BattleState.Quest:
                     complete_monster_quest(self, author, text)
                 return
 

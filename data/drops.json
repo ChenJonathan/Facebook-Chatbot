@@ -1,0 +1,43 @@
+{
+    "Lith Harbor": {
+        "Bottled Light": 0.1
+    },
+    "Henesys": {
+        "Wild Essence": 0.7
+    },
+    "Ellinia": {
+        "Arcane Essence": 0.7,
+        "Crystal Shard": 0.1,
+        "Breathing Wood": 0.5
+    },
+    "Perion": {
+        "Brutal Essence": 0.7,
+        "Drop of Earth": 0.2,
+        "Iron Shard": 0.5
+    },
+    "Kerning City": {
+        "Void Essence": 0.7,
+        "Bottled Darkness": 0.1
+    },
+    "Sleepywood": {
+        "Breathing Wood": 0.5,
+        "Shifting Vines": 0.2
+    },
+    "Cursed Sanctuary": {
+        "Arcane Essence": 0.3,
+        "Void Essence": 0.3,
+        "Bottled Darkness": 0.1,
+        "Touch of Death": 0.05,
+        "Warped Bones": 0.1
+    },
+    "Krakian Jungle": {
+        "Wild Essence": 0.4,
+        "Breathing Wood": 0.5,
+        "Shifting Vines": 0.5
+    },
+    "Bigger Ben": {
+        "Howling Wind": 0.1,
+        "Clockwork Shard": 0.6,
+        "Time Shard": 0.05
+    }
+}
