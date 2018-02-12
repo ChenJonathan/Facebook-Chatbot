@@ -135,12 +135,14 @@ def run_group_command(client, author, command, text, thread_id):
         client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
 
     elif command == 'battle' or command == 'b':
-        if client.user_health.get(author_id, author['Stats']['HP']) > 0:
-            generate_battle(client, author, thread_id)
-        else:
-            reply = 'You don\'t have any health left! Wait until the next hour or '
+        if _check_busy(client, author, thread_id):
+            return
+        elif client.user_health.get(author_id, author['Stats']['HP']) <= 0:
+            reply = 'You\'re on the brink of death! Wait until the next hour or '
             reply += 'buy a life elixir from the shop to restore your health.'
             client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
+        else:
+            generate_battle(client, author, thread_id)
 
     elif command == 'bully':
         if len(text) == 0:
@@ -432,7 +434,8 @@ def _check_busy(client, user, thread_id):
 
     # Check if user is in battle
     elif state == UserState.Battle:
-        reply = 'You\'re busy fighting a monster!'
+        reply = 'You\'re busy fighting a level ' + str(details['Monster']['Level'])
+        reply += ' ' + details['Monster']['Name'] + '!'
         client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
 
     return True

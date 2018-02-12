@@ -135,7 +135,8 @@ def generate_group_info(client, text, author, thread_id):
         reply += 'Usage: "!battle"\n'
         reply += 'Generates a random monster for you to fight. The monster\'s strength is based '
         reply += 'on the current location and your level. Defeating monsters will reward you with '
-        reply += 'experience and gold. Quest and battle gold rewards scale up with your level.'
+        reply += 'experience and gold. Quest and battle gold rewards scale up with your level. '
+        reply += 'Health is restored fully every hour'
 
     elif text == 'bully':
         reply = '<<Bully>>\n'

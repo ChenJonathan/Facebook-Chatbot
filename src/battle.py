@@ -91,7 +91,7 @@ def complete_battle(client, user, victory):
         reply = user['Name'] + ' has emerged victorious over the ' + monster['Name'] + ' and has received ' + \
                 str(delta_experience) + ' experience and ' + str(delta_gold) + ' gold.'
         if delta_level:
-            reply += user['Name'] + ' has reached level ' + str(user['Stats']['Level'] + delta_level) + '!'
+            reply += ' ' + user['Name'] + ' has reached level ' + str(user['Stats']['Level'] + delta_level) + '!'
         client.send(Message(reply), thread_id=details['ThreadID'], thread_type=ThreadType.GROUP)
     else:
         reply = 'You have lost the battle.'

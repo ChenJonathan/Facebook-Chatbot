@@ -12,7 +12,7 @@ def generate_shop_info(client, user, thread_id):
     reply.append('Buy things with "!shop <item>" in a group chat.\n')
     reply.append('1. 0100 gold: Charity donation')
     reply.append('-> Donates some gold to your local charity.\n')
-    reply.append('2. 1000 gold: Life Elixir')
+    reply.append('2. 0500 gold: Life Elixir')
     reply.append('-> Restores your life to its maximum.\n')
     reply.append('3. 2500 gold: Hunting pet')
     reply.append('-> Hunts monsters for you, granting some gold every hour.')
@@ -37,8 +37,8 @@ def shop_purchase(client, user, slot, thread_id):
         elif slot == 1:
             if user['_id'] not in client.user_health or client.user_health[user['_id']] == user['Stats']['HP']:
                 reply = 'You already have full health.'
-            elif gold >= 1000:
-                gold_add(user['_id'], -1000)
+            elif gold >= 500:
+                gold_add(user['_id'], -500)
                 _life_elixir(client, user, thread_id)
                 return
             else:
