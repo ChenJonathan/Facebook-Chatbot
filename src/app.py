@@ -175,7 +175,7 @@ def index():
     return 'Welcome!'
 
 
-client = ChatBot('jonathanchen1025@gmail.com', b64decode(os.environ.get('PASSWORD')))
+client = ChatBot('Avenlokh@gmail.com', b64decode(os.environ.get('PASSWORD')))
 
 
 class ServerThread(threading.Thread):
@@ -196,7 +196,10 @@ class ActiveThread(threading.Thread):
 
     def run(self):
         while True:
-            loop(client)
+            try:
+                loop(client)
+            except Exception as error:
+                client.send(Message('Error: ' + str(error)), thread_id=master_id)
 
 
 ServerThread().start()

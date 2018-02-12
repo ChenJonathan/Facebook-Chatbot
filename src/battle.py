@@ -193,5 +193,5 @@ def _calculate_experience(user_level, monster_level):
 
 
 def _calculate_gold(monster_level):
-    average = int((math.sqrt(monster_level + 64) - 7) * 400)
-    return int(average * random.uniform(0.8, 1.2))
+    gold = int((math.sqrt(monster_level + 64) - 7) * 400)
+    return int(gold * random.uniform(0.8, 1.2))

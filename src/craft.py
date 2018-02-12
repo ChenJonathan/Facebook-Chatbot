@@ -29,7 +29,7 @@ def craft_item(client, user, slot, thread_id):
     try:
         slot = int(slot) - 1
         item_list = craft_data[user['Location']]
-        assert 0 >= slot < len(item_list)
+        assert 0 <= slot < len(item_list)
     except:
         reply = 'Invalid slot number.'
     else:
