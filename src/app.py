@@ -205,7 +205,7 @@ class ActiveThread(threading.Thread):
             try:
                 loop(client)
             except:
-                client.send(Message('Error: ' + str(traceback.format_exc())), thread_id=master_id)
+                client.send(Message(traceback.format_exc()), thread_id=master_id)
 
 
 ServerThread().start()

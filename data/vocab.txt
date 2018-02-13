@@ -335,7 +335,7 @@ forbearance:patience
 forestall:to prevent; delay
 formidable:menacing; threatening
 forswear:renounce; repudiate
-founder:to sink; fail; colapse
+founder:to sink; fail; collapse
 fracas:a loud quarrel; brawl
 fractious:quarrelsome; unruly; rebellious
 fresco:a painting done on plaster

@@ -33,7 +33,7 @@ def generate_battle(client, user, thread_id):
         lower_bound = max(user_level - 4, monster['Level'][0])
         upper_bound = min(user_level + 4, monster['Level'][1])
         monster_level = random.randint(lower_bound, upper_bound)
-    stat_scale = level_to_stat_scale(monster_level) * (1 + monster_level / 20)
+    stat_scale = level_to_stat_scale(monster_level) * (1 + (monster_level - 5) / 10)
     monster['Level'] = monster_level
     monster['ATK'] = int(monster['ATK'] * stat_scale)
     monster['DEF'] = int(monster['DEF'] * stat_scale)
