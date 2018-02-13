@@ -4,16 +4,16 @@
             "Name": "Blue Snail",
             "Level": [1, 5],
             "ATK": 1.0,
-            "DEF": 1.3,
-            "SPD": 0.7,
+            "DEF": 1.4,
+            "SPD": 0.6,
             "HP":  1.0
         },
         {
             "Name": "Red Snail",
             "Level": [1, 5],
             "ATK": 1.0,
-            "DEF": 1.3,
-            "SPD": 0.7,
+            "DEF": 1.4,
+            "SPD": 0.6,
             "HP":  1.0
         }
     ],
@@ -22,17 +22,17 @@
             "Name": "Orange Mushroom",
             "Level": [1, 10],
             "ATK": 1.0,
-            "DEF": 0.7,
+            "DEF": 0.6,
             "SPD": 1.0,
-            "HP":  1.3
+            "HP":  1.4
         },
         {
             "Name": "Iron Hog",
             "Level": [1, 15],
             "ATK": 0.8,
-            "DEF": 1.4,
+            "DEF": 1.5,
             "SPD": 1.0,
-            "HP":  0.8
+            "HP":  0.7
         }
     ],
     "Ellinia": [
@@ -40,17 +40,17 @@
             "Name": "Slime",
             "Level": [1, 10],
             "ATK": 1.0,
-            "DEF": 0.6,
+            "DEF": 0.5,
             "SPD": 1.0,
-            "HP":  1.4
+            "HP":  1.5
         },
         {
             "Name": "Lupin",
             "Level": [1, 15],
-            "ATK": 1.2,
-            "DEF": 0.8,
-            "SPD": 1.2,
-            "HP":  0.8
+            "ATK": 1.3,
+            "DEF": 0.7,
+            "SPD": 1.3,
+            "HP":  0.7
         }
     ],
     "Perion": [
@@ -66,8 +66,8 @@
             "Name": "Wild Boar",
             "Level": [1, 15],
             "ATK": 1.0,
-            "DEF": 0.7,
-            "SPD": 1.1,
+            "DEF": 0.6,
+            "SPD": 1.2,
             "HP":  1.2
         }
     ],
@@ -84,9 +84,9 @@
             "Name": "Wraith",
             "Level": [1, 15],
             "ATK": 0.8,
-            "DEF": 1.3,
+            "DEF": 1.4,
             "SPD": 1.0,
-            "HP":  0.9
+            "HP":  0.8
         }
     ],
     "Sleepywood": [
@@ -94,16 +94,16 @@
             "Name": "Zombie Mushroom",
             "Level": [5, 15],
             "ATK": 1.0,
-            "DEF": 0.7,
+            "DEF": 0.6,
             "SPD": 1.0,
-            "HP":  1.3
+            "HP":  1.4
         },
         {
             "Name": "Dark Drake",
             "Level": [5, 20],
-            "ATK": 1.2,
+            "ATK": 1.4,
             "DEF": 1.0,
-            "SPD": 0.8,
+            "SPD": 0.6,
             "HP":  1.0
         }
     ],
@@ -113,16 +113,16 @@
             "Level": [10, 25],
             "ATK": 1.0,
             "DEF": 1.0,
-            "SPD": 0.8,
-            "HP":  1.2
+            "SPD": 0.7,
+            "HP":  1.3
         },
         {
             "Name": "Taurospear",
             "Level": [10, 25],
-            "ATK": 1.2,
-            "DEF": 0.8,
-            "SPD": 0.8,
-            "HP":  1.2
+            "ATK": 1.3,
+            "DEF": 0.7,
+            "SPD": 0.7,
+            "HP":  1.3
         }
     ],
     "Krakian Jungle": [
@@ -131,16 +131,16 @@
             "Level": [5, 25],
             "ATK": 1.0,
             "DEF": 1.0,
-            "SPD": 0.8,
-            "HP":  1.2
+            "SPD": 0.7,
+            "HP":  1.3
         },
         {
             "Name": "Mighty Maple Eater",
             "Level": [5, 25],
-            "ATK": 1.2,
-            "DEF": 0.8,
-            "SPD": 0.8,
-            "HP":  1.2
+            "ATK": 1.3,
+            "DEF": 0.7,
+            "SPD": 0.7,
+            "HP":  1.3
         }
     ],
     "Bigger Ben": [
@@ -148,25 +148,25 @@
             "Name": "Killa Bee",
             "Level": [10, 25],
             "ATK": 0.8,
-            "DEF": 0.9,
-            "SPD": 1.4,
-            "HP":  0.9
+            "DEF": 0.8,
+            "SPD": 1.6,
+            "HP":  0.8
         },
         {
             "Name": "Electrophant",
             "Level": [10, 25],
             "ATK": 1.0,
             "DEF": 1.0,
-            "SPD": 0.8,
-            "HP":  1.2
+            "SPD": 0.7,
+            "HP":  1.3
         },
         {
             "Name": "Wolf Spider",
             "Level": [10, 25],
-            "ATK": 1.2,
-            "DEF": 0.8,
+            "ATK": 1.4,
+            "DEF": 0.7,
             "SPD": 1.2,
-            "HP":  0.8
+            "HP":  0.7
         }
     ]
 }

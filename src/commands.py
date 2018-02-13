@@ -3,7 +3,7 @@ from datetime import datetime
 import random
 import requests
 
-from battle import generate_battle
+from battle import generate_battle, cancel_battle
 from craft import generate_craft_info, craft_item
 from data import random_emoji
 from info import generate_user_info, generate_group_info
@@ -210,6 +210,7 @@ def run_group_command(client, author, command, text, thread_id):
             user = author
         weapon = user['Equipment']['Weapon']
         armor = user['Equipment']['Armor']
+        accessory = user['Equipment']['Accessory']
         reply = '<<Equipment>>\n'
         reply += 'Weapon: ' + weapon['Name'] + '\n'
         reply += '-> ATK: ' + str(weapon['ATK']) + '\n'
@@ -218,7 +219,11 @@ def run_group_command(client, author, command, text, thread_id):
         reply += 'Armor: ' + armor['Name'] + '\n'
         reply += '-> ATK: ' + str(armor['ATK']) + '\n'
         reply += '-> DEF: ' + str(armor['DEF']) + '\n'
-        reply += '-> SPD: ' + str(armor['SPD'])
+        reply += '-> SPD: ' + str(armor['SPD']) + '\n'
+        reply += 'Accessory: ' + accessory['Name'] + '\n'
+        reply += '-> ATK: ' + str(accessory['ATK']) + '\n'
+        reply += '-> DEF: ' + str(accessory['DEF']) + '\n'
+        reply += '-> SPD: ' + str(accessory['SPD'])
         client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
 
     elif command == 'explore' or command == 'e':
@@ -229,6 +234,11 @@ def run_group_command(client, author, command, text, thread_id):
             if author_id != master_id:
                 client.explore_record.add(author_id)
             explore_location(client, author, thread_id)
+
+    elif command == 'flee' or command == 'f':
+        state, details = client.user_states.get(author_id, (UserState.Idle, {}))
+        if state == UserState.Battle:
+            cancel_battle(client, author)
 
     elif command == 'give' or command == 'g':
         amount, user = text.split(' ', 1)
@@ -447,8 +457,8 @@ def _check_to_string(client, user):
     text += 'Level: ' + str(user['Stats']['Level']) + ' (' + str(user['Stats']['EXP']) + '/100 exp)\n'
     text += 'Health: ' + str(client.user_health.get(user['_id'], user['Stats']['HP'])) + \
             '/' + str(user['Stats']['HP']) + '\n'
-    text += 'Stats: ' + str(user['Stats']['ATK']) + '/' + str(user['Stats']['DEF']) + \
-            '/' + str(user['Stats']['SPD']) + '\n'
+    text += 'Stats: ' + str(total_atk(user)) + ', ' + str(total_def(user)) + \
+            ', ' + str(total_spd(user)) + '\n'
     text += 'Gold: ' + str(user['Gold']) + ' (+' + str(user['GoldFlow']) + '/hour)\n'
     text += 'Location: ' + user['Location']
     state, details = client.user_states.get(user['_id'], (UserState.Idle, {}))

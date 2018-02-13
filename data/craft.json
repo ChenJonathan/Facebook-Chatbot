@@ -3,7 +3,7 @@
         {
             "Name": "Earthborn Warhammer",
             "Type": "Weapon",
-            "ATK": 12,
+            "ATK": 8,
             "DEF": 0,
             "SPD": -2,
             "Materials": {
@@ -16,9 +16,9 @@
         {
             "Name": "Cloak of Thorns",
             "Type": "Armor",
-            "ATK": 4,
-            "DEF": 2,
-            "SPD": 4,
+            "ATK": 3,
+            "DEF": 1,
+            "SPD": 2,
             "Materials": {
                 "Wild Essence": 20,
                 "Shifting Vines": 10,
@@ -44,8 +44,8 @@
             "Name": "Decaying Shroud",
             "Type": "Armor",
             "ATK": 0,
-            "DEF": 6,
-            "SPD": 6,
+            "DEF": 4,
+            "SPD": 4,
             "Materials": {
                 "Void Essence": 20,
                 "Touch of Death": 1,

@@ -53,10 +53,26 @@ def level_to_stat_scale(level):
     return (math.sqrt(level + 64) - 7) * 10
 
 
+def total_atk(user):
+    return user['Stats']['ATK'] + user['Equipment']['Weapon']['ATK'] + \
+           user['Equipment']['Armor']['ATK'] + user['Equipment']['Accessory']['ATK']
+
+
+def total_def(user):
+    return user['Stats']['DEF'] + user['Equipment']['Weapon']['DEF'] + \
+           user['Equipment']['Armor']['DEF'] + user['Equipment']['Accessory']['DEF']
+
+
+def total_spd(user):
+    return user['Stats']['SPD'] + user['Equipment']['Weapon']['SPD'] + \
+           user['Equipment']['Armor']['SPD'] + user['Equipment']['Accessory']['SPD']
+
+
 def calculate_score(user):
-    score = user['Gold'] + user['GoldFlow'] * 125
+    score = math.sqrt(user['Gold'] + user['GoldFlow'] * 100)
+    score += (total_atk(user) + total_def(user) + total_spd(user) - 36) * 25
     for location, progress in user['LocationProgress'].items():
         if progress == 1:
-            score += 5000
-    score -= 6 * 5000
-    return int(score / 10)
+            score += 50
+    score -= 6 * 50
+    return int(score)

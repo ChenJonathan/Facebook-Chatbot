@@ -7,7 +7,7 @@ import random
 from data import monster_data
 from mongo import *
 from quest import generate_quest
-from util import UserState, BattleState, level_to_stat_scale
+from util import UserState, BattleState, level_to_stat_scale, total_atk, total_def, total_spd
 
 quest_locks = {}
 
@@ -53,7 +53,7 @@ def begin_battle(client, user):
     user_id = user['_id']
     state, details = client.user_states[user_id]
 
-    details['Timer'] = _calculate_timer(user['Stats']['SPD'], details['Monster']['SPD'])
+    details['Timer'] = _calculate_timer(total_spd(user), details['Monster']['SPD'])
     details['StartTime'] = datetime.now()
     details['EndTime'] = details['StartTime'] + timedelta(seconds=3)
     details['Status'] = BattleState.Delay
@@ -81,7 +81,7 @@ def complete_battle(client, user, victory):
         delta_experience = _calculate_experience(user['Stats']['Level'], monster['Level'])
         new_experience = user['Stats']['EXP'] + delta_experience
         delta_level = new_experience // 100
-        delta_gold = _calculate_gold(monster['Level'])
+        delta_gold = _calculate_gold(user['Stats']['Level'], monster['Level'])
         experience_set(user_id, new_experience % 100)
         if delta_level:
             level_set(user_id, user['Stats']['Level'] + delta_level)
@@ -104,10 +104,16 @@ def cancel_battle(client, user):
     user_id = user['_id']
     state, details = client.user_states[user_id]
     del client.user_states[user_id]
-    reply = 'You have fled the battle.'
+    flee_penalty = min(client.user_health[user_id], 10)
+    client.user_health[user_id] -= flee_penalty
+    reply = 'You have fled the battle, losing ' + str(flee_penalty) + ' health in the process. '
+    if client.user_health[user_id] > 0:
+        reply += 'You have ' + str(client.user_health[user_id]) + ' health remaining.'
+    else:
+        reply += 'You\'re now on the brink of death!'
     client.send(Message(reply), thread_id=user_id)
-    reply = user['Name'] + ' has fled from the level ' + str(details['Monster']['Level'])
-    reply += ' ' + details['Monster']['Name'] + '.'
+    reply = user['Name'] + ' has fled from the level ' + str(details['Monster']['Level']) + ' '
+    reply += details['Monster']['Name'] + ', losing ' + str(flee_penalty) + ' health in the process.'
     client.send(Message(reply), thread_id=details['ThreadID'], thread_type=ThreadType.GROUP)
 
 
@@ -136,17 +142,17 @@ def complete_monster_quest(client, user, text):
     monster = details['Monster']
     quest = details['Quest']
     if text == str(quest['Correct'] + 1):
-        damage = _calculate_damage(user['Stats']['ATK'], monster['ATK'])
+        damage = _calculate_damage(total_atk(user), monster['DEF'])
         monster['HP'] = max(monster['HP'] - damage, 0)
         if details['Timer'] > 4:
             details['Timer'] -= 1
-        reply = 'You have dealt ' + str(damage) + ' damage to the enemy ' + monster['Name'] + '! It has '
+        reply = 'You dealt ' + str(damage) + ' damage to the enemy ' + monster['Name'] + '! It has '
         reply += str(monster['HP']) + ' health left.'
     else:
-        damage = _calculate_damage(monster['ATK'], user['Stats']['ATK'])
+        damage = _calculate_damage(monster['ATK'], total_def(user))
         client.user_health[user_id] = max(client.user_health[user_id] - damage, 0)
-        details['Timer'] = _calculate_timer(user['Stats']['SPD'], monster['SPD'])
-        reply = 'You have been dealt ' + str(damage) + ' damage by the enemy ' + monster['Name'] + '. You have '
+        details['Timer'] = _calculate_timer(total_spd(user), monster['SPD'])
+        reply = 'You\'ve been dealt ' + str(damage) + ' damage by the enemy ' + monster['Name'] + '. You have '
         reply += str(client.user_health[user_id]) + '/' + str(user['Stats']['HP']) + ' health left. '
         if text is None:
             reply += 'Be faster next time!'
@@ -177,21 +183,23 @@ def complete_monster_quest(client, user, text):
 
 
 def _calculate_damage(attack, defence):
-    damage = random.randint(attack, attack * 2) - random.randint(defence // 2, defence)
-    return max(damage, 1)
+    damage = random.uniform(attack * 0.8, attack * 1.2) - random.uniform(defence * 0.4, defence * 0.6)
+    return max(int(damage), 1)
 
 
 def _calculate_timer(user_speed, monster_speed):
-    return 5 + int(math.sqrt(max(user_speed * 2 - monster_speed, 0)) * 2)
+    return 4 + int(math.sqrt(max(user_speed * 2 - monster_speed, 0)) * 2)
 
 
 def _calculate_experience(user_level, monster_level):
-    if user_level - monster_level > 5:
-        return 0
-    ratio = math.sqrt(monster_level / user_level)
-    return max(int(ratio * 5 * random.uniform(0.8, 1.2)), 0)
+    experience = math.sqrt(monster_level / user_level) * 5
+    experience *= random.uniform(0.8, 1.2)
+    experience /= max((user_level - monster_level) / 4, 1)
+    return max(int(experience), 0)
 
 
-def _calculate_gold(monster_level):
-    gold = int((math.sqrt(monster_level + 64) - 7) * 400)
-    return int(gold * random.uniform(0.8, 1.2))
+def _calculate_gold(user_level, monster_level):
+    gold = (math.sqrt(monster_level + 64) - 7) * 400
+    gold *= random.uniform(0.8, 1.2)
+    gold /= max((user_level - monster_level) / 4, 1)
+    return max(int(gold), 0)

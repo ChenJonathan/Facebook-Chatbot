@@ -89,19 +89,19 @@ def user_try_add(user_id):
             },
             'Equipment': {
                 'Weapon': {
-                    'Name': 'Wooden Sword',
+                    'Name': 'Iron Longsword',
                     'ATK': 2,
                     'DEF': 0,
                     'SPD': 0
                 },
                 'Armor': {
-                    'Name': 'Practice Armor',
+                    'Name': 'Leather Armor',
                     'ATK': 0,
                     'DEF': 2,
                     'SPD': 0
                 },
                 'Accessory': {
-                    'Name': 'Silver Pendant',
+                    'Name': 'Sapphire Amulet',
                     'ATK': 0,
                     'DEF': 0,
                     'SPD': 2

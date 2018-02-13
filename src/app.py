@@ -71,95 +71,100 @@ class ChatBot(Client):
         if author_id == self.uid:
             return
 
-        # Check for chat commands
-        if message_object.text and message_object.text[0] == '!':
-            command, text, *_ = message_object.text.split(' ', 1) + ['']
-            command = command[1:].lower()
-            text = text.strip()
-        else:
-            command, text = None, (message_object.text or '')
+        try:
 
-        # Check for mentions
-        mentions = []
-        for mention in message_object.mentions:
-            mentions.append(mention.thread_id)
-
-        if thread_type == ThreadType.USER:
-
-            # Handle battle messages
-            state, details = self.user_states.get(author_id, (UserState.Idle, {}))
-            if state == UserState.Battle:
-                author = user_from_id(author_id)
-                if command == 'flee' or command == 'f':
-                    cancel_battle(self, author)
-                elif details['Status'] == BattleState.Preparation:
-                    if command == 'ready' or command == 'r':
-                        begin_battle(self, author)
-                elif details['Status'] == BattleState.Quest:
-                    complete_monster_quest(self, author, text)
-                return
-
-            # Forward direct messages
-            if thread_id != master_id:
-                user = self.fetchUserInfo(thread_id)[thread_id]
-                message = Message('<' + user.name + '>: ' + (message_object.text or ''))
-                self.send(message, thread_id=master_id)
-
-            # Chat commands - User
-            run_user_command(self, user_from_id(author_id), command, text)
-
-        elif thread_type == ThreadType.GROUP:
-
-            # Track last messages
-            if command:
-                self.message_record[thread_id] = [None, set()]
+            # Check for chat commands
+            if message_object.text and message_object.text[0] == '!':
+                command, text, *_ = message_object.text.split(' ', 1) + ['']
+                command = command[1:].lower()
+                text = text.strip()
             else:
-                if thread_id not in self.message_record:
-                    self.message_record[thread_id] = [None, set()]
-                group_record = self.message_record[thread_id]
-                text_lower = (message_object.text or '').lower()
-                if text_lower != group_record[0]:
-                    group_record[0] = text_lower
-                    group_record[1].clear()
-                group_record[1].add(author_id)
-                if len(group_record[1]) >= 3 and self.uid not in group_record[1]:
-                    message = Message(message_object.text)
-                    self.send(message, thread_id=thread_id, thread_type=ThreadType.GROUP)
+                command, text = None, (message_object.text or '')
 
-            # Check for active quest
-            if author_id in self.quest_record:
-                complete_quest(self, user_from_id(author_id), text, thread_id)
+            # Check for mentions
+            mentions = []
+            for mention in message_object.mentions:
+                mentions.append(mention.thread_id)
 
-            # Cleverbot messaging
-            if not command:
-                text = text.split()
-                if text and text[0].lower() == 'wong,':
-                    try:
-                        if author_id == master_id and self.responses:
-                            reply = self.responses.pop(0)
-                        elif priority_get(author_id) == 0:
-                            reply = 'Sorry, I don\'t respond to peasants.'
-                        else:
-                            reply = cb.say(' '.join(text[1:]))
-                    except cleverbot.CleverbotError as error:
-                        print(error)
-                    else:
-                        self.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
-                return
+            if thread_type == ThreadType.USER:
 
-            # Check for defined override
-            if command in self.defines:
-                if self.defines[command][0] == '!':
-                    command, text, *_ = self.defines[command].split(' ', 1) + ['']
-                    command = command[1:].lower()
-                    text = text.strip()
-                else:
-                    message = Message(self.defines[command])
-                    self.send(message, thread_id=thread_id, thread_type=ThreadType.GROUP)
+                # Handle battle messages
+                state, details = self.user_states.get(author_id, (UserState.Idle, {}))
+                if state == UserState.Battle:
+                    author = user_from_id(author_id)
+                    if command == 'flee' or command == 'f':
+                        cancel_battle(self, author)
+                    elif details['Status'] == BattleState.Preparation:
+                        if command == 'ready' or command == 'r':
+                            begin_battle(self, author)
+                    elif details['Status'] == BattleState.Quest:
+                        complete_monster_quest(self, author, text)
                     return
 
-            # Chat commands - Group
-            run_group_command(self, user_from_id(author_id), command, text, thread_id)
+                # Forward direct messages
+                if thread_id != master_id:
+                    user = self.fetchUserInfo(thread_id)[thread_id]
+                    message_object.text = '<' + user.name + '>: ' + (message_object.text or '')
+                    self.send(message_object, thread_id=master_id)
+
+                # Chat commands - User
+                run_user_command(self, user_from_id(author_id), command, text)
+
+            elif thread_type == ThreadType.GROUP:
+
+                # Track last messages
+                if command:
+                    self.message_record[thread_id] = [None, set()]
+                else:
+                    if thread_id not in self.message_record:
+                        self.message_record[thread_id] = [None, set()]
+                    group_record = self.message_record[thread_id]
+                    text_lower = (message_object.text or '').lower()
+                    if text_lower != group_record[0]:
+                        group_record[0] = text_lower
+                        group_record[1].clear()
+                    group_record[1].add(author_id)
+                    if len(group_record[1]) >= 3 and self.uid not in group_record[1]:
+                        message = Message(message_object.text)
+                        self.send(message, thread_id=thread_id, thread_type=ThreadType.GROUP)
+
+                # Check for active quest
+                if author_id in self.quest_record:
+                    complete_quest(self, user_from_id(author_id), text, thread_id)
+
+                # Cleverbot messaging
+                if not command:
+                    text = text.split()
+                    if text and text[0].lower() == 'wong,':
+                        try:
+                            if author_id == master_id and self.responses:
+                                reply = self.responses.pop(0)
+                            elif priority_get(author_id) == 0:
+                                reply = 'Sorry, I don\'t respond to peasants.'
+                            else:
+                                reply = cb.say(' '.join(text[1:]))
+                        except cleverbot.CleverbotError as error:
+                            print(error)
+                        else:
+                            self.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
+                    return
+
+                # Check for defined override
+                if command in self.defines:
+                    if self.defines[command][0] == '!':
+                        command, text, *_ = self.defines[command].split(' ', 1) + ['']
+                        command = command[1:].lower()
+                        text = text.strip()
+                    else:
+                        message = Message(self.defines[command])
+                        self.send(message, thread_id=thread_id, thread_type=ThreadType.GROUP)
+                        return
+
+                # Chat commands - Group
+                run_group_command(self, user_from_id(author_id), command, text, thread_id)
+
+        except Exception as error:
+            self.send(Message('Error: ' + str(error)), thread_id=master_id)
 
     def onPersonRemoved(self, mid=None, removed_id=None, author_id=None, thread_id=None, ts=None, msg=None):
         if exceeds_priority(removed_id, author_id):
