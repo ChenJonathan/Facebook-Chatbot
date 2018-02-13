@@ -399,6 +399,7 @@ def run_group_command(client, author, command, text, thread_id):
                 users.pop()
             try:
                 page = int(text) - 1
+                assert page >= 0
             except:
                 page = 0
             if len(users) <= page * 9:
