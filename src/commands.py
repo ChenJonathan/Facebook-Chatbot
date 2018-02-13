@@ -432,7 +432,7 @@ def run_group_command(client, author, command, text, thread_id):
                     travel_to_location(client, author, text, thread_id)
 
     except Exception as error:
-        client.send(Message(traceback.format_stack() + '\n' + str(error)), thread_id=master_id)
+        client.send(Message(traceback.format_exc() + '\n' + str(error)), thread_id=master_id)
 
 
 def _check_busy(client, user, thread_id):

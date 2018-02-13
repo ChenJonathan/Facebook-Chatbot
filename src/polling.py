@@ -34,11 +34,10 @@ def loop(client):
             elif state == UserState.Battle:
                 if details['Status'] == BattleState.Delay:
                     if now > details['EndTime']:
-
                         begin_monster_quest(client, user_from_id(user_id))
                 elif details['Status'] == BattleState.Quest:
                     if now > details['EndTime']:
                         complete_monster_quest(client, user_from_id(user_id), None)
 
     except Exception as error:
-        client.send(Message(traceback.format_stack() + '\n' + str(error)), thread_id=master_id)
+        client.send(Message(traceback.format_exc() + '\n' + str(error)), thread_id=master_id)

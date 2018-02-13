@@ -101,7 +101,7 @@ class ChatBot(Client):
                         complete_monster_quest(self, author, text)
                     return
             except Exception as error:
-                self.send(Message(traceback.format_stack() + '\n' + str(error)), thread_id=master_id)
+                self.send(Message(traceback.format_exc() + '\n' + str(error)), thread_id=master_id)
 
             # Forward direct messages
             if thread_id != master_id:
