@@ -30,9 +30,9 @@
             "Name": "Iron Hog",
             "Level": [1, 15],
             "ATK": 0.8,
-            "DEF": 1.5,
+            "DEF": 1.4,
             "SPD": 1.0,
-            "HP":  0.7
+            "HP":  0.8
         }
     ],
     "Ellinia": [
@@ -57,8 +57,8 @@
         {
             "Name": "Axe Stump",
             "Level": [1, 10],
-            "ATK": 0.9,
-            "DEF": 1.2,
+            "ATK": 1.0,
+            "DEF": 1.1,
             "SPD": 0.9,
             "HP":  1.0
         },
@@ -83,8 +83,8 @@
         {
             "Name": "Wraith",
             "Level": [1, 15],
-            "ATK": 0.8,
-            "DEF": 1.4,
+            "ATK": 1.0,
+            "DEF": 1.2,
             "SPD": 1.0,
             "HP":  0.8
         }

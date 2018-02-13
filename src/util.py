@@ -69,7 +69,7 @@ def total_spd(user):
 
 
 def calculate_score(user):
-    score = math.sqrt(max(user['Gold'] + user['GoldFlow'] * 100, 0))
+    score = math.sqrt(max(user['Gold'] + user['GoldFlow'] * 125, 0))
     score += (total_atk(user) + total_def(user) + total_spd(user) - 36) * 25
     for location, progress in user['LocationProgress'].items():
         if progress == 1:
