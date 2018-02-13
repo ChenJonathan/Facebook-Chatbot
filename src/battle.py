@@ -25,13 +25,13 @@ def generate_battle(client, user, thread_id):
     }
     monster = battle['Monster']
     user_level = user['Stats']['Level']
-    if user_level + 4 < monster['Level'][0]:
+    if user_level + 3 < monster['Level'][0]:
         monster_level = monster['Level'][0]
-    elif user_level - 4 > monster['Level'][1]:
+    elif user_level - 3 > monster['Level'][1]:
         monster_level = monster['Level'][1]
     else:
-        lower_bound = max(user_level - 4, monster['Level'][0])
-        upper_bound = min(user_level + 4, monster['Level'][1])
+        lower_bound = max(user_level - 3, monster['Level'][0])
+        upper_bound = min(user_level + 3, monster['Level'][1])
         monster_level = random.randint(lower_bound, upper_bound)
     stat_scale = level_to_stat_scale(monster_level) * (1 + (monster_level - 5) / 10)
     monster['Level'] = monster_level
@@ -194,12 +194,12 @@ def _calculate_timer(user_speed, monster_speed):
 def _calculate_experience(user_level, monster_level):
     experience = math.sqrt(monster_level / user_level) * 5
     experience *= random.uniform(0.8, 1.2)
-    experience /= max((user_level - monster_level) / 4, 1)
+    experience /= max((user_level - monster_level) / 2, 1)
     return max(int(experience), 0)
 
 
 def _calculate_gold(user_level, monster_level):
     gold = (math.sqrt(monster_level + 64) - 7) * 400
     gold *= random.uniform(0.8, 1.2)
-    gold /= max((user_level - monster_level) / 4, 1)
+    gold /= max((user_level - monster_level) / 2, 1)
     return max(int(gold), 0)
