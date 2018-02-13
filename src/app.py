@@ -4,6 +4,7 @@ from flask import Flask
 from base64 import b64decode
 import cleverbot
 import threading
+import traceback
 
 from battle import begin_battle, cancel_battle, complete_monster_quest
 from clock import set_timer
@@ -203,8 +204,8 @@ class ActiveThread(threading.Thread):
         while True:
             try:
                 loop(client)
-            except Exception as error:
-                client.send(Message('Error: ' + str(error)), thread_id=master_id)
+            except:
+                client.send(Message('Error: ' + str(traceback.format_exc())), thread_id=master_id)
 
 
 ServerThread().start()

@@ -4,16 +4,16 @@
             "Name": "Blue Snail",
             "Level": [1, 5],
             "ATK": 1.0,
-            "DEF": 1.4,
-            "SPD": 0.6,
+            "DEF": 1.2,
+            "SPD": 0.8,
             "HP":  1.0
         },
         {
             "Name": "Red Snail",
             "Level": [1, 5],
             "ATK": 1.0,
-            "DEF": 1.4,
-            "SPD": 0.6,
+            "DEF": 1.2,
+            "SPD": 0.8,
             "HP":  1.0
         }
     ],
