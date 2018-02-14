@@ -9,7 +9,6 @@ from util import UserState, BattleState, master_id
 
 
 def loop(client):
-
     try:
 
         now = datetime.now()
@@ -39,5 +38,5 @@ def loop(client):
                     if now > details['EndTime']:
                         complete_monster_quest(client, user_from_id(user_id), None)
 
-    except Exception as error:
-        client.send(Message(traceback.format_exc() + '\n' + str(error)), thread_id=master_id)
+    except:
+        client.send(Message(traceback.format_exc()), thread_id=master_id)

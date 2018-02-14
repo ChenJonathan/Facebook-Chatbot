@@ -57,7 +57,7 @@ def explore_location(client, user, thread_id):
             inventory_add(user['_id'], item, final_amount)
 
     # Calculate gold gain
-    delta_gold = int(seed * (250 + random.randint(-50, 50)) * gold_multiplier)
+    delta_gold = int(seed * (500 + random.randint(-50, 50)) * gold_multiplier)
     gold_add(user['_id'], delta_gold)
 
     # Check for discovered hunting pet
@@ -75,7 +75,10 @@ def explore_location(client, user, thread_id):
     presence = False
     for i, time in enumerate(edges[current]):
         if time >= 0 and progress.get(location_names[i], 0) < 1:
-            new_progress = progress.get(location_names[i], 0) + seed / edges[current][i]
+            if time > 0:
+                new_progress = progress.get(location_names[i], 0) + seed / edges[current][i]
+            else:
+                new_progress = 1
             if new_progress >= 1:
                 location_progress_set(user['_id'], location_names[i], 1)
                 unlocked.append(i)

@@ -5,6 +5,7 @@ import threading
 
 from data import random_emoji
 from mongo import *
+from util import UserState
 
 
 def apply_gold_rates():
@@ -13,7 +14,10 @@ def apply_gold_rates():
 
 
 def restore_health(client):
-    client.user_health.clear()
+    for user_id, health in client.user_health.items():
+        state, details = client.user_states.get(user_id, (UserState.Idle, {}))
+        if state != UserState.Battle:
+            del client.user_health[user_id]
 
 
 def manage_subscriptions(client):
