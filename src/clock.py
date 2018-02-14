@@ -37,11 +37,14 @@ def manage_subscriptions(client):
 
 
 def reset_timer(client):
-    client.explore_record.clear()
-    apply_gold_rates()
-    restore_health(client)
-    if datetime.today().hour == 0:
-        manage_subscriptions(client)
+    try:
+        client.explore_record.clear()
+        apply_gold_rates()
+        restore_health(client)
+        if datetime.today().hour == 0:
+            manage_subscriptions(client)
+    except:
+        self.send(Message(traceback.format_exc()), thread_id=master_id)
 
     set_timer(client)
 

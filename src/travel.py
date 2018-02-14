@@ -24,7 +24,7 @@ _connect(2, 6, 2)
 _connect(3, 6, 2)
 _connect(4, 6, 2)
 _connect(5, 6, 2)
-_connect(6, 7, 0)
+_connect(6, 7, 1)
 # - New Leaf City
 _connect(5, 8, 5)
 _connect(8, 9, 3)
@@ -37,12 +37,12 @@ _connect(13, 14, 0)
 # - Aqua Road
 #_connect(11, 15, 10)
 _connect(12, 15, 6)
-_connect(15, 16, 0)
+_connect(15, 16, 1)
 _connect(15, 20, 5)
 # - Ludibrium
 #_connect(11, 17, 16)
 _connect(17, 18, 5)
-_connect(18, 19, 0)
+_connect(18, 19, 1)
 _connect(17, 20, 8)
 _connect(17, 21, 9)
 # - Nihal Desert
@@ -51,7 +51,7 @@ _connect(22, 23, 5)
 # - Leafre
 #_connect(11, 24, 15)
 _connect(24, 25, 5)
-_connect(25, 26, 0)
+_connect(25, 26, 1)
 #_connect(24, 27, 60)
 
 

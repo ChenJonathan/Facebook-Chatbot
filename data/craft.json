@@ -45,7 +45,7 @@
             "Type": "Armor",
             "ATK": 0,
             "DEF": 4,
-            "SPD": 4,
+            "SPD": 6,
             "Materials": {
                 "Void Essence": 20,
                 "Touch of Death": 1,

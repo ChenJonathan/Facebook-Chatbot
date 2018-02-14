@@ -45,7 +45,9 @@ def generate_battle(client, user, thread_id):
     reply += ' ' + battle['Monster']['Name'] + '! Check your private messages (or message requests) '
     reply += 'to fight it.'
     client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
-    reply = 'Use "!ready" to begin the fight. Use "!flee" at any point to cancel the fight.'
+    reply = 'You are facing a level ' + str(battle['Monster']['Level']) + ' '
+    reply += battle['Monster']['Name'] + '! Use "!ready" to begin the fight. '
+    reply += 'Use "!flee" at any point to cancel the fight (at the cost of 10 health).'
     client.send(Message(reply), thread_id=user['_id'])
 
 
