@@ -1,3 +1,4 @@
+from html import unescape
 import json
 import random
 
@@ -5,14 +6,74 @@ import random
 
 beasts = []
 
-with open('./data/beasts.txt', 'r') as data:
+with open('./data/beasts.txt') as data:
     for line in data.readlines():
         line = line.split(',')
         beasts.append((line[0].strip(), int(line[1]), int(line[2])))
 
 # Crafting
 
-craft_data = json.load(open('./data/craft.json', 'r'))
+craft_data = json.load(open('./data/craft.json'))
+
+# Datasets
+
+terms = []
+definitions = []
+
+with open('./data/vocab.txt') as data:
+    for line in data.readlines():
+        term, definition = line.split(':', 1)
+        term = term[0].upper() + term[1:]
+        definition = definition[0].upper() + definition[1:]
+        terms.append(term.strip())
+        definitions.append(definition.strip())
+
+
+def parse_mcq_dataset(file_name):
+    with open('./data/' + file_name, encoding='utf8') as data:
+        quests = []
+        quest = {'Answers': []}
+        for line in data.readlines():
+            line = unescape(line.strip())
+            if len(line) == 0:
+                if 'Question' in quest:
+                    quests.append(quest)
+                quest = {'Answers': []}
+            elif 'Question' not in quest:
+                quest['Question'] = line
+            else:
+                correct, answer = line.split(' ', 1)
+                correct = int(correct)
+                if correct:
+                    quest['Correct'] = len(quest['Answers'])
+                quest['Answers'].append(answer[0].upper() + answer[1:])
+        return quests
+
+
+econ_dataset = parse_mcq_dataset('econ.txt')
+gov_dataset = parse_mcq_dataset('gov.txt')
+history_dataset = parse_mcq_dataset('history.txt')
+psych_dataset = parse_mcq_dataset('psych.txt')
+
+science_dataset = []
+
+with open('./data/science.json') as data:
+    data = json.load(data)
+    for datum in data:
+        try:
+            quest = {
+                'Question': datum['question'],
+                'Answers': []
+            }
+            for i in range(1, 4):
+                answer = datum['distractor' + str(i)]
+                quest['Answers'].append(answer[0].upper() + answer[1:])
+            quest['Correct'] = random.randint(0, len(quest['Answers']))
+            correct_answer = datum['correct_answer'][0].upper() + datum['correct_answer'][1:]
+            quest['Answers'].insert(quest['Correct'], correct_answer)
+            science_dataset.append(quest)
+        except:
+            pass
 
 # Emojis
 
@@ -40,24 +101,11 @@ for r in EMOJI_RANGES_UNICODE:
 
 # Item drops
 
-item_drop_data = json.load(open('./data/drops.json', 'r'))
-
-# Vocab
-
-terms = []
-definitions = []
-
-with open('./data/vocab.txt', 'r') as data:
-    for line in data.readlines():
-        term, definition = line.split(':', 1)
-        term = term[0].upper() + term[1:]
-        definition = definition[0].upper() + definition[1:]
-        terms.append(term.strip())
-        definitions.append(definition.strip())
+item_drop_data = json.load(open('./data/drops.json'))
 
 # Monsters
 
-monster_data = json.load(open('./data/monsters.json', 'r'))
+monster_data = json.load(open('./data/monsters.json'))
 
 
 # Methods

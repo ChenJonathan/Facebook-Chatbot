@@ -169,8 +169,8 @@ def generate_group_info(client, text, author, thread_id):
         reply += 'Example: "!daily emoji"\n'
         reply += 'Toggles the group\'s subscription to <event>. Events occur at midnight '
         reply += 'EST. Current events include the following:\n'
-        reply += '"Color" - Changes the chat color\n'
-        reply += '"Emoji" - Changes the chat emoji'
+        reply += '-> "Color" - Changes the chat color\n'
+        reply += '-> "Emoji" - Changes the chat emoji'
 
     elif text == 'explore':
         reply = '<<Explore>>\n'
@@ -244,11 +244,16 @@ def generate_group_info(client, text, author, thread_id):
         reply += 'Correct responses will reward gold but incorrect ones will cost you. '
         reply += 'The amount of gold scales up with your level.\n\n'
         reply += 'Usage: "!quest <type>"\n'
-        reply += 'Example: "!quest trivia"\n'
+        reply += 'Example: "!quest psych"\n'
         reply += 'Sets the type of multiple choice question that will be generated '
         reply += 'for you. Current quest types include the following:\n'
-        reply += '"Vocab" - GRE vocabulary questions\n'
-        reply += '"Trivia" - Trivia questions from various topics'
+        reply += '-> "Vocab" - GRE vocabulary questions\n'
+        reply += '-> "Econ" - Economics questions\n'
+        reply += '-> "Gov" - U.S. Government questions\n'
+        reply += '-> "History" - World history questions\n'
+        reply += '-> "Psych" - Psychology questions\n'
+        reply += '-> "Science" - Physics / chemistry / biology questions\n'
+        reply += '-> "Trivia" - Trivia questions from various topics\n'
 
     elif text == 'random':
         reply = '<<Random>>\n'
