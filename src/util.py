@@ -28,7 +28,7 @@ location_names += ['Nihal Desert', 'Magatia', 'Leafre', 'Minar Forest', 'Cave of
 location_names_reverse = {location_names[i]: i for i in range(len(location_names))}
 
 item_names = ['Demon Soul', 'Truffle Worm', 'Eye of Fire', 'Cracked Dimension Piece', 'Dragon Soul']
-item_names = ['Brutal Essence', 'Wild Essence', 'Arcane Essence', 'Void Essence']
+item_names += ['Brutal Essence', 'Wild Essence', 'Arcane Essence', 'Void Essence']
 item_names += ['Bottled Light', 'Bottled Darkness', 'Touch of Life', 'Touch of Death']
 item_names += ['Howling Wind', 'Formless Ice', 'Drop of Earth', 'Living Flame']
 item_names += ['Clockwork Shard', 'Crystal Shard', 'Iron Shard', 'Time Shard']

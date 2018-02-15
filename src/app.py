@@ -164,7 +164,7 @@ class ChatBot(Client):
                 run_group_command(self, user_from_id(author_id), command, text, thread_id)
 
         except:
-            self.send(Message(traceback.format_exc()), thread_id=master_id)
+            self.send(Message('Main: ' + traceback.format_exc()), thread_id=master_id)
 
     def onPersonRemoved(self, mid=None, removed_id=None, author_id=None, thread_id=None, ts=None, msg=None):
         if exceeds_priority(removed_id, author_id):

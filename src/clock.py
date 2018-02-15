@@ -2,10 +2,11 @@ from fbchat.models import *
 from datetime import datetime
 import random
 import threading
+import traceback
 
 from data import random_emoji
 from mongo import *
-from util import UserState
+from util import master_id, UserState
 
 
 def apply_gold_rates():
@@ -44,7 +45,7 @@ def reset_timer(client):
         if datetime.today().hour == 0:
             manage_subscriptions(client)
     except:
-        self.send(Message(traceback.format_exc()), thread_id=master_id)
+        client.send(Message('Timer: ' + traceback.format_exc()), thread_id=master_id)
 
     set_timer(client)
 

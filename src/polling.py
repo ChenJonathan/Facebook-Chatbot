@@ -39,4 +39,4 @@ def loop(client):
                         complete_monster_quest(client, user_from_id(user_id), None)
 
     except:
-        client.send(Message(traceback.format_exc()), thread_id=master_id)
+        client.send(Message('Polling: ' + traceback.format_exc()), thread_id=master_id)
