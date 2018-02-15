@@ -249,7 +249,7 @@ def generate_group_info(client, text, author, thread_id):
         reply += 'for you. Current quest types include the following:\n'
         reply += '-> "Vocab" - GRE vocabulary questions\n'
         reply += '-> "Econ" - Economics questions\n'
-        reply += '-> "Gov" - U.S. Government questions\n'
+        reply += '-> "Gov" - U.S. government questions\n'
         reply += '-> "History" - World history questions\n'
         reply += '-> "Psych" - Psychology questions\n'
         reply += '-> "Science" - Physics / chemistry / biology questions\n'
