@@ -6,7 +6,7 @@ import traceback
 
 from data import random_emoji
 from mongo import *
-from util import master_id, UserState
+from util import *
 
 
 def apply_gold_rates():
@@ -15,10 +15,14 @@ def apply_gold_rates():
 
 
 def restore_health(client):
-    for user_id, health in client.user_health.items():
-        state, details = client.user_states.get(user_id, (UserState.Idle, {}))
-        if state != UserState.Battle:
-            del client.user_health[user_id]
+    for user_id, health in list(client.user_health.items()):
+        lock_acquire(user_id)
+        try:
+            state, details = client.user_states.get(user_id, (UserState.Idle, {}))
+            if state != UserState.Battle:
+                del client.user_health[user_id]
+        finally:
+            lock_release(user_id)
 
 
 def manage_subscriptions(client):
@@ -38,6 +42,7 @@ def manage_subscriptions(client):
 
 
 def reset_timer(client):
+    explore_lock.acquire()
     try:
         client.explore_record.clear()
         apply_gold_rates()
@@ -46,6 +51,8 @@ def reset_timer(client):
             manage_subscriptions(client)
     except:
         client.send(Message('Timer: ' + traceback.format_exc()), thread_id=master_id)
+    finally:
+        explore_lock.release()
 
     set_timer(client)
 

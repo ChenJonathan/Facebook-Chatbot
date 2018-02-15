@@ -1,6 +1,6 @@
 from fbchat.models import *
 
-from util import priority_names, master_priority, master_id
+from util import *
 
 
 def generate_user_info(client, text, author):

@@ -3,6 +3,7 @@ import random
 
 from data import random_beast
 from mongo import *
+from util import *
 
 
 def generate_shop_info(client, user, thread_id):
@@ -66,7 +67,12 @@ def _charity_donation(client, thread_id):
 
 
 def _life_elixir(client, user, thread_id):
-    client.user_health[user['_id']] = user['Stats']['HP']
+    user_id = user['_id']
+    lock_acquire(user_id)
+    try:
+        client.user_health[user_id] = user['Stats']['HP']
+    finally:
+        lock_release(user_id)
     reply = 'Your health has been restored to its maximum!'
     client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
 

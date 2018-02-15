@@ -1,13 +1,11 @@
 from fbchat.models import *
 from datetime import datetime, timedelta
-from threading import Lock
-import math
 import random
 
 from data import monster_data
 from mongo import *
 from quest import generate_quest
-from util import UserState, BattleState, level_to_stat_scale, total_atk, total_def, total_spd
+from util import *
 
 quest_locks = {}
 
@@ -60,9 +58,9 @@ def begin_battle(client, user):
     details['EndTime'] = details['StartTime'] + timedelta(seconds=3)
     details['Status'] = BattleState.Delay
 
-    quest_locks[user_id] = Lock()
-    if user_id not in client.user_health:
-        client.user_health[user_id] = user['Stats']['HP']
+    # quest_locks[user_id] = Lock()
+    #if user_id not in client.user_health:
+    #    client.user_health[user_id] = user['Stats']['HP']
 
     reply = 'The battle has begun!'
     client.send(Message(reply), thread_id=user_id)
@@ -76,8 +74,8 @@ def complete_battle(client, user, victory):
     monster = details['Monster']
     del client.user_states[user_id]
 
-    quest_locks[user_id].release()
-    del quest_locks[user_id]
+    # quest_locks[user_id].release()
+    # del quest_locks[user_id]
 
     if victory:
         delta_experience = _calculate_experience(user['Stats']['Level'], monster['Level'])
@@ -106,6 +104,8 @@ def cancel_battle(client, user):
     user_id = user['_id']
     state, details = client.user_states[user_id]
     del client.user_states[user_id]
+    if user_id not in client.user_health:
+        client.user_health[user_id] = user['Stats']['HP']
     flee_penalty = min(client.user_health[user_id], 10)
     client.user_health[user_id] -= flee_penalty
     reply = 'You have fled the battle, losing ' + str(flee_penalty) + ' health in the process. '
@@ -132,13 +132,15 @@ def begin_monster_quest(client, user):
 
 def complete_monster_quest(client, user, text):
     user_id = user['_id']
-    if not (user_id in quest_locks and quest_locks[user_id].acquire(False)):
-        return
+    # if not (user_id in quest_locks and quest_locks[user_id].acquire(False)):
+    #     return
 
     # Race condition safeguard
     state, details = client.user_states[user_id]
-    if details['Status'] == BattleState.Delay:
-        return
+    if user_id not in client.user_health:
+        client.user_health[user_id] = user['Stats']['HP']
+    #if details['Status'] == BattleState.Delay:
+    #    return
 
     # Calculate current hit
     monster = details['Monster']
@@ -181,7 +183,7 @@ def complete_monster_quest(client, user, text):
         reply += '\n\nYou will have ' + str(details['Timer']) + ' seconds to complete the next question.'
         client.send(Message(reply), thread_id=user_id)
 
-    quest_locks[user_id].release()
+    # quest_locks[user_id].release()
 
 
 def _calculate_damage(attack, defence):

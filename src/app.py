@@ -10,7 +10,7 @@ from battle import begin_battle, cancel_battle, complete_monster_quest
 from clock import set_timer
 from commands import run_group_command, run_user_command
 from mongo import *
-from polling import loop
+from polling import loop, lock_acquire, lock_release
 from quest import complete_quest
 from util import master_priority, master_id, UserState, BattleState
 
@@ -89,17 +89,21 @@ class ChatBot(Client):
             if thread_type == ThreadType.USER:
 
                 # Handle battle messages
-                state, details = self.user_states.get(author_id, (UserState.Idle, {}))
-                if state == UserState.Battle:
-                    author = user_from_id(author_id)
-                    if command == 'flee' or command == 'f':
-                        cancel_battle(self, author)
-                    elif details['Status'] == BattleState.Preparation:
-                        if command == 'ready' or command == 'r':
-                            begin_battle(self, author)
-                    elif details['Status'] == BattleState.Quest:
-                        complete_monster_quest(self, author, text)
-                    return
+                lock_acquire(author_id)
+                try:
+                    state, details = self.user_states.get(author_id, (UserState.Idle, {}))
+                    if state == UserState.Battle:
+                        author = user_from_id(author_id)
+                        if command == 'flee' or command == 'f':
+                            cancel_battle(self, author)
+                        elif details['Status'] == BattleState.Preparation:
+                            if command == 'ready' or command == 'r':
+                                begin_battle(self, author)
+                        elif details['Status'] == BattleState.Quest:
+                            complete_monster_quest(self, author, text)
+                        return
+                finally:
+                    lock_release(author_id)
 
                 # Forward direct messages
                 if thread_id != master_id:
@@ -200,11 +204,9 @@ class ReactiveThread(threading.Thread):
 class ActiveThread(threading.Thread):
 
     def run(self):
+        client.startListening()
         while True:
-            try:
-                loop(client)
-            except:
-                pass
+            loop(client)
 
 
 ServerThread().start()

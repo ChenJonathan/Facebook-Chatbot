@@ -2,7 +2,6 @@ from fbchat.models import *
 from datetime import datetime
 import random
 import requests
-import traceback
 
 from battle import generate_battle, cancel_battle
 from craft import generate_craft_info, craft_item
@@ -136,14 +135,18 @@ def run_group_command(client, author, command, text, thread_id):
         client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
 
     elif command == 'battle' or command == 'b':
-        if _check_busy(client, author, thread_id):
-            return
-        elif client.user_health.get(author_id, author['Stats']['HP']) <= 0:
-            reply = 'You\'re on the brink of death! Wait until the next hour or '
-            reply += 'buy a life elixir from the shop to restore your health.'
-            client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
-        else:
-            generate_battle(client, author, thread_id)
+        lock_acquire(author_id)
+        try:
+            if _check_busy(client, author, thread_id):
+                return
+            elif client.user_health.get(author_id, author['Stats']['HP']) <= 0:
+                reply = 'You\'re on the brink of death! Wait until the next hour or '
+                reply += 'buy a life elixir from the shop to restore your health.'
+                client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
+            else:
+                generate_battle(client, author, thread_id)
+        finally:
+            lock_release(author_id)
 
     elif command == 'bully':
         if len(text) == 0:
@@ -233,13 +236,21 @@ def run_group_command(client, author, command, text, thread_id):
             client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
         elif not _check_busy(client, author, thread_id):
             if author_id != master_id:
-                client.explore_record.add(author_id)
+                explore_lock.acquire()
+                try:
+                    client.explore_record.add(author_id)
+                finally:
+                    explore_lock.release()
             explore_location(client, author, thread_id)
 
     elif command == 'flee' or command == 'f':
-        state, details = client.user_states.get(author_id, (UserState.Idle, {}))
-        if state == UserState.Battle:
-            cancel_battle(client, author)
+        lock_acquire(author_id)
+        try:
+            state, details = client.user_states.get(author_id, (UserState.Idle, {}))
+            if state == UserState.Battle:
+                cancel_battle(client, author)
+        finally:
+            lock_release(author_id)
 
     elif command == 'give' or command == 'g':
         try:
@@ -289,16 +300,20 @@ def run_group_command(client, author, command, text, thread_id):
                 user = user_from_id(user.uid)
                 if user['_id'] == master_id and author_id != master_id:
                     user = author
-                if location_names_reverse[user['Location']] == 0:
-                    location_set(user['_id'], location_names[1])
-                    if client.user_states.get(user['_id'], (UserState.Idle, {}))[0] == UserState.Travel:
-                        del client.travel_record[user['_id']]
-                    reply = user['Name'] + ' has been freed from jail.'
-                else:
-                    location_set(user['_id'], location_names[0])
-                    if client.user_states.get(user['_id'], (UserState.Idle, {}))[0] == UserState.Travel:
-                        del client.travel_record[user['_id']]
-                    reply = user['Name'] + ' has been sent to jail!'
+                lock_acquire(user['_id'])
+                try:
+                    if location_names_reverse[user['Location']] == 0:
+                        location_set(user['_id'], location_names[1])
+                        if client.user_states.get(user['_id'], (UserState.Idle, {}))[0] == UserState.Travel:
+                            del client.travel_record[user['_id']]
+                        reply = user['Name'] + ' has been freed from jail.'
+                    else:
+                        location_set(user['_id'], location_names[0])
+                        if client.user_states.get(user['_id'], (UserState.Idle, {}))[0] == UserState.Travel:
+                            del client.travel_record[user['_id']]
+                        reply = user['Name'] + ' has been sent to jail!'
+                finally:
+                    lock_release(user['_id'])
         else:
             reply = 'You don\'t have permission to do this.'
         client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)

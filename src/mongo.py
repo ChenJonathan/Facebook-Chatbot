@@ -1,4 +1,4 @@
-from util import location_names, level_to_stat_scale
+from util import *
 
 import os
 import pymongo

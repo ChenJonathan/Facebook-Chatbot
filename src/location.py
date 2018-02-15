@@ -4,7 +4,7 @@ import random
 from data import item_drop_data, random_beast
 from mongo import *
 from travel import edges
-from util import location_names, location_names_reverse
+from util import *
 
 feature_map = {
     'Lith Harbor': ['Shop'],
