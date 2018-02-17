@@ -7,8 +7,6 @@ from mongo import *
 from quest import generate_quest
 from util import *
 
-quest_locks = {}
-
 
 def generate_battle(client, user, thread_id):
     if user['Location'] not in monster_data:
@@ -58,10 +56,6 @@ def begin_battle(client, user):
     details['EndTime'] = details['StartTime'] + timedelta(seconds=3)
     details['Status'] = BattleState.Delay
 
-    # quest_locks[user_id] = Lock()
-    #if user_id not in client.user_health:
-    #    client.user_health[user_id] = user['Stats']['HP']
-
     reply = 'The battle has begun!'
     client.send(Message(reply), thread_id=user_id)
     reply = 'You will have ' + str(details['Timer']) + ' seconds to complete the next question.'
@@ -73,9 +67,6 @@ def complete_battle(client, user, victory):
     state, details = client.user_states[user_id]
     monster = details['Monster']
     del client.user_states[user_id]
-
-    # quest_locks[user_id].release()
-    # del quest_locks[user_id]
 
     if victory:
         delta_experience = _calculate_experience(user['Stats']['Level'], monster['Level'])
@@ -126,21 +117,14 @@ def begin_monster_quest(client, user):
     details['StartTime'] = datetime.now()
     details['EndTime'] = details['StartTime'] + timedelta(seconds=details['Timer'])
     details['Status'] = BattleState.Quest
-    reply = details['Quest']['Question']
-    client.send(Message(reply), thread_id=user_id)
+    client.send(Message(details['Quest']['Question']), thread_id=user_id)
 
 
 def complete_monster_quest(client, user, text):
     user_id = user['_id']
-    # if not (user_id in quest_locks and quest_locks[user_id].acquire(False)):
-    #     return
-
-    # Race condition safeguard
     state, details = client.user_states[user_id]
     if user_id not in client.user_health:
         client.user_health[user_id] = user['Stats']['HP']
-    #if details['Status'] == BattleState.Delay:
-    #    return
 
     # Calculate current hit
     monster = details['Monster']
@@ -183,8 +167,6 @@ def complete_monster_quest(client, user, text):
         reply += '\n\nYou will have ' + str(details['Timer']) + ' seconds to complete the next question.'
         client.send(Message(reply), thread_id=user_id)
 
-    # quest_locks[user_id].release()
-
 
 def _calculate_damage(attack, defence):
     damage = random.uniform(attack * 0.8, attack * 1.2) - random.uniform(defence * 0.4, defence * 0.6)
@@ -196,7 +178,7 @@ def _calculate_timer(user_speed, monster_speed):
 
 
 def _calculate_experience(user_level, monster_level):
-    experience = math.sqrt(monster_level / user_level) * 5
+    experience = math.sqrt(monster_level / user_level) * 10
     experience *= random.uniform(0.8, 1.2)
     experience /= max((user_level - monster_level) / 2, 1)
     return max(int(experience), 0)

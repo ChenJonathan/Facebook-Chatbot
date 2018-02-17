@@ -23,7 +23,7 @@ class BattleState(Enum):
 location_names = ['Maple Island', 'Lith Harbor', 'Henesys', 'Ellinia', 'Perion', 'Kerning City']
 location_names += ['Sleepywood', 'Cursed Sanctuary', 'New Leaf City', 'Krakian Jungle', 'Bigger Ben']
 location_names += ['Orbis', 'El Nath', 'Dead Mine', 'Zakum\'s Altar', 'Aqua Road', 'Cave of Pianus']
-location_names += ['Ludibrium', 'Path of Time', 'Papulatus Tower', 'Korean Folk Town', 'Omega Sector']
+location_names += ['Korean Folk Town', 'Omega Sector', 'Ludibrium', 'Path of Time', 'Papulatus Clock Tower']
 location_names += ['Nihal Desert', 'Magatia', 'Leafre', 'Minar Forest', 'Cave of Life', 'Temple of Time']
 
 location_names_reverse = {location_names[i]: i for i in range(len(location_names))}
@@ -47,20 +47,6 @@ def lock_acquire(user_id):
 
 def lock_release(user_id):
     user_locks[user_id].release()
-
-
-def query_location(query):
-    query = query.lower()
-    for i, name in enumerate(location_names):
-        if query == name.lower():
-            return i
-    for i, name in enumerate(location_names):
-        if query in name.lower().split():
-            return i
-    for i, name in enumerate(location_names):
-        if name.lower().startswith(query):
-            return i
-    return None
 
 
 def level_to_stat_scale(level):

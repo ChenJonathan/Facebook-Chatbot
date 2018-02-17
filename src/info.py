@@ -110,6 +110,7 @@ def generate_group_info(client, text, author, thread_id):
         reply += '!inventory: Check your inventory\n'
         reply += '!jail: Send someone to jail\n'
         reply += '!location: Current location details\n'
+        reply += '!map: See your location\n'
         reply += '!quest: Solve quizzes for gold\n'
         reply += '!score: Show group rankings\n'
         reply += '!shop: Spend gold to buy things\n'
@@ -222,6 +223,11 @@ def generate_group_info(client, text, author, thread_id):
         reply += 'Lists the services available in your current location. This can '
         reply += 'include things like shops, crafting stations, boss fights, and more.'
 
+    elif text == 'map':
+        reply = '<<Map>>\n'
+        reply += 'Usage: "!map>"\n'
+        reply += 'Posts a visual of your current region.'
+
     elif text == 'mute':
         reply = '<<Mute>>\n'
         reply += 'Usage: "!mute <search_string>"\n'
@@ -239,10 +245,9 @@ def generate_group_info(client, text, author, thread_id):
     elif text == 'quest':
         reply = '<<Quest>>\n'
         reply += 'Usage: "!quest"\n'
-        reply += 'Generates a multiple choice question for you. You can answer by '
-        reply += 'replying with either the answer itself or the choice number. '
-        reply += 'Correct responses will reward gold but incorrect ones will cost you. '
-        reply += 'The amount of gold scales up with your level.\n\n'
+        reply += 'Generates a multiple choice question for you. You answer by replying with '
+        reply += 'the choice number. Correct responses will reward gold but incorrect ones '
+        reply += 'will cost you. The amount of gold scales up with your level.\n\n'
         reply += 'Usage: "!quest <type>"\n'
         reply += 'Example: "!quest psych"\n'
         reply += 'Sets the type of multiple choice question that will be generated '

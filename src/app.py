@@ -10,9 +10,9 @@ from battle import begin_battle, cancel_battle, complete_monster_quest
 from clock import set_timer
 from commands import run_group_command, run_user_command
 from mongo import *
-from polling import loop, lock_acquire, lock_release
+from polling import loop
 from quest import complete_quest
-from util import master_priority, master_id, UserState, BattleState
+from util import *
 
 cb = cleverbot.Cleverbot(os.environ.get('CLEVERBOT_KEY'))
 

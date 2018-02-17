@@ -331,7 +331,37 @@ def run_group_command(client, author, command, text, thread_id):
             reply += 'There are no services available here.'
         client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
 
-    elif command == 'mute' or command == 'm':
+    elif command == 'map' or command == 'm':
+        location = author['Location']
+        if location in ['Maple Island']:
+            client.sendLocalImage('./images/maple_island.png', thread_id=thread_id, thread_type=ThreadType.GROUP)
+        elif location in ['Lith Harbor', 'Henesys', 'Ellinia', 'Perion', 'Kerning City']:
+            client.sendLocalImage('./images/victoria_island.png', thread_id=thread_id, thread_type=ThreadType.GROUP)
+        elif location in ['Sleepywood', 'Cursed Sanctuary']:
+            client.sendLocalImage('./images/sleepywood.png', thread_id=thread_id, thread_type=ThreadType.GROUP)
+        elif location in ['New Leaf City', 'Krakian Jungle', 'Bigger Ben']:
+            client.sendLocalImage('./images/masteria.png', thread_id=thread_id, thread_type=ThreadType.GROUP)
+        elif location in ['Orbis', 'El Nath']:
+            client.sendLocalImage('./images/el_nath_mts.png', thread_id=thread_id, thread_type=ThreadType.GROUP)
+        elif location in ['Dead Mine', 'Zakum\'s Altar']:
+            client.sendLocalImage('./images/dead_mine.png', thread_id=thread_id, thread_type=ThreadType.GROUP)
+        elif location in ['Aqua Road', 'Cave of Pianus']:
+            client.sendLocalImage('./images/aqua_road.png', thread_id=thread_id, thread_type=ThreadType.GROUP)
+        elif location in ['Korean Folk Town', 'Omega Sector', 'Ludibrium']:
+            client.sendLocalImage('./images/ludus_lake.png', thread_id=thread_id, thread_type=ThreadType.GROUP)
+        elif location in ['Path of Time', 'Papulatus Clock Tower']:
+            client.sendLocalImage('./images/clock_tower.png', thread_id=thread_id, thread_type=ThreadType.GROUP)
+        elif location in ['Nihal Desert', 'Magatia']:
+            client.sendLocalImage('./images/nihal_desert.png', thread_id=thread_id, thread_type=ThreadType.GROUP)
+        elif location in ['Leafre', 'Minar Forest', 'Cave of Life']:
+            client.sendLocalImage('./images/minar_forest.png', thread_id=thread_id, thread_type=ThreadType.GROUP)
+        elif location in ['Temple of Time']:
+            client.sendLocalImage('./images/temple_of_time.png', thread_id=thread_id, thread_type=ThreadType.GROUP)
+        else:
+            message = Message('No map available for this region.')
+            client.send(message, thread_id=thread_id, thread_type=ThreadType.GROUP)
+
+    elif command == 'mute':
         if len(text) == 0:
             client.removeUserFromGroup(author_id, thread_id)
             return

@@ -486,10 +486,10 @@ A comparison of Japan's policies before 1945 with the policies in effect after 1
 0 democratic institutions hinder economic growth
 
 A study of Japan's economy since World War II would lead to the conclusion that
-1 a. government support of technological advances can improve a nation's economic position
-0 a. imperialism is necessary form the economic development of a nation
-0 a. a communist system leads to economic prosperity
-0 a. the feudal system is more economically productive than the market system
+1 government support of technological advances can improve a nation's economic position
+0 imperialism is necessary form the economic development of a nation
+0 a communist system leads to economic prosperity
+0 the feudal system is more economically productive than the market system
 
 Which situation has contributed most to recent Japanese economic growth?
 0 The Japanese government has place limits on Japanese exports.
@@ -3115,28 +3115,28 @@ The stability of many African nations continues to be threatened by the
 0 establishment of labor unions
 
 The war between India and Pakistan in Kashmir in 1965, the sending of Indian troops to Sir Lanka in 1987, and the assassination of Rajiv Gandhi in 1991 all demonstrate that in South Asia
-0 a. the Shino religion is a significant force
-0 a. United Nations peacekeeping forces are ineffective
-1 b. regional and ethnic rivalries remain strong
-0 c. nations are vulnerable to a communist takeover
+0 the Shino religion is a significant force
+0 United Nations peacekeeping forces are ineffective
+1 regional and ethnic rivalries remain strong
+0 nations are vulnerable to a communist takeover
 
 In India today, the continued discrimination based on caste illustrates
-0 a. a commitment to a capitalist economic system
-1 b. the gap between law and tradition
-0 c. the influence of the Cold War on India
-0 c. the declining role of religion in modern society
+0 a commitment to a capitalist economic system
+1 the gap between law and tradition
+0 the influence of the Cold War on India
+0 the declining role of religion in modern society
 
 India has developed a mixed economy that
-0 a. guarantees government control over the economy
-0 b. provides open competition without government interference
-1 c. blends free enterprise with socialism
-0 d. relies on the traditional barter system
+0 guarantees government control over the economy
+0 provides open competition without government interference
+1 blends free enterprise with socialism
+0 relies on the traditional barter system
 
 During the 1980 s, national unity in India was hindered by
-0 a. a foreign policy of nonalignment
-0 b. continued fear of attack from the Soviet Union
-0 c. political interference from China
-1 c. conflicts between Sikhs, Hindus, and Muslims
+0 a foreign policy of nonalignment
+0 continued fear of attack from the Soviet Union
+0 political interference from China
+1 conflicts between Sikhs, Hindus, and Muslims
 
 With which nation are Pol Pot, the Khmer Rouge, and genocide associated?
 0 Korea
@@ -3163,10 +3163,10 @@ Which statement is most accurate about many African societies today?
 0 European influence no longer exists in the former colonial territories
 
 Which situation would best encourage economic development in most African nations today?
-0 a. increasing the population growth rate
-1 b. attracting investment capital
-0 c. reducing the number of skilled workers
-0 d. depleting their natural resources
+0 increasing the population growth rate
+1 attracting investment capital
+0 reducing the number of skilled workers
+0 depleting their natural resources
 
 The caste system is still practiced in India today primarily because it is
 1 encouraged by village customs and traditions
@@ -4377,10 +4377,10 @@ A comparison of Japan's policies before 1945 with the policies in effect after 1
 0 democratic institutions hinder economic growth
 
 A study of Japan's economy since World War II would lead to the conclusion that
-1 a. government support of technological advances can improve a nation's economic position
-0 a. imperialism is necessary form the economic development of a nation
-0 a. a communist system leads to economic prosperity
-0 a. the feudal system is more economically productive than the market system
+1 government support of technological advances can improve a nation's economic position
+0 imperialism is necessary form the economic development of a nation
+0 a communist system leads to economic prosperity
+0 the feudal system is more economically productive than the market system
 
 Which situation has contributed most to recent Japanese economic growth?
 0 The Japanese government has place limits on Japanese exports.
@@ -7006,40 +7006,34 @@ The stability of many African nations continues to be threatened by the
 0 establishment of labor unions
 
 The war between India and Pakistan in Kashmir in 1965, the sending of Indian troops to Sir Lanka in 1987, and the assassination of Rajiv Gandhi in 1991 all demonstrate that in South Asia
-0 a. the Shino religion is a significant force
-0 a. United Nations peacekeeping forces are ineffective
-1 b. regional and ethnic rivalries remain strong
-0 c. nations are vulnerable to a communist takeover
+0 the Shino religion is a significant force
+0 United Nations peacekeeping forces are ineffective
+1 regional and ethnic rivalries remain strong
+0 nations are vulnerable to a communist takeover
 
 In India today, the continued discrimination based on caste illustrates
-0 a. a commitment to a capitalist economic system
-1 b. the gap between law and tradition
-0 c. the influence of the Cold War on India
-0 c. the declining role of religion in modern society
+0 a commitment to a capitalist economic system
+1 the gap between law and tradition
+0 the influence of the Cold War on India
+0 the declining role of religion in modern society
 
 India has developed a mixed economy that
-0 a. guarantees government control over the economy
-0 b. provides open competition without government interference
-1 c. blends free enterprise with socialism
-0 d. relies on the traditional barter system
+0 guarantees government control over the economy
+0 provides open competition without government interference
+1 blends free enterprise with socialism
+0 relies on the traditional barter system
 
 During the 1980 s, national unity in India was hindered by
-0 a. a foreign policy of nonalignment
-0 b. continued fear of attack from the Soviet Union
-0 c. political interference from China
-1 c. conflicts between Sikhs, Hindus, and Muslims
+0 a foreign policy of nonalignment
+0 continued fear of attack from the Soviet Union
+0 political interference from China
+1 conflicts between Sikhs, Hindus, and Muslims
 
 With which nation are Pol Pot, the Khmer Rouge, and genocide associated?
 0 Korea
 0 Japan
 0 Myanmar (Burma)
 1 Cambodia (Kampuchea)
-
---Rebellion in the Congo during the 1960's  --Civil war in Nigeria from 1967 to 1970 
-0 poor food distribution systems
-0 communist interference
-0 demands for land reform
-1 ethnic rivalries
 
 In some African nations today, ethnic rivalries erupt when
 1 political differences are motivated by ancient resentments
@@ -7054,10 +7048,10 @@ Which statement is most accurate about many African societies today?
 0 European influence no longer exists in the former colonial territories
 
 Which situation would best encourage economic development in most African nations today?
-0 a. increasing the population growth rate
-1 b. attracting investment capital
-0 c. reducing the number of skilled workers
-0 d. depleting their natural resources
+0 increasing the population growth rate
+1 attracting investment capital
+0 reducing the number of skilled workers
+0 depleting their natural resources
 
 The caste system is still practiced in India today primarily because it is
 1 encouraged by village customs and traditions
@@ -9859,7 +9853,7 @@ The final collapse of the Byzantine and Arab Islamic empires was caused by?:
 1 the conquests of the Ottoman Turks.
 
 The Ottoman and Safavid empires shared the Muslim tradition of?:
-1 the  Sharia. 
+1 the Sharia. 
 0 peaceful non-violent protests by the people against their government.
 0 religious intolerance.
 0 massive, gaudy architectural styles.

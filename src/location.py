@@ -3,7 +3,7 @@ import random
 
 from data import item_drop_data, random_beast
 from mongo import *
-from travel import edges
+from travel import edges, adjacent_locations
 from util import *
 
 feature_map = {
@@ -51,7 +51,7 @@ def explore_location(client, user, thread_id):
             while rate > random.random():
                 amount += 1
             trials.append(amount)
-        final_amount = sorted(trials)[-3]
+        final_amount = sorted(trials)[-2]
         if final_amount > 0:
             item_drops[item] = final_amount
             inventory_add(user['_id'], item, final_amount)
@@ -73,18 +73,17 @@ def explore_location(client, user, thread_id):
     progress = user['LocationProgress']
     unlocked = []
     presence = False
-    for i, time in enumerate(edges[current]):
-        if time >= 0 and progress.get(location_names[i], 0) < 1:
-            if time > 0:
-                new_progress = progress.get(location_names[i], 0) + seed / edges[current][i]
-            else:
-                new_progress = 1
-            if new_progress >= 1:
-                location_progress_set(user['_id'], location_names[i], 1)
-                unlocked.append(i)
-            else:
-                location_progress_set(user['_id'], location_names[i], new_progress)
-                presence = True
+    for i in adjacent_locations(user, discovered=False):
+        if edges[current][i] > 0:
+            new_progress = progress.get(location_names[i], 0) + seed * 2 / edges[current][i]
+        else:
+            new_progress = 1
+        if new_progress >= 1:
+            location_progress_set(user['_id'], location_names[i], 1)
+            unlocked.append(i)
+        else:
+            location_progress_set(user['_id'], location_names[i], new_progress)
+            presence = True
 
     # Create message
     reply = []

@@ -98,10 +98,7 @@ def complete_quest(client, user, text, thread_id):
         reply = user['Name'] + ' has gained ' + str(delta) + ' gold and is now at '
         reply += str(user['Gold'] + delta) + ' gold total!'
     else:
-        if quest_type == 'Vocab':
-            delta *= random.uniform(-200, -40)
-        else:
-            delta *= random.uniform(-100, -20)
+        delta *= random.uniform(-100, -20)
         delta = int(delta)
         gold_add(user_id, delta)
         quest_stat_track(user_id, quest_type, False)

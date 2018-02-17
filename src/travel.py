@@ -60,12 +60,10 @@ def check_travel(client, user, thread_id):
     if current == 0:
         reply = 'You cannot travel anywhere.'
     else:
-        progress = user['LocationProgress']
         reply = ['You are in ' + location_names[current]]
         reply[0] += ' and can travel to the following places:'
-        for i, time in enumerate(edges[current]):
-            if time >= 0 and progress.get(location_names[i], 0) == 1:
-                reply.append('-> ' + location_names[i] + ': ' + str(time) + ' minutes away')
+        for i in adjacent_locations(user):
+            reply.append('-> ' + location_names[i] + ': ' + str(edges[current][i]) + ' minutes away')
         if len(reply) > 1:
             reply = '\n'.join(reply)
         else:
@@ -75,12 +73,9 @@ def check_travel(client, user, thread_id):
 
 def travel_to_location(client, user, text, thread_id):
     current = location_names_reverse[user['Location']]
-    progress = user['LocationProgress']
-    location = query_location(text)
+    location = _query_location(text, adjacent_locations(user))
     if location is None:
-        reply = 'That location doesn\'t exist.'
-    elif edges[current][location] < 0 or progress.get(location_names[location], 0) < 1:
-        reply = 'You cannot travel there.'
+        reply = 'Invalid location.'
     else:
         user_id = user['_id']
         lock_acquire(user_id)
@@ -93,3 +88,28 @@ def travel_to_location(client, user, text, thread_id):
             lock_release(user_id)
         reply = user['Name'] + ' is now traveling to ' + location_names[location] + '.'
     client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
+
+
+def adjacent_locations(user, discovered=True):
+    current = location_names_reverse[user['Location']]
+    progress = user['LocationProgress']
+    locations = []
+    for i, time in enumerate(edges[current]):
+        if time >= 0 and ((progress.get(location_names[i], 0) == 1) == discovered):
+            locations.append(i)
+    return locations
+
+
+def _query_location(query, locations):
+    query = query.lower()
+    locations = [location_names[location] for location in locations]
+    for location in locations:
+        if query == location.lower():
+            return location_names_reverse[location]
+    for location in locations:
+        if query in location.lower().split():
+            return location_names_reverse[location]
+    for location in locations:
+        if location.lower().startswith(query):
+            return location_names_reverse[location]
+    return None
