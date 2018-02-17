@@ -46,7 +46,7 @@ def explore_location(client, user, thread_id):
     item_drops = {}
     for item, rate in item_drop_data.get(user['Location'], {}).items():
         trials = []
-        for _ in range(9):
+        for _ in range(8):
             amount = 0
             while rate > random.random():
                 amount += 1

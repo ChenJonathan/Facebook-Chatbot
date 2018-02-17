@@ -506,10 +506,14 @@ def _check_to_string(client, user):
     text = '<<' + user['Name'] + '>>' + ((' (' + user['Alias'] + ')\n') if 'Alias' in user else '\n')
     text += 'Priority: ' + priority_names[user['Priority']] + '\n'
     text += 'Level: ' + str(user['Stats']['Level']) + ' (' + str(user['Stats']['EXP']) + '/100 exp)\n'
+    text += '-> ATK: ' + str(total_atk(user)) + ' (' + str(user['Stats']['ATK']) + '+' + \
+            str(total_atk(user) - user['Stats']['ATK']) + ')\n'
+    text += '-> DEF: ' + str(total_def(user)) + ' (' + str(user['Stats']['DEF']) + '+' + \
+            str(total_def(user) - user['Stats']['DEF']) + ')\n'
+    text += '-> SPD: ' + str(total_spd(user)) + ' (' + str(user['Stats']['SPD']) + '+' + \
+            str(total_spd(user) - user['Stats']['SPD']) + ')\n'
     text += 'Health: ' + str(client.user_health.get(user['_id'], user['Stats']['HP'])) + \
             '/' + str(user['Stats']['HP']) + '\n'
-    text += 'Stats: ' + str(total_atk(user)) + ', ' + str(total_def(user)) + \
-            ', ' + str(total_spd(user)) + '\n'
     text += 'Gold: ' + str(user['Gold']) + ' (+' + str(user['GoldFlow']) + '/hour)\n'
     text += 'Location: ' + user['Location']
     state, details = client.user_states.get(user['_id'], (UserState.Idle, {}))
