@@ -97,7 +97,8 @@ def _hunting_pet(client, user, multiplier, thread_id):
     gold_rate_add(user['_id'], delta_rate)
     if multiplier == 1:
         reply = 'You\'ve bought a ' + str(beast[1]) + '/' + str(beast[2])
+        reply += ' ' + beast[0] + '! It grants you an additional ' + str(delta_rate) + ' gold per hour.'
     else:
         reply = 'You\'ve bought ' + str(multiplier) + ' ' + str(beast[1]) + '/' + str(beast[2])
-    reply += ' ' + beast[0] + 's! They grant you an additional ' + str(delta_rate) + ' gold per hour.'
+        reply += ' ' + beast[0] + 's! They grant you an additional ' + str(delta_rate) + ' gold per hour.'
     client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)

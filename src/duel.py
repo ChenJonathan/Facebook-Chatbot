@@ -205,7 +205,7 @@ def complete_duel_quest(client, user, text):
 def _calculate_damage(user_attack, user_base_attack, opponent_defence):
     damage = (user_attack + user_base_attack) * random.uniform(0.8, 1.2)
     damage -= opponent_defence * random.uniform(0.8, 1.2)
-    return max(int(damage / 2), 0)
+    return max(int(damage / 2), 1)
 
 
 def _calculate_timer(user_speed, opponent_speed):

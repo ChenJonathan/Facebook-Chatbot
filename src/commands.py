@@ -276,7 +276,7 @@ def run_group_command(client, author, command, text, thread_id):
         if author_id in client.explore_record:
             now = datetime.today()
             later = now.replace(hour=(now.hour + 1) % 24, minute=0, second=0, microsecond=0)
-            seconds = int((later - now).total_seconds())
+            seconds = (later - now).seconds
             minutes, seconds = seconds // 60, seconds % 60
             reply = 'You can only explore once per hour. ('
             reply += ((str(minutes) + ' min ') if minutes > 0 else '')
