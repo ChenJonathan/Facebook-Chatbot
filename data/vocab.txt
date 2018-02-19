@@ -305,7 +305,7 @@ extemporaneous:unrehearsed
 extirpate:to root up; to destroy
 extraneous:not essential
 extrapolation:the act of estimation by projecting known information
-extrinsic:not inherent of essential
+extrinsic:not inherent or essential
 facetious:homorous
 facilitate:to make less difficult
 factotum:a person who does all sorts of work; a handyman
@@ -437,7 +437,7 @@ irascible:easily angered
 irresolute:unsure of how to act; weak
 itinerant:wandering from place to place; unsettled
 itinerary:route of a traveler's journey
-jaundiced:havind a yellowish discoloration of the skin; affected by envy
+jaundiced:having a yellowish discoloration of the skin; affected by envy
 jibe:to be in agreement
 jocose:fond of joking; jocular
 juggernaut:huge force destrying everything in its path

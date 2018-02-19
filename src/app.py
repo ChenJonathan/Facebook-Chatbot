@@ -4,9 +4,11 @@ from flask import Flask
 from base64 import b64decode
 import cleverbot
 import threading
+import time
 import traceback
 
-from battle import begin_battle, cancel_battle, complete_monster_quest
+from battle import begin_battle, cancel_battle, complete_battle_quest
+from duel import begin_duel, cancel_duel, complete_duel_quest
 from clock import set_timer
 from commands import run_group_command, run_user_command
 from mongo import *
@@ -15,6 +17,7 @@ from quest import complete_quest
 from util import *
 
 cb = cleverbot.Cleverbot(os.environ.get('CLEVERBOT_KEY'))
+lock = threading.Lock()
 
 
 class ChatBot(Client):
@@ -26,14 +29,15 @@ class ChatBot(Client):
 
         self.quest_record = {}
         self.explore_record = set()
-        self.message_record = {}
+        self.duel_requests = {}
         self.user_health = {}
         self.user_states = {}
 
+        self.message_record = {}
         self.defines = {}
         self.responses = []
 
-        set_timer(self)
+        set_timer(self, lock)
 
     def send(self, message, thread_id=None, thread_type=ThreadType.USER):
         super().send(message, thread_id=thread_id, thread_type=thread_type)
@@ -71,6 +75,8 @@ class ChatBot(Client):
     def onMessage(self, mid=None, author_id=None, message=None, message_object=None, thread_id=None, thread_type=ThreadType.USER, ts=None, metadata=None, msg=None):
         if author_id == self.uid:
             return
+
+        lock.acquire()
         try:
 
             # Check for chat commands
@@ -89,21 +95,29 @@ class ChatBot(Client):
             if thread_type == ThreadType.USER:
 
                 # Handle battle messages
-                lock_acquire(author_id)
-                try:
-                    state, details = self.user_states.get(author_id, (UserState.Idle, {}))
-                    if state == UserState.Battle:
-                        author = user_from_id(author_id)
-                        if command == 'flee' or command == 'f':
-                            cancel_battle(self, author)
-                        elif details['Status'] == BattleState.Preparation:
-                            if command == 'ready' or command == 'r':
-                                begin_battle(self, author)
-                        elif details['Status'] == BattleState.Quest:
-                            complete_monster_quest(self, author, text)
-                        return
-                finally:
-                    lock_release(author_id)
+                state, details = self.user_states.get(author_id, (UserState.Idle, {}))
+                if state == UserState.Battle:
+                    author = user_from_id(author_id)
+                    if command == 'flee' or command == 'f':
+                        cancel_battle(self, author)
+                    elif details['Status'] == ChatState.Preparing:
+                        if command == 'ready' or command == 'r':
+                            begin_battle(self, author)
+                    elif details['Status'] == ChatState.Quest:
+                        complete_battle_quest(self, author, text)
+                    return
+
+                # Handle duel messages
+                elif state == UserState.Duel:
+                    author = user_from_id(author_id)
+                    if command == 'flee' or command == 'f':
+                        cancel_duel(self, author)
+                    elif details['Status'] == ChatState.Preparing:
+                        if command == 'ready' or command == 'r':
+                            begin_duel(self, author)
+                    elif details['Status'] == ChatState.Quest:
+                        complete_duel_quest(self, author, text)
+                    return
 
                 # Forward direct messages
                 if thread_id != master_id:
@@ -169,6 +183,8 @@ class ChatBot(Client):
 
         except:
             self.send(Message('Main: ' + traceback.format_exc()), thread_id=master_id)
+        finally:
+            lock.release()
 
     def onPersonRemoved(self, mid=None, removed_id=None, author_id=None, thread_id=None, ts=None, msg=None):
         if exceeds_priority(removed_id, author_id):
@@ -206,7 +222,14 @@ class ActiveThread(threading.Thread):
     def run(self):
         client.startListening()
         while True:
-            loop(client)
+            time.sleep(0.001)
+            lock.acquire()
+            try:
+                loop(client)
+            except:
+                client.send(Message('Polling: ' + traceback.format_exc()), thread_id=master_id)
+            finally:
+                lock.release()
 
 
 ServerThread().start()

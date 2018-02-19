@@ -6,6 +6,7 @@ import requests
 from battle import generate_battle, cancel_battle
 from craft import generate_craft_info, craft_item
 from data import random_emoji
+from duel import send_duel_request, cancel_duel_request, generate_duel, cancel_duel
 from info import generate_user_info, generate_group_info
 from location import location_features, explore_location
 from mongo import *
@@ -23,7 +24,10 @@ def run_user_command(client, author, command, text):
     if command == 'alias' or command == 'a':
         alias, user, *_ = text.split(' ', 1) + ['']
         alias = alias.lower()
-        if len(user) > 0:
+        if len(alias) == 0:
+            generate_user_info(client, author, 'alias')
+            return
+        elif len(user) > 0:
             user = client.searchForUsers(user)[0]
             alias_add(user.uid, alias)
             message = Message(user.name + '\'s alias has been set to ' + alias + '.')
@@ -58,12 +62,17 @@ def run_user_command(client, author, command, text):
             client.defines[command] = text
         elif len(command) > 0:
             del client.defines[command]
+        else:
+            generate_user_info(client, author, 'define')
 
     elif command == 'help' or command == 'h':
-        generate_user_info(client, text, author)
+        generate_user_info(client, author, text)
 
     elif command == 'message' or command == 'm':
         alias, reply, *_ = text.split(' ', 1) + ['']
+        if len(alias) == 0:
+            generate_user_info(client, author, 'message')
+            return
         user = user_from_alias(alias.lower())
         if not user:
             client.send(Message('Alias not found.'), thread_id=author_id)
@@ -73,15 +82,19 @@ def run_user_command(client, author, command, text):
             client.send(Message(emoji_size=EmojiSize.SMALL), thread_id=user['_id'])
 
     elif command == 'perm' or command == 'p':
-        priority, alias = text.split(' ', 1)
-        priority = int(priority)
+        try:
+            priority, alias = text.split(' ', 1)
+            priority = int(priority)
+        except:
+            generate_user_info(client, author, 'perm')
+            return
         user = user_from_alias(alias.lower())
         if not user:
             message = Message('Alias not found.')
         elif user['_id'] == master_id:
             message = Message('Cannot modify master priority.')
         elif priority < 0 or priority >= master_priority:
-            message = Message('Invalid priority.')
+            message = Message('Invalid priority value.')
         else:
             priority_set(user['_id'], priority)
             reply = user['Name'] + '\'s priority has been set to ' + str(priority)
@@ -105,7 +118,7 @@ def run_user_command(client, author, command, text):
     elif command == 'wong' or command == 'w':
         if len(text) > 0:
             client.responses.append(text)
-        elif len(text) == 1:
+        else:
             client.responses.clear()
 
 
@@ -116,7 +129,10 @@ def run_group_command(client, author, command, text, thread_id):
         if author_id == master_id:
             alias, user, *_ = text.split(' ', 1) + ['']
             alias = alias.lower()
-            if len(user) > 0:
+            if len(alias) == 0:
+                generate_group_info(client, author, 'alias', thread_id)
+                return
+            elif len(user) > 0:
                 user = client.match_user(thread_id, user)
                 if user:
                     alias_add(user.uid, alias)
@@ -135,22 +151,19 @@ def run_group_command(client, author, command, text, thread_id):
         client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
 
     elif command == 'battle' or command == 'b':
-        lock_acquire(author_id)
-        try:
-            if _check_busy(client, author, thread_id):
-                return
-            elif client.user_health.get(author_id, author['Stats']['HP']) <= 0:
-                reply = 'You\'re on the brink of death! Wait until the next hour or '
-                reply += 'buy a life elixir from the shop to restore your health.'
-                client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
-            else:
-                generate_battle(client, author, thread_id)
-        finally:
-            lock_release(author_id)
+        if _check_busy(client, author, thread_id):
+            return
+        elif client.user_health.get(author_id, author['Stats']['HP']) <= 0:
+            reply = 'You\'re on the brink of death! Wait until the next hour or '
+            reply += 'buy a life elixir from the shop to restore your health.'
+            client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
+        else:
+            generate_battle(client, author, thread_id)
 
     elif command == 'bully':
         if len(text) == 0:
-            user = client.fetchUserInfo(author_id)[author_id]
+            generate_group_info(client, author, 'bully', thread_id)
+            return
         else:
             user = client.match_user(thread_id, text)
         if user:
@@ -181,17 +194,16 @@ def run_group_command(client, author, command, text, thread_id):
         if _check_busy(client, author, thread_id):
             return
         elif 'Crafting' not in location_features(author['Location']):
-            reply = 'There is no crafting station in this location. '
-            reply += 'Try going to Perion or Sleepywood.'
+            reply = 'There is no crafting station in this location. Try looking elsewhere.'
             client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
         elif len(text) == 0:
             generate_craft_info(client, author, thread_id)
         else:
             craft_item(client, author, text, thread_id)
 
-    elif command == 'daily' or command == 'd':
-        text = text.strip().lower()
+    elif command == 'daily':
         if text not in ['color', 'emoji']:
+            generate_group_info(client, author, 'daily', thread_id)
             return
         subscriptions = subscription_get(thread_id)
         if text in subscriptions:
@@ -201,6 +213,36 @@ def run_group_command(client, author, command, text, thread_id):
             subscription_add(thread_id, text)
             reply = 'This conversation has been subscribed to daily ' + text + 's.'
         client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
+
+    elif command == 'duel' or command == 'd':
+        if _check_busy(client, author, thread_id, allow_duel_requests=True):
+            return
+        elif text.lower() == 'cancel':
+            cancel_duel_request(client, author, thread_id)
+        elif len(text) > 0:
+            try:
+                amount, user = text.split(' ', 1)
+                amount = int(amount)
+                assert amount >= 0
+            except:
+                reply = 'Invalid amount of gold.'
+            else:
+                user = client.match_user(thread_id, user)
+                gold = author['Gold']
+                if author_id in client.duel_requests:
+                    gold += client.duel_requests[author_id][1]
+                if gold < amount:
+                    reply = 'Not enough gold.'
+                elif user is None:
+                    reply = 'User not found.'
+                elif author_id == user.uid:
+                    reply = 'You can\'t duel yourself.'
+                else:
+                    send_duel_request(client, author, user_from_id(user.uid), amount, thread_id)
+                    return
+            client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
+        else:
+            generate_group_info(client, author, 'duel', thread_id)
 
     elif command == 'equip':
         if len(text) > 0:
@@ -232,37 +274,41 @@ def run_group_command(client, author, command, text, thread_id):
 
     elif command == 'explore' or command == 'e':
         if author_id in client.explore_record:
-            reply = 'You can only explore once per hour.'
+            now = datetime.today()
+            later = now.replace(hour=(now.hour + 1) % 24, minute=0, second=0, microsecond=0)
+            seconds = int((later - now).total_seconds())
+            minutes, seconds = seconds // 60, seconds % 60
+            reply = 'You can only explore once per hour. ('
+            reply += ((str(minutes) + ' min ') if minutes > 0 else '')
+            reply += str(seconds) + ' secs remaining)'
             client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
         elif not _check_busy(client, author, thread_id):
             if author_id != master_id:
-                explore_lock.acquire()
-                try:
-                    client.explore_record.add(author_id)
-                finally:
-                    explore_lock.release()
+                client.explore_record.add(author_id)
             explore_location(client, author, thread_id)
 
     elif command == 'flee' or command == 'f':
-        lock_acquire(author_id)
-        try:
-            state, details = client.user_states.get(author_id, (UserState.Idle, {}))
-            if state == UserState.Battle:
-                cancel_battle(client, author)
-        finally:
-            lock_release(author_id)
+        state, details = client.user_states.get(author_id, (UserState.Idle, {}))
+        if state == UserState.Battle:
+            cancel_battle(client, author)
+        elif state == UserState.Duel:
+            cancel_duel(client, author)
 
     elif command == 'give' or command == 'g':
         try:
             amount, user = text.split(' ', 1)
+            assert len(amount) > 0
+        except:
+            generate_group_info(client, author, 'give', thread_id)
+            return
+        try:
             amount = int(amount)
             assert amount > 0 or author_id == master_id
         except:
             reply = 'Invalid amount of gold.'
         else:
             user = client.match_user(thread_id, user)
-            gold = author['Gold']
-            if gold < amount:
+            if author['Gold'] < amount:
                 reply = 'Not enough gold.'
             elif user is None:
                 reply = 'User not found.'
@@ -276,7 +322,7 @@ def run_group_command(client, author, command, text, thread_id):
         client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
 
     elif command == 'help' or command == 'h':
-        generate_group_info(client, text, author, thread_id)
+        generate_group_info(client, author, text, thread_id)
 
     elif command == 'inventory' or command == 'i':
         reply = 'Your inventory has been sent to you. Check your private messages (or message requests).'
@@ -290,7 +336,8 @@ def run_group_command(client, author, command, text, thread_id):
     elif command == 'jail' or command == 'j':
         if author['Priority'] >= master_priority - 1:
             if len(text) == 0:
-                reply = 'Please specify a user.'
+                generate_group_info(client, author, 'jail', thread_id)
+                return
             else:
                 user = client.match_user(thread_id, text)
                 if not user:
@@ -300,20 +347,16 @@ def run_group_command(client, author, command, text, thread_id):
                 user = user_from_id(user.uid)
                 if user['_id'] == master_id and author_id != master_id:
                     user = author
-                lock_acquire(user['_id'])
-                try:
-                    if location_names_reverse[user['Location']] == 0:
-                        location_set(user['_id'], location_names[1])
-                        if client.user_states.get(user['_id'], (UserState.Idle, {}))[0] == UserState.Travel:
-                            del client.travel_record[user['_id']]
-                        reply = user['Name'] + ' has been freed from jail.'
-                    else:
-                        location_set(user['_id'], location_names[0])
-                        if client.user_states.get(user['_id'], (UserState.Idle, {}))[0] == UserState.Travel:
-                            del client.travel_record[user['_id']]
-                        reply = user['Name'] + ' has been sent to jail!'
-                finally:
-                    lock_release(user['_id'])
+                if location_names_reverse[user['Location']] == 0:
+                    location_set(user['_id'], location_names[1])
+                    if client.user_states.get(user['_id'], (UserState.Idle, {}))[0] == UserState.Travel:
+                        del client.user_states[user['_id']]
+                    reply = user['Name'] + ' has been freed from jail.'
+                else:
+                    location_set(user['_id'], location_names[0])
+                    if client.user_states.get(user['_id'], (UserState.Idle, {}))[0] == UserState.Travel:
+                        del client.user_states[user['_id']]
+                    reply = user['Name'] + ' has been sent to jail!'
         else:
             reply = 'You don\'t have permission to do this.'
         client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
@@ -363,7 +406,7 @@ def run_group_command(client, author, command, text, thread_id):
 
     elif command == 'mute':
         if len(text) == 0:
-            client.removeUserFromGroup(author_id, thread_id)
+            generate_group_info(client, author, 'mute', thread_id)
             return
         user = client.match_user(thread_id, text)
         if user:
@@ -377,8 +420,12 @@ def run_group_command(client, author, command, text, thread_id):
 
     elif command == 'perm' or command == 'p':
         if author_id == master_id:
-            priority, user = text.split(' ', 1)
-            priority = int(priority)
+            try:
+                priority, user = text.split(' ', 1)
+                priority = int(priority)
+            except:
+                generate_group_info(client, author, 'perm', thread_id)
+                return
             user = client.match_user(thread_id, user)
             if not user:
                 reply = 'User not found.'
@@ -477,26 +524,35 @@ def run_group_command(client, author, command, text, thread_id):
                 travel_to_location(client, author, text, thread_id)
 
 
-def _check_busy(client, user, thread_id):
+def _check_busy(client, user, thread_id, allow_duel_requests=False):
     user_id = user['_id']
     if user_id not in client.user_states:
-        return False
+        if allow_duel_requests or user_id not in client.duel_requests:
+            return False
+
+        opponent_id, gold = client.duel_requests[user_id]
+        reply = 'You\'re busy requesting a duel with ' + user_from_id(opponent_id)['Name']
+        reply += ' for ' + str(gold) + ' gold!'
+        client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
+        return True
 
     state, details = client.user_states[user_id]
 
-    # Check if user has finished traveling
     if state == UserState.Travel:
         seconds = int((details['EndTime'] - datetime.now()).total_seconds())
         minutes, seconds = seconds // 60, seconds % 60
         reply = 'You\'re busy traveling to ' + details['Destination'] + '. ('
-        reply += ((str(minutes) + ' min ') if minutes > 0 else '')
-        reply += str(seconds) + ' secs remaining)'
+        reply += ((str(minutes) + ' min ') if minutes > 0 else '') + str(seconds) + ' secs remaining)'
         client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
 
-    # Check if user is in battle
     elif state == UserState.Battle:
         reply = 'You\'re busy fighting a level ' + str(details['Monster']['Level'])
         reply += ' ' + details['Monster']['Name'] + '!'
+        client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
+
+    elif state == UserState.Duel:
+        opponent = user_from_id(details['OpponentID'])
+        reply = 'You\'re busy dueling ' + opponent['Name'] + ' for ' + str(details['Gold']) + ' gold!'
         client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
 
     return True
@@ -517,6 +573,7 @@ def _check_to_string(client, user):
     text += 'Gold: ' + str(user['Gold']) + ' (+' + str(user['GoldFlow']) + '/hour)\n'
     text += 'Location: ' + user['Location']
     state, details = client.user_states.get(user['_id'], (UserState.Idle, {}))
+
     if state == UserState.Travel:
         seconds = int((details['EndTime'] - datetime.now()).total_seconds())
         minutes, seconds = seconds // 60, seconds % 60
@@ -525,4 +582,8 @@ def _check_to_string(client, user):
         text += str(seconds) + ' secs remaining)'
     elif state == UserState.Battle:
         text += '\n(In battle with ' + details['Monster']['Name'] + ')'
+    elif state == UserState.Duel:
+        opponent = user_from_id(details['OpponentID'])
+        text += '\n(In a duel with ' + opponent['Name'] + ')'
+
     return text

@@ -3,13 +3,13 @@ from fbchat.models import *
 from util import *
 
 
-def generate_user_info(client, text, author):
-    text = text.lower()
+def generate_user_info(client, author, command):
+    command = command.lower()
     is_master = author['_id'] == master_id
     if not is_master:
         return
 
-    if len(text) == 0:
+    if len(command) == 0:
         reply = '<<Command List>>\n'
         reply += '!alias: Alias assignment\n'
         reply += '!check: See user statistics\n'
@@ -21,21 +21,21 @@ def generate_user_info(client, text, author):
         reply += '!wong: Response priming\n'
         reply += '(See how commands work with "!help <command>")'
     
-    elif text == 'alias':
+    elif command == 'alias':
         reply = '<<Alias>>\n'
-        reply += 'Usage: "!alias <alias> <search_string>"\n'
+        reply += 'Usage: "!alias <alias> <name>"\n'
         reply += 'Example: "!alias wong Wong Liu"\n'
-        reply += 'Assigns an alias to a user (found using <search_string>) for '
+        reply += 'Assigns an alias to a user (found using <name>) for '
         reply += 'use in other private chat commands. Aliases must be a single word.'
 
-    elif text == 'check':
+    elif command == 'check':
         reply = '<<Check>>\n'
         reply += 'Usage: "!check <alias>"\n'
         reply += 'Lists some information on the user designated by <alias>.\n\n'
         reply += 'Usage: "!check"\n'
         reply += 'Lists some information on all users with aliases.'
 
-    elif text == 'define':
+    elif command == 'define':
         reply = '<<Define>>\n'
         reply += 'Usage: "!define <command> <mapping>"\n'
         reply += 'Example: "!define quit !mute"\n'
@@ -47,7 +47,7 @@ def generate_user_info(client, text, author):
         reply += 'Usage: "!define <command>"\n'
         reply += 'Clears the mapping for <command> to its default.'
 
-    elif text == 'help':
+    elif command == 'help':
         reply = '<<Help>>\n'
         reply += 'Usage: "!help"\n'
         reply += 'Lists all the user commands that you can use. Differs per person.\n\n'
@@ -55,7 +55,7 @@ def generate_user_info(client, text, author):
         reply += 'Example: "!help secret"\n'
         reply += 'Explains the syntax and effects of the provided user <command>.'
 
-    elif text == 'message':
+    elif command == 'message':
         reply = '<<Message>>\n'
         reply += 'Usage: "!message <alias> <message>"\n'
         reply += 'Example: "!message raph This is Wong."\n'
@@ -64,19 +64,19 @@ def generate_user_info(client, text, author):
         reply += 'Example: "!message raph"\n'
         reply += 'Sends the default chat emoji from Wong to the user designated by <alias>.'
 
-    elif text == 'perm':
+    elif command == 'perm':
         reply = '<<Perm>>\n'
         reply += 'Usage: "!perm <priority> <alias>"\n'
         reply += 'Example: "!perm 0 raph"\n'
         reply += 'Sets the priority of the user designated by <alias> to <priority>.'
 
-    elif text == 'secret':
+    elif command == 'secret':
         reply = '<<Secret>>\n'
         reply += 'Usage: "!secret"\n'
         reply += 'Lists all of your active secrets. This includes command mappings '
         reply += '(!define) and primed responses (!wong).'
 
-    elif text == 'wong':
+    elif command == 'wong':
         reply = '<<Wong>>\n'
         reply += 'Usage: "!wong <response>"\n'
         reply += 'Example: "!wong Anime belongs in the trash."\n'
@@ -85,15 +85,15 @@ def generate_user_info(client, text, author):
         reply += 'can be primed at once - they will be used oldest first.'
 
     else:
-        return
+        reply = 'Not a valid command.'
     client.send(Message(reply), thread_id=author['_id'])
 
 
-def generate_group_info(client, text, author, thread_id):
-    text = text.lower()
+def generate_group_info(client, author, command, thread_id):
+    command = command.lower()
     is_master = author['_id'] == master_id
 
-    if len(text) == 0:
+    if len(command) == 0:
         reply = '<<Command List>>\n'
         reply += 'See how commands work with "!help <command>".\n'
         if is_master:
@@ -104,6 +104,7 @@ def generate_group_info(client, text, author, thread_id):
         reply += '!battle: Fight monsters\n'
         reply += '!check: See user statistics\n'
         reply += '!craft: Craft items with materials\n'
+        reply += '!duel: Duel another player'
         reply += '!explore: Gather materials\n'
         reply += '!equip: See user equipment\n'
         reply += '!give: Give someone gold\n'
@@ -123,15 +124,15 @@ def generate_group_info(client, text, author, thread_id):
         reply += '!random: Random emoji / color\n'
         reply += '!roll: Roll the dice'
 
-    elif text == 'alias':
+    elif command == 'alias':
         reply = '<<Alias>>\n'
-        reply += 'Usage: "!alias <alias> <search_string>"\n'
+        reply += 'Usage: "!alias <alias> <name>"\n'
         reply += 'Example: "!alias wong Wong Liu"\n'
-        reply += 'Assigns an alias to a user (found using <search_string>) for '
+        reply += 'Assigns an alias to a user (found using <name>) for '
         reply += 'use in other private chat commands. Aliases must be a single word. '
         reply += 'Only usable by ' + priority_names[master_priority] + ' priority.'
 
-    elif text == 'battle':
+    elif command == 'battle':
         reply = '<<Battle>>\n'
         reply += 'Usage: "!battle"\n'
         reply += 'Generates a random monster for you to fight. The monster\'s strength is based '
@@ -139,22 +140,22 @@ def generate_group_info(client, text, author, thread_id):
         reply += 'experience and gold. Quest and battle gold rewards scale up with your level. '
         reply += 'Health is restored fully every hour.'
 
-    elif text == 'bully':
+    elif command == 'bully':
         reply = '<<Bully>>\n'
-        reply += 'Usage: "!bully <search_string>"\n'
-        reply += 'Example: "!bully Raphael"\n'
-        reply += 'Generates an insult for a user (found using <search_string>). '
-        reply += 'The user defaults to you if <search_string> is left blank.'
+        reply += 'Usage: "!bully <name>"\n'
+        reply += 'Example: "!bully Justin"\n'
+        reply += 'Generates an insult for a user (found using <name>). '
+        reply += 'The user defaults to you if <name> is left blank.'
 
-    elif text == 'check':
+    elif command == 'check':
         reply = '<<Check>>\n'
         reply += 'Usage: "!check"\n'
         reply += 'Lists some information on yourself.\n\n'
-        reply += 'Usage: "!check <search_string>"\n'
-        reply += 'Example: "!check Raphael"\n'
-        reply += 'Lists some information on the user designated by <search_string>.'
+        reply += 'Usage: "!check <name>"\n'
+        reply += 'Example: "!check Justin"\n'
+        reply += 'Lists some information on the user designated by <name>.'
 
-    elif text == 'craft':
+    elif command == 'craft':
         reply = '<<Craft>>\n'
         reply += 'Usage: "!craft"\n'
         reply += 'Lists all the items available to craft. Different locations will offer '
@@ -164,7 +165,7 @@ def generate_group_info(client, text, author, thread_id):
         reply += 'Crafts the item designated by <slot>. Make sure to check the craft list '
         reply += 'first to see which item is in each slot.'
 
-    elif text == 'daily':
+    elif command == 'daily':
         reply = '<<Daily>>\n'
         reply += 'Usage: "!daily <event>"\n'
         reply += 'Example: "!daily emoji"\n'
@@ -173,28 +174,39 @@ def generate_group_info(client, text, author, thread_id):
         reply += '-> "Color" - Changes the chat color\n'
         reply += '-> "Emoji" - Changes the chat emoji'
 
-    elif text == 'explore':
+    elif command == 'duel':
+        reply = '<<Duel>>\n'
+        reply += 'Usage: "!duel <amount> <name>"\n'
+        reply += 'Example: "!duel 100 Justin"\n'
+        reply += 'Sends a duel request to the user designated by <name> with a bet of <amount>. '
+        reply += 'The bet is refunded if the duel is cancelled. Duel requests can be accepted by '
+        reply += 'sending a duel request back with the same <amount>. Only one duel request can '
+        reply += 'be active at a time per person.\n\n'
+        reply += 'Usage: "!duel cancel"\n'
+        reply += 'Cancels your current duel request.'
+
+    elif command == 'explore':
         reply = '<<Explore>>\n'
         reply += 'Usage: "!explore"\n'
         reply += 'Explores the current location. Exploration will grant various rewards '
         reply += 'and gradually discover surrounding locations. Can be done once per hour; '
         reply += 'the explore timer resets on the hour.'
 
-    elif text == 'equip':
+    elif command == 'equip':
         reply = '<<Equip>>\n'
         reply += 'Usage: "!equip"\n'
         reply += 'Lists your current equipment information.'
-        reply += 'Usage: "!equip <search_string>"\n'
-        reply += 'Example: "!equip Raphael"\n'
-        reply += 'Lists equipment information on the user designated by <search_string>.'
+        reply += 'Usage: "!equip <name>"\n'
+        reply += 'Example: "!equip Justin"\n'
+        reply += 'Lists equipment information on the user designated by <name>.'
 
-    elif text == 'give':
+    elif command == 'give':
         reply = '<<Give>>\n'
-        reply += 'Usage: "!give <amount> <search_string>"\n'
-        reply += 'Example: "!give 10 Raphael"\n'
-        reply += 'Gives <amount> gold to the user designated by <search_string>.'
+        reply += 'Usage: "!give <amount> <name>"\n'
+        reply += 'Example: "!give 10 Justin"\n'
+        reply += 'Gives <amount> gold to the user designated by <name>.'
 
-    elif text == 'help':
+    elif command == 'help':
         reply = '<<Help>>\n'
         reply += 'Usage: "!help"\n'
         reply += 'Lists all the group commands that you can use.\n\n'
@@ -202,14 +214,14 @@ def generate_group_info(client, text, author, thread_id):
         reply += 'Example: "!help quest"\n'
         reply += 'Explains the syntax and effects of the provided group <command>.'
 
-    elif text == 'inventory':
+    elif command == 'inventory':
         reply = '<<Inventory>>\n'
         reply += 'Usage: "!inventory"\n'
         reply += 'Lists the contents of your inventory to you in a private message. '
         reply += 'Items can be found through exploration. There is no limit to '
         reply += 'inventory size.'
 
-    elif text == 'jail':
+    elif command == 'jail':
         reply = '<<Jail>>\n'
         reply += 'Usage: "!jail"\n'
         reply += 'Sends a person to jail, preventing them from taking any actions '
@@ -217,32 +229,32 @@ def generate_group_info(client, text, author, thread_id):
         reply += 'they will be freed from jail instead and sent to Lith Harbor. '
         reply += 'Only usable by ' + priority_names[master_priority - 1] + ' priority and above.'
 
-    elif text == 'location':
+    elif command == 'location':
         reply = '<<Location>>\n'
         reply += 'Usage: "!location"\n'
         reply += 'Lists the services available in your current location. This can '
         reply += 'include things like shops, crafting stations, boss fights, and more.'
 
-    elif text == 'map':
+    elif command == 'map':
         reply = '<<Map>>\n'
         reply += 'Usage: "!map>"\n'
         reply += 'Posts a visual of your current region.'
 
-    elif text == 'mute':
+    elif command == 'mute':
         reply = '<<Mute>>\n'
-        reply += 'Usage: "!mute <search_string>"\n'
-        reply += 'Example: "!mute Raphael"\n'
-        reply += 'Kicks a user (found using <search_string>) from the group chat. '
-        reply += 'The user defaults to you if <search_string> is left blank.'
+        reply += 'Usage: "!mute <name>"\n'
+        reply += 'Example: "!mute Justin"\n'
+        reply += 'Kicks a user (found using <name>) from the group chat. '
+        reply += 'The user defaults to you if <name> is left blank.'
 
-    elif text == 'perm':
+    elif command == 'perm':
         reply = '<<Perm>>\n'
-        reply += 'Usage: "!perm <priority> <search_string>"\n'
-        reply += 'Example: "!perm 0 Raphael"\n'
-        reply += 'Sets the priority of the user designated by <search_string> to '
-        reply += '<priority>. Only usable by ' + priority_names[master_priority] + ' priority.'
+        reply += 'Usage: "!perm <priority> <name>"\n'
+        reply += 'Example: "!perm 0 Justin"\n'
+        reply += 'Sets the priority of the user designated by <name> to <priority>. '
+        reply += 'Only usable by ' + priority_names[master_priority] + ' priority.'
 
-    elif text == 'quest':
+    elif command == 'quest':
         reply = '<<Quest>>\n'
         reply += 'Usage: "!quest"\n'
         reply += 'Generates a multiple choice question for you. You answer by replying with '
@@ -260,18 +272,18 @@ def generate_group_info(client, text, author, thread_id):
         reply += '-> "Science" - Physics / chemistry / biology questions\n'
         reply += '-> "Trivia" - Trivia questions from various topics\n'
 
-    elif text == 'random':
+    elif command == 'random':
         reply = '<<Random>>\n'
         reply += 'Usage: "!random"\n'
         reply += 'Randomly sets the group chat\'s color and emoji.'
 
-    elif text == 'roll':
+    elif command == 'roll':
         reply = '<<Roll>>\n'
         reply += 'Usage: "!roll <sides>"\n'
         reply += 'Example: "!roll 10"\n'
         reply += 'Rolls a <sides> sided die. <sides> defaults to 6 if left blank.'
 
-    elif text == 'score':
+    elif command == 'score':
         reply = '<<Score>>\n'
         reply += 'Usage: "!score <page>"\n'
         reply += 'Example: "!score 2"\n'
@@ -279,7 +291,7 @@ def generate_group_info(client, text, author, thread_id):
         reply += 'gold generation, and number of locations discovered into account. '
         reply += 'Each page lists 9 people.'
 
-    elif text == 'shop':
+    elif command == 'shop':
         reply = '<<Shop>>\n'
         reply += 'Usage: "!shop"\n'
         reply += 'Lists all the items available in the shop. Shop items are the same '
@@ -289,7 +301,7 @@ def generate_group_info(client, text, author, thread_id):
         reply += 'Purchases the shop item designated by <slot>. Make sure to check the '
         reply += 'shop first to see which item is in each slot.'
 
-    elif text == 'travel':
+    elif command == 'travel':
         reply = '<<Travel>>\n'
         reply += 'Usage: "!travel <location>"\n'
         reply += 'Example: "!travel Ellinia"\n'
@@ -300,5 +312,5 @@ def generate_group_info(client, text, author, thread_id):
         reply += 'New locations can be found through exploration.'
 
     else:
-        return
+        reply = 'Not a valid command.'
     client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)

@@ -16,13 +16,9 @@ def apply_gold_rates():
 
 def restore_health(client):
     for user_id, health in list(client.user_health.items()):
-        lock_acquire(user_id)
-        try:
-            state, details = client.user_states.get(user_id, (UserState.Idle, {}))
-            if state != UserState.Battle:
-                del client.user_health[user_id]
-        finally:
-            lock_release(user_id)
+        state, details = client.user_states.get(user_id, (UserState.Idle, {}))
+        if state != UserState.Battle:
+            del client.user_health[user_id]
 
 
 def manage_subscriptions(client):
@@ -41,8 +37,8 @@ def manage_subscriptions(client):
             client.changeThreadEmoji(emoji, thread_id=group_id)
 
 
-def reset_timer(client):
-    explore_lock.acquire()
+def reset_timer(client, lock):
+    lock.acquire()
     try:
         client.explore_record.clear()
         apply_gold_rates()
@@ -52,13 +48,13 @@ def reset_timer(client):
     except:
         client.send(Message('Timer: ' + traceback.format_exc()), thread_id=master_id)
     finally:
-        explore_lock.release()
+        lock.release()
 
-    set_timer(client)
+    set_timer(client, lock)
 
 
-def set_timer(client):
+def set_timer(client, lock):
     now = datetime.today()
     later = now.replace(hour=(now.hour + 1) % 24, minute=0, second=0, microsecond=0)
     delta_time = (later - now).seconds + 1
-    threading.Timer(delta_time, reset_timer, [client]).start()
+    threading.Timer(delta_time, reset_timer, [client, lock]).start()

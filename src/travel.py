@@ -24,7 +24,7 @@ _connect(2, 6, 2)
 _connect(3, 6, 2)
 _connect(4, 6, 2)
 _connect(5, 6, 2)
-_connect(6, 7, 1)
+_connect(6, 7, 2)
 # - New Leaf City
 _connect(5, 8, 5)
 _connect(8, 9, 3)
@@ -37,7 +37,7 @@ _connect(13, 14, 0)
 # - Aqua Road
 #_connect(11, 15, 10)
 _connect(12, 15, 6)
-_connect(15, 16, 1)
+_connect(15, 16, 2)
 _connect(15, 20, 5)
 # - Ludibrium
 #_connect(11, 17, 16)
@@ -51,7 +51,7 @@ _connect(22, 23, 5)
 # - Leafre
 #_connect(11, 24, 15)
 _connect(24, 25, 5)
-_connect(25, 26, 1)
+_connect(25, 26, 2)
 #_connect(24, 27, 60)
 
 
@@ -78,14 +78,10 @@ def travel_to_location(client, user, text, thread_id):
         reply = 'Invalid location.'
     else:
         user_id = user['_id']
-        lock_acquire(user_id)
-        try:
-            client.user_states[user_id] = (UserState.Travel, {
-                'Destination': location_names[location],
-                'EndTime': datetime.now() + timedelta(minutes=edges[current][location])
-            })
-        finally:
-            lock_release(user_id)
+        client.user_states[user_id] = (UserState.Travel, {
+            'Destination': location_names[location],
+            'EndTime': datetime.now() + timedelta(minutes=edges[current][location])
+        })
         reply = user['Name'] + ' is now traveling to ' + location_names[location] + '.'
     client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
 

@@ -1,5 +1,4 @@
 from enum import Enum
-from threading import Lock
 import math
 
 priority_names = ['Peasant', 'User', 'Mod', 'Admin', 'Master']
@@ -12,12 +11,14 @@ class UserState(Enum):
     Idle = 0
     Travel = 1
     Battle = 2
+    Duel = 3
 
 
-class BattleState(Enum):
-    Preparation = 0
-    Delay = 1
-    Quest = 2
+class ChatState(Enum):
+    Preparing = 0
+    Ready = 1
+    Delay = 2
+    Quest = 3
 
 
 location_names = ['Maple Island', 'Lith Harbor', 'Henesys', 'Ellinia', 'Perion', 'Kerning City']
@@ -34,19 +35,6 @@ item_names += ['Bottled Light', 'Bottled Darkness', 'Touch of Life', 'Touch of D
 item_names += ['Howling Wind', 'Formless Ice', 'Drop of Earth', 'Living Flame']
 item_names += ['Clockwork Shard', 'Crystal Shard', 'Iron Shard', 'Time Shard']
 item_names += ['Breathing Wood', 'Shifting Vines', 'Astral Coral', 'Warped Bones']
-
-user_locks = {}
-explore_lock = Lock()
-
-
-def lock_acquire(user_id):
-    if user_id not in user_locks:
-        user_locks[user_id] = Lock()
-    user_locks[user_id].acquire()
-
-
-def lock_release(user_id):
-    user_locks[user_id].release()
 
 
 def level_to_stat_scale(level):
