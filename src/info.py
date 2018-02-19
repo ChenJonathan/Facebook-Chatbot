@@ -104,7 +104,7 @@ def generate_group_info(client, author, command, thread_id):
         reply += '!battle: Fight monsters\n'
         reply += '!check: See user statistics\n'
         reply += '!craft: Craft items with materials\n'
-        reply += '!duel: Duel another player'
+        reply += '!duel: Duel another player\n'
         reply += '!explore: Gather materials\n'
         reply += '!equip: See user equipment\n'
         reply += '!give: Give someone gold\n'
