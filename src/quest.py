@@ -1,4 +1,5 @@
 from fbchat.models import *
+import math
 import requests
 import string
 
@@ -86,23 +87,27 @@ def complete_quest(client, user, text, thread_id):
     quest = client.quest_record[user_id]
     correct = quest['Correct']
     del client.quest_record[user_id]
-    delta = math.sqrt(user['Stats']['Level'] + 64) - 7
+
+    delta = 10 + user['GoldFlow'] / 100
+
     if text == str(correct + 1):
         if quest_type == 'Vocab':
-            delta *= random.uniform(40, 200)
+            delta *= random.uniform(4, 20)
         else:
-            delta *= random.uniform(60, 300)
+            delta *= random.uniform(6, 30)
         delta = int(delta)
         gold_add(user_id, delta)
         quest_stat_track(user_id, quest_type, True)
         reply = user['Name'] + ' has gained ' + str(delta) + ' gold and is now at '
         reply += str(user['Gold'] + delta) + ' gold total!'
+
     else:
-        delta *= random.uniform(-100, -20)
+        delta *= random.uniform(-10, -2)
         delta = int(delta)
         gold_add(user_id, delta)
         quest_stat_track(user_id, quest_type, False)
         reply = user['Name'] + ' has lost ' + str(-delta) + ' gold and is now at '
         reply += str(user['Gold'] + delta) + ' gold total. The correct answer was '
         reply += '"' + quest['Answers'][correct] + '".'
+
     client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)

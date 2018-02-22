@@ -21,7 +21,9 @@ def generate_craft_info(client, user, thread_id):
             reply += '\n-> SPD: ' + str(item_datum['SPD'])
         reply += '\n-> Materials:'
         for material, amount in item_datum['Materials'].items():
+            count = user['Inventory'].get(material, 0)
             reply += '\n---> ' + material + ' x ' + str(amount)
+            reply += ' (' + str(count) + '/' + str(amount) + ')'
     client.send(Message(reply), thread_id=user['_id'])
 
 
