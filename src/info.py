@@ -101,7 +101,7 @@ def generate_group_info(client, author, command, thread_id):
             reply += '!alias: Alias assignment\n'
             reply += '!perm: Change user priority\n'
         reply += '\n<Game Commands>\n'
-        reply += '!battle: Fight monsters\n'
+        reply += '!battle: Battle monsters\n'
         reply += '!check: See user statistics\n'
         reply += '!craft: Craft items with materials\n'
         reply += '!duel: Duel another player\n'
@@ -144,8 +144,7 @@ def generate_group_info(client, author, command, thread_id):
         reply = '<<Bully>>\n'
         reply += 'Usage: "!bully <name>"\n'
         reply += 'Example: "!bully Justin"\n'
-        reply += 'Generates an insult for a user (found using <name>). '
-        reply += 'The user defaults to you if <name> is left blank.'
+        reply += 'Generates an insult for a user (found using <name>).'
 
     elif command == 'check':
         reply = '<<Check>>\n'
@@ -244,8 +243,7 @@ def generate_group_info(client, author, command, thread_id):
         reply = '<<Mute>>\n'
         reply += 'Usage: "!mute <name>"\n'
         reply += 'Example: "!mute Justin"\n'
-        reply += 'Kicks a user (found using <name>) from the group chat. '
-        reply += 'The user defaults to you if <name> is left blank.'
+        reply += 'Kicks a user (found using <name>) from the group chat.'
 
     elif command == 'perm':
         reply = '<<Perm>>\n'
@@ -287,9 +285,8 @@ def generate_group_info(client, author, command, thread_id):
         reply = '<<Score>>\n'
         reply += 'Usage: "!score <page>"\n'
         reply += 'Example: "!score 2"\n'
-        reply += 'Lists the top people in the group chat by score. Score takes gold, '
-        reply += 'gold generation, and number of locations discovered into account. '
-        reply += 'Each page lists 9 people.'
+        reply += 'Lists the top people in the group chat by score. Score takes total stats, gold, '
+        reply += 'gold generation, and locations discovered into account. Each page lists 9 people.'
 
     elif command == 'shop':
         reply = '<<Shop>>\n'

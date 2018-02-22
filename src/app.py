@@ -83,14 +83,9 @@ class ChatBot(Client):
             if message_object.text and message_object.text[0] == '!':
                 command, text, *_ = message_object.text.split(' ', 1) + ['']
                 command = command[1:].lower()
-                text = text.strip()
             else:
                 command, text = None, (message_object.text or '')
-
-            # Check for mentions
-            mentions = []
-            for mention in message_object.mentions:
-                mentions.append(mention.thread_id)
+            text = text.strip().replace('@', '')
 
             if thread_type == ThreadType.USER:
 

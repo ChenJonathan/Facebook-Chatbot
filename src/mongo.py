@@ -81,11 +81,8 @@ def user_try_add(user_id):
             'LocationProgress': {location_names[i]: 1 for i in range(0, 6)},
             'Stats': {
                 'Level': 1,
-                'EXP': 0,
-                'HP': 100,
-                'ATK': 10,
-                'DEF': 10,
-                'SPD': 10
+                'Experience': 0,
+                'Health': 100
             },
             'Equipment': {
                 'Weapon': {
@@ -109,15 +106,7 @@ def user_try_add(user_id):
             },
             'Inventory': {},
             'Quest': {
-                'Type': 'Vocab',
-                'Vocab': {
-                    'Correct': 0,
-                    'Total': 0
-                },
-                'Trivia': {
-                    'Correct': 0,
-                    'Total': 0
-                }
+                'Type': 'Vocab'
             }
         })
 
@@ -188,20 +177,16 @@ def location_progress_set(user_id, location, progress):
 # Level methods
 
 def level_set(user_id, level):
-    value = int(level_to_stat_scale(level))
     user_try_add(user_id)
     update = {'$set': {
-        'Stats.Level': level,
-        'Stats.ATK': value,
-        'Stats.DEF': value,
-        'Stats.SPD': value
+        'Stats.Level': level
     }}
     db_users.update_one({'_id': user_id}, update)
 
 
 def experience_set(user_id, experience):
     user_try_add(user_id)
-    update = {'$set': {'Stats.EXP': experience}}
+    update = {'$set': {'Stats.Experience': experience}}
     db_users.update_one({'_id': user_id}, update)
 
 

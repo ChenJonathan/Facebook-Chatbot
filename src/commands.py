@@ -153,9 +153,15 @@ def run_group_command(client, author, command, text, thread_id):
     elif command == 'battle' or command == 'b':
         if _check_busy(client, author, thread_id):
             return
-        elif client.user_health.get(author_id, author['Stats']['HP']) <= 0:
-            reply = 'You\'re on the brink of death! Wait until the next hour or '
-            reply += 'buy a life elixir from the shop to restore your health.'
+        elif client.user_health.get(author_id, author['Stats']['Health']) <= 0:
+            now = datetime.today()
+            later = now.replace(hour=(now.hour + 1) % 24, minute=0, second=0, microsecond=0)
+            seconds = (later - now).seconds
+            minutes, seconds = seconds // 60, seconds % 60
+            reply = 'You\'re on the brink of death! Buy a life elixir from the shop '
+            reply += 'or wait until the next hour to restore your health. ('
+            reply += ((str(minutes) + ' min ') if minutes > 0 else '')
+            reply += str(seconds) + ' secs remaining)'
             client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
         else:
             generate_battle(client, author, thread_id)
@@ -470,14 +476,19 @@ def run_group_command(client, author, command, text, thread_id):
         user = client.fetchUserInfo(author_id)[author_id]
         if len(text) == 0:
             roll = 'a ' + str(random.randint(1, 6))
-        elif len(text) > 0 and int(text) > 0:
-            roll = str(random.randint(1, int(text)))
-            if roll[0] == '8' or (roll[0:2] == '18' and len(roll) % 3 == 2):
-                roll = 'an ' + roll
-            else:
-                roll = 'a ' + roll
         else:
-            return
+            try:
+                text = int(text)
+                assert text > 0
+            except:
+                generate_group_info(client, author, 'roll', thread_id)
+                return
+            else:
+                roll = str(random.randint(1, text))
+                if roll[0] == '8' or (roll[0:2] == '18' and len(roll) % 3 == 2):
+                    roll = 'an ' + roll
+                else:
+                    roll = 'a ' + roll
         message = Message(user.name + ' rolls ' + roll + '.')
         client.send(message, thread_id=thread_id, thread_type=ThreadType.GROUP)
 
@@ -561,15 +572,13 @@ def _check_busy(client, user, thread_id, allow_duel_requests=False):
 def _check_to_string(client, user):
     text = '<<' + user['Name'] + '>>' + ((' (' + user['Alias'] + ')\n') if 'Alias' in user else '\n')
     text += 'Priority: ' + priority_names[user['Priority']] + '\n'
-    text += 'Level: ' + str(user['Stats']['Level']) + ' (' + str(user['Stats']['EXP']) + '/100 exp)\n'
-    text += '-> ATK: ' + str(total_atk(user)) + ' (' + str(user['Stats']['ATK']) + '+' + \
-            str(total_atk(user) - user['Stats']['ATK']) + ')\n'
-    text += '-> DEF: ' + str(total_def(user)) + ' (' + str(user['Stats']['DEF']) + '+' + \
-            str(total_def(user) - user['Stats']['DEF']) + ')\n'
-    text += '-> SPD: ' + str(total_spd(user)) + ' (' + str(user['Stats']['SPD']) + '+' + \
-            str(total_spd(user) - user['Stats']['SPD']) + ')\n'
-    text += 'Health: ' + str(client.user_health.get(user['_id'], user['Stats']['HP'])) + \
-            '/' + str(user['Stats']['HP']) + '\n'
+    text += 'Level: ' + str(user['Stats']['Level']) + ' (' + str(user['Stats']['Experience']) + '/100 exp)\n'
+    base_stat_val = str(base_stat(user['Stats']['Level']))
+    text += '-> ATK: ' + str(total_atk(user)) + ' (' + base_stat_val + format_num(equip_atk(user)) + ')\n'
+    text += '-> DEF: ' + str(total_def(user)) + ' (' + base_stat_val + format_num(equip_def(user)) + ')\n'
+    text += '-> SPD: ' + str(total_spd(user)) + ' (' + base_stat_val + format_num(equip_spd(user)) + ')\n'
+    text += 'Health: ' + str(client.user_health.get(user['_id'], user['Stats']['Health'])) + \
+            '/' + str(user['Stats']['Health']) + '\n'
     text += 'Gold: ' + str(user['Gold']) + ' (+' + str(user['GoldFlow']) + '/hour)\n'
     text += 'Location: ' + user['Location']
     state, details = client.user_states.get(user['_id'], (UserState.Idle, {}))

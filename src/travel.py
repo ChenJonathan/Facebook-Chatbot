@@ -91,7 +91,7 @@ def adjacent_locations(user, discovered=True):
     progress = user['LocationProgress']
     locations = []
     for i, time in enumerate(edges[current]):
-        if time >= 0 and ((progress.get(location_names[i], 0) == 1) == discovered):
+        if time >= 0 and ((progress.get(location_names[i], 0) >= 1) == discovered):
             locations.append(i)
     return locations
 

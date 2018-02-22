@@ -31,29 +31,58 @@ location_names_reverse = {location_names[i]: i for i in range(len(location_names
 
 item_names = ['Demon Soul', 'Truffle Worm', 'Eye of Fire', 'Cracked Dimension Piece', 'Dragon Soul']
 item_names += ['Brutal Essence', 'Wild Essence', 'Arcane Essence', 'Void Essence']
-item_names += ['Bottled Light', 'Bottled Darkness', 'Touch of Life', 'Touch of Death']
-item_names += ['Howling Wind', 'Formless Ice', 'Drop of Earth', 'Living Flame']
-item_names += ['Clockwork Shard', 'Crystal Shard', 'Iron Shard', 'Time Shard']
-item_names += ['Breathing Wood', 'Shifting Vines', 'Astral Coral', 'Warped Bones']
+item_names += ['Touch of Life', 'Touch of Death', 'Touch of Chaos', 'Touch of Magic']
+item_names += ['Bottled Light', 'Bottled Darkness', 'Lost Magic', 'Lost Memory']
+item_names += ['Howling Wind', 'Formless Water', 'Drop of Earth', 'Living Flame']
+item_names += ['Howling Sky', 'Formless Ice', 'Drop of Sand', 'Living Magma']
+item_names += ['Celestial Fragment', 'Snow Fragment', 'Altar Fragment', 'Energy Fragment']
+item_names += ['Sunlight Shard', 'Moonlight Shard', 'Time Shard', 'Space Shard']
+item_names += ['Iron Shard', 'Diamond Shard', 'Crystal Shard', 'Clockwork Shard']
+item_names += ['Breathing Wood', 'Shifting Vines', 'Weeping Herb', 'Astral Flower']
+item_names += ['Mutated Moss', 'Sleeping Coral', 'Tainted Fur', 'Fairy Feather']
+item_names += ['Warped Bones', 'Warped Entrails', 'Warped Spirit', 'Warped Debris']
 
 
-def level_to_stat_scale(level):
+def base_stat_float(level):
     return (math.sqrt(level + 64) - 7) * 10
 
 
+def base_stat(level):
+    return int(base_stat_float(level))
+
+
+def equip_atk(user):
+    return user['Equipment']['Weapon']['ATK'] + \
+           user['Equipment']['Armor']['ATK'] + \
+           user['Equipment']['Accessory']['ATK']
+
+
+def equip_def(user):
+    return user['Equipment']['Weapon']['DEF'] + \
+           user['Equipment']['Armor']['DEF'] + \
+           user['Equipment']['Accessory']['DEF']
+
+
+def equip_spd(user):
+    return user['Equipment']['Weapon']['SPD'] + \
+           user['Equipment']['Armor']['SPD'] + \
+           user['Equipment']['Accessory']['SPD']
+
+
 def total_atk(user):
-    return user['Stats']['ATK'] + user['Equipment']['Weapon']['ATK'] + \
-           user['Equipment']['Armor']['ATK'] + user['Equipment']['Accessory']['ATK']
+    return base_stat(user['Stats']['Level']) + equip_atk(user)
 
 
 def total_def(user):
-    return user['Stats']['DEF'] + user['Equipment']['Weapon']['DEF'] + \
-           user['Equipment']['Armor']['DEF'] + user['Equipment']['Accessory']['DEF']
+    return base_stat(user['Stats']['Level']) + equip_def(user)
 
 
 def total_spd(user):
-    return user['Stats']['SPD'] + user['Equipment']['Weapon']['SPD'] + \
-           user['Equipment']['Armor']['SPD'] + user['Equipment']['Accessory']['SPD']
+    return base_stat(user['Stats']['Level']) + equip_spd(user)
+
+
+def format_num(num):
+    return ('+' + str(num)) if num >= 0 else str(num)
 
 
 def calculate_score(user):

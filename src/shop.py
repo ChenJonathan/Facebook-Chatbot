@@ -40,7 +40,7 @@ def shop_purchase(client, user, slot, thread_id):
             else:
                 reply = 'You can\'t afford that.'
         elif slot == 2:
-            if user['_id'] not in client.user_health or client.user_health[user['_id']] == user['Stats']['HP']:
+            if user['_id'] not in client.user_health or client.user_health[user['_id']] == user['Stats']['Health']:
                 reply = 'You already have full health.'
             elif gold >= 1000:
                 gold_add(user['_id'], -1000)
@@ -86,7 +86,7 @@ def _charity_donation(client, thread_id):
 
 def _life_elixir(client, user, thread_id):
     user_id = user['_id']
-    client.user_health[user_id] = user['Stats']['HP']
+    client.user_health[user_id] = user['Stats']['Health']
     reply = 'Your health has been restored to its maximum!'
     client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
 

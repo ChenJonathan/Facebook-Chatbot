@@ -29,12 +29,12 @@ def generate_battle(client, user, thread_id):
         lower_bound = max(user_level - 3, monster['Level'][0])
         upper_bound = min(user_level + 3, monster['Level'][1])
         monster_level = random.randint(lower_bound, upper_bound)
-    stat_scale = level_to_stat_scale(monster_level) * (1 + (monster_level - 8) / 16)
+    stat_scale = base_stat(monster_level) * (1 + (monster_level - 8) / 16)
     monster['Level'] = monster_level
     monster['ATK'] = int(monster['ATK'] * stat_scale)
     monster['DEF'] = int(monster['DEF'] * stat_scale)
     monster['SPD'] = int(monster['SPD'] * stat_scale)
-    monster['HP'] = int(monster['HP'] * stat_scale * 3) // 10 * 10
+    monster['Health'] = int(monster['Health'] * stat_scale * 3) // 10 * 10
 
     client.user_states[user['_id']] = (UserState.Battle, battle)
     reply = user['Name'] + ' has encountered a level ' + str(battle['Monster']['Level']) + ' '
@@ -70,7 +70,7 @@ def complete_battle(client, user, victory):
 
     if victory:
         delta_experience = _calculate_experience(user['Stats']['Level'], monster['Level'])
-        new_experience = user['Stats']['EXP'] + delta_experience
+        new_experience = user['Stats']['Experience'] + delta_experience
         delta_level = new_experience // 100
         delta_gold = _calculate_gold(user['Stats']['Level'], monster['Level'])
         experience_set(user_id, new_experience % 100)
@@ -98,7 +98,7 @@ def cancel_battle(client, user):
     del client.user_states[user_id]
 
     if user_id not in client.user_health:
-        client.user_health[user_id] = user['Stats']['HP']
+        client.user_health[user_id] = user['Stats']['Health']
     flee_penalty = min(client.user_health[user_id], 10)
     client.user_health[user_id] -= flee_penalty
 
@@ -128,26 +128,26 @@ def complete_battle_quest(client, user, text):
     user_id = user['_id']
     state, details = client.user_states[user_id]
     if user_id not in client.user_health:
-        client.user_health[user_id] = user['Stats']['HP']
+        client.user_health[user_id] = user['Stats']['Health']
 
     # Calculate user damage
     monster = details['Monster']
     quest = details['Quest']
     if text == str(quest['Correct'] + 1):
-        damage = _calculate_damage(total_atk(user), user['Stats']['ATK'], monster['DEF'])
-        monster['HP'] = max(monster['HP'] - damage, 0)
+        damage = _calculate_damage(total_atk(user), base_stat(user['Stats']['Level']), monster['DEF'])
+        monster['Health'] = max(monster['Health'] - damage, 0)
         if details['Timer'] > 4:
             details['Timer'] -= 1
 
         if damage == 0:
             reply = 'Your attack was too weak and dealt no damage to the enemy ' + monster['Name']
-            reply += '. It has ' + str(monster['HP']) + ' health left.'
+            reply += '. It has ' + str(monster['Health']) + ' health left.'
         else:
             reply = 'You dealt ' + str(damage) + ' damage to the enemy ' + monster['Name'] + '! It has '
-            reply += str(monster['HP']) + ' health left.'
+            reply += str(monster['Health']) + ' health left.'
 
         # User wins
-        if monster['HP'] <= 0:
+        if monster['Health'] <= 0:
             client.send(Message(reply), thread_id=user_id)
             complete_battle(client, user, True)
             return
@@ -155,11 +155,12 @@ def complete_battle_quest(client, user, text):
     # Calculate opponent damage
     else:
         damage = _calculate_damage(monster['ATK'], monster['ATK'], total_def(user))
+        damage = max(damage, 1)
         client.user_health[user_id] = max(client.user_health[user_id] - damage, 0)
         details['Timer'] = _calculate_timer(total_spd(user), monster['SPD'])
 
         reply = 'You\'ve been dealt ' + str(damage) + ' damage by the enemy ' + monster['Name'] + '. You have '
-        reply += str(client.user_health[user_id]) + '/' + str(user['Stats']['HP']) + ' health left. '
+        reply += str(client.user_health[user_id]) + '/' + str(user['Stats']['Health']) + ' health left. '
         if text is None:
             reply += 'Be faster next time!'
         else:

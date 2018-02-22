@@ -42,14 +42,14 @@ def generate_duel(client, user_1, user_2, gold, thread_id):
     duel_1 = {
         'Status': ChatState.Preparing,
         'Gold': gold,
-        'UserHealth': user_1['Stats']['HP'],
-        'OpponentHealth': user_2['Stats']['HP'],
+        'UserHealth': user_1['Stats']['Health'],
+        'OpponentHealth': user_2['Stats']['Health'],
         'OpponentID': user_2['_id'],
         'ThreadID': thread_id
     }
     duel_2 = duel_1.copy()
-    duel_2['UserHealth'] = user_2['Stats']['HP']
-    duel_2['OpponentHealth'] = user_1['Stats']['HP']
+    duel_2['UserHealth'] = user_2['Stats']['Health']
+    duel_2['OpponentHealth'] = user_1['Stats']['Health']
     duel_2['OpponentID'] = user_1['_id']
 
     client.user_states[user_1['_id']] = (UserState.Duel, duel_1)
@@ -111,7 +111,7 @@ def complete_duel(client, winner, loser):
     reply = 'You have lost the duel.'
     client.send(Message(reply), thread_id=loser_id)
     reply = winner['Name'] + ' has defeated ' + loser['Name'] + ' in a duel with '
-    reply += str(winner_details['UserHealth']) + '/' + str(winner['Stats']['HP']) + ' health remaining! '
+    reply += str(winner_details['UserHealth']) + '/' + str(winner['Stats']['Health']) + ' health remaining! '
     reply += winner['Name'] + ' receives ' + str(gold) + ' gold from ' + loser['Name'] + '.'
     client.send(Message(reply), thread_id=winner_details['ThreadID'], thread_type=ThreadType.GROUP)
 
@@ -144,8 +144,8 @@ def cancel_duel(client, user):
         client.send(Message(reply), thread_id=user_id)
         reply = user['Name'] + ' forfeits. You won the duel!'
         client.send(Message(reply), thread_id=opponent_id)
-        reply = user['Name'] + ' forfeits the duel against ' + opponent['Name'] + '! '
-        reply += opponent['Name'] + ' receives ' + str(gold) + ' gold from ' + user['Name'] + '.'
+        reply = user['Name'] + ' forfeits the duel! ' + opponent['Name']
+        reply += ' receives ' + str(gold) + ' gold from ' + user['Name'] + '.'
         client.send(Message(reply), thread_id=user_details['ThreadID'], thread_type=ThreadType.GROUP)
 
 
@@ -164,14 +164,14 @@ def complete_duel_quest(client, user, text):
     opponent = user_from_id(opponent_id)
     opponent_state, opponent_details = client.user_states[opponent_id]
     if user_id not in client.user_health:
-        client.user_health[user_id] = user['Stats']['HP']
+        client.user_health[user_id] = user['Stats']['Health']
     if opponent_id not in client.user_health:
-        client.user_health[opponent_id] = opponent['Stats']['HP']
+        client.user_health[opponent_id] = opponent['Stats']['Health']
 
     # Calculate user damage
     quest = user_details['Quest']
     if text == str(quest['Correct'] + 1):
-        damage = _calculate_damage(total_atk(user), user['Stats']['ATK'], total_def(opponent))
+        damage = _calculate_damage(total_atk(user), base_stat(user['Stats']['Level']), total_def(opponent))
         opponent_health = max(user_details['OpponentHealth'] - damage, 0)
         user_details['OpponentHealth'] = opponent_health
         opponent_details['UserHealth'] = opponent_health
