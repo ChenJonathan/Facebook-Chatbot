@@ -78,7 +78,7 @@ def user_try_add(user_id):
             'Gold': 0,
             'GoldFlow': 0,
             'Location': 'Lith Harbor',
-            'LocationProgress': {location_names[i]: 1 for i in range(0, 6)},
+            'LocationProgress': {location_names[i]: 1 for i in list(range(6)) + [8, 11, 17, 19, 24]},
             'Stats': {
                 'Level': 1,
                 'Experience': 0,
@@ -87,27 +87,25 @@ def user_try_add(user_id):
             'Equipment': {
                 'Weapon': {
                     'Name': 'Iron Longsword',
-                    'ATK': 2,
+                    'ATK': 5,
                     'DEF': 0,
                     'SPD': 0
                 },
                 'Armor': {
                     'Name': 'Leather Armor',
                     'ATK': 0,
-                    'DEF': 2,
+                    'DEF': 5,
                     'SPD': 0
                 },
                 'Accessory': {
                     'Name': 'Sapphire Amulet',
                     'ATK': 0,
                     'DEF': 0,
-                    'SPD': 2
+                    'SPD': 5
                 }
             },
             'Inventory': {},
-            'Quest': {
-                'Type': 'Vocab'
-            }
+            'Quest': {'Type': 'Vocab'}
         })
 
 

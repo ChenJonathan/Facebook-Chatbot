@@ -58,7 +58,7 @@ def _generate_vocab_quest(choices):
 
 
 def _generate_mcq_quest(dataset):
-    quest = random.choice(dataset)
+    quest = random.choice(dataset).copy()
     for i, answer in enumerate(quest['Answers']):
         quest['Question'] += '\n' + str(i + 1) + '. ' + answer
     return quest
@@ -88,7 +88,7 @@ def complete_quest(client, user, text, thread_id):
     correct = quest['Correct']
     del client.quest_record[user_id]
 
-    delta = 10 + user['GoldFlow'] / 100
+    delta = user['GoldFlow'] / 100 + 10
 
     if text == str(correct + 1):
         if quest_type == 'Vocab':

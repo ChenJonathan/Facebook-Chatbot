@@ -14,11 +14,13 @@ def generate_user_info(client, author, command):
         reply += '!alias: Alias assignment\n'
         reply += '!check: See user statistics\n'
         reply += '!define: Command remapping\n'
+        reply += '!equip: Change level / stats\n'
         reply += '!help: Read documentation\n'
         reply += '!message: Gateway messaging\n'
         reply += '!perm: Change user priority\n'
+        reply += '!response: Response priming\n'
         reply += '!secret: List active secrets\n'
-        reply += '!wong: Response priming\n'
+        reply += '!warp: Change location\n'
         reply += '(See how commands work with "!help <command>")'
     
     elif command == 'alias':
@@ -47,6 +49,13 @@ def generate_user_info(client, author, command):
         reply += 'Usage: "!define <command>"\n'
         reply += 'Clears the mapping for <command> to its default.'
 
+    elif command == 'equip':
+        reply = '<<Equip>>\n'
+        reply += 'Usage: "!equip <level> <attack> <defence> <speed>"\n'
+        reply += 'Example: "!equip 1 2 2 2"\n'
+        reply += 'Sets your level to <level> and equips items with a stat total of '
+        reply += '<attack> attack, <defence> defence, and <speed> speed.'
+
     elif command == 'help':
         reply = '<<Help>>\n'
         reply += 'Usage: "!help"\n'
@@ -70,19 +79,25 @@ def generate_user_info(client, author, command):
         reply += 'Example: "!perm 0 raph"\n'
         reply += 'Sets the priority of the user designated by <alias> to <priority>.'
 
+    elif command == 'response':
+        reply = '<<Response>>\n'
+        reply += 'Usage: "!response <response>"\n'
+        reply += 'Example: "!response Anime belongs in the trash."\n'
+        reply += 'Primes a response for Wong. The next time you talk to Wong, his '
+        reply += 'normal response will be replaced by <response>. Multiple responses '
+        reply += 'can be primed at once - older responses will be used first.'
+
     elif command == 'secret':
         reply = '<<Secret>>\n'
         reply += 'Usage: "!secret"\n'
         reply += 'Lists all of your active secrets. This includes command mappings '
-        reply += '(!define) and primed responses (!wong).'
+        reply += '(!define) and primed responses (!response).'
 
-    elif command == 'wong':
-        reply = '<<Wong>>\n'
-        reply += 'Usage: "!wong <response>"\n'
-        reply += 'Example: "!wong Anime belongs in the trash."\n'
-        reply += 'Primes a response for Wong. The next time you talk to Wong, his '
-        reply += 'normal response will be replaced by <response>. Multiple responses '
-        reply += 'can be primed at once - they will be used oldest first.'
+    elif command == 'warp':
+        reply = '<<Warp>>\n'
+        reply += 'Usage: "!warp <location>"\n'
+        reply += 'Sends you to the location designated by <location> instantly. This '
+        reply += 'cancels your current journey if you are traveling somewhere.'
 
     else:
         reply = 'Not a valid command.'
@@ -257,7 +272,7 @@ def generate_group_info(client, author, command, thread_id):
         reply += 'Usage: "!quest"\n'
         reply += 'Generates a multiple choice question for you. You answer by replying with '
         reply += 'the choice number. Correct responses will reward gold but incorrect ones '
-        reply += 'will cost you. The amount of gold scales up with your level.\n\n'
+        reply += 'will cost you. The amount of gold scales up with your gold gain per hour.\n\n'
         reply += 'Usage: "!quest <type>"\n'
         reply += 'Example: "!quest psych"\n'
         reply += 'Sets the type of multiple choice question that will be generated '

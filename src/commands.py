@@ -6,13 +6,13 @@ import requests
 from battle import generate_battle, cancel_battle
 from craft import generate_craft_info, craft_item
 from data import random_emoji
-from duel import send_duel_request, cancel_duel_request, generate_duel, cancel_duel
+from duel import send_duel_request, cancel_duel_request, cancel_duel
 from info import generate_user_info, generate_group_info
 from location import location_features, explore_location
 from mongo import *
 from quest import set_quest_type, generate_quest
 from shop import generate_shop_info, shop_purchase
-from travel import check_travel, travel_to_location
+from travel import check_travel, travel_to_location, query_location
 from util import *
 
 
@@ -64,6 +64,34 @@ def run_user_command(client, author, command, text):
             del client.defines[command]
         else:
             generate_user_info(client, author, 'define')
+        client.send(Message('Define added!'), thread_id=author_id)
+
+    elif command == 'equip' or command == 'e':
+        try:
+            level, attack, defence, speed = [int(num) for num in text.split(' ')]
+            level_set(author_id, level)
+            equip_item(author_id, 'Weapon', {
+                'Name': 'Oversized Banhammer',
+                'ATK': attack,
+                'DEF': 0,
+                'SPD': 0
+            })
+            equip_item(author_id, 'Armor', {
+                'Name': 'Master Priority',
+                'ATK': 0,
+                'DEF': defence,
+                'SPD': 0
+            })
+            equip_item(author_id, 'Accessory', {
+                'Name': 'CTCI, 7th Edition',
+                'ATK': 0,
+                'DEF': 0,
+                'SPD': speed
+            })
+        except:
+            generate_user_info(client, author, 'equip')
+        else:
+            client.send(Message('Level and stats changed!'), thread_id=author_id)
 
     elif command == 'help' or command == 'h':
         generate_user_info(client, author, text)
@@ -102,6 +130,13 @@ def run_user_command(client, author, command, text):
             message = Message(reply)
         client.send(message, thread_id=author_id)
 
+    elif command == 'response' or command == 'r':
+        if len(text) > 0:
+            client.responses.append(text)
+        else:
+            client.responses.clear()
+        client.send(Message('Response added!'), thread_id=author_id)
+
     elif command == 'secret' or command == 's':
         reply = []
         if client.defines:
@@ -115,11 +150,20 @@ def run_user_command(client, author, command, text):
         reply = '\n\n'.join(reply) if reply else 'No secrets active.'
         client.send(Message(reply), thread_id=author_id)
 
-    elif command == 'wong' or command == 'w':
-        if len(text) > 0:
-            client.responses.append(text)
+    elif command == 'warp' or command == 'w':
+        if len(text) == 0:
+            generate_group_info(client, author, 'warp', author_id)
+            return
+        try:
+            location = location_names[query_location(text, range(len(location_names)))]
+        except:
+            reply = 'Not a valid location.'
         else:
-            client.responses.clear()
+            location_set(author_id, location)
+            if client.user_states.get(author_id, (UserState.Idle, {}))[0] == UserState.Travel:
+                del client.user_states[author_id]
+            reply = 'You have been warped to ' + location + '!'
+        client.send(Message(reply), thread_id=author_id)
 
 
 def run_group_command(client, author, command, text, thread_id):
@@ -170,8 +214,7 @@ def run_group_command(client, author, command, text, thread_id):
         if len(text) == 0:
             generate_group_info(client, author, 'bully', thread_id)
             return
-        else:
-            user = client.match_user(thread_id, text)
+        user = client.match_user(thread_id, text)
         if user:
             if exceeds_priority(user.uid, author_id):
                 reply = user.name + ' is a cool guy.'
@@ -344,25 +387,24 @@ def run_group_command(client, author, command, text, thread_id):
             if len(text) == 0:
                 generate_group_info(client, author, 'jail', thread_id)
                 return
+            user = client.match_user(thread_id, text)
+            if not user:
+                message = Message('User not found.')
+                client.send(message, thread_id=thread_id, thread_type=ThreadType.GROUP)
+                return
+            user = user_from_id(user.uid)
+            if user['_id'] == master_id and author_id != master_id:
+                user = author
+            if location_names_reverse[user['Location']] == 0:
+                location_set(user['_id'], location_names[1])
+                if client.user_states.get(user['_id'], (UserState.Idle, {}))[0] == UserState.Travel:
+                    del client.user_states[user['_id']]
+                reply = user['Name'] + ' has been freed from jail.'
             else:
-                user = client.match_user(thread_id, text)
-                if not user:
-                    message = Message('User not found.')
-                    client.send(message, thread_id=thread_id, thread_type=ThreadType.GROUP)
-                    return
-                user = user_from_id(user.uid)
-                if user['_id'] == master_id and author_id != master_id:
-                    user = author
-                if location_names_reverse[user['Location']] == 0:
-                    location_set(user['_id'], location_names[1])
-                    if client.user_states.get(user['_id'], (UserState.Idle, {}))[0] == UserState.Travel:
-                        del client.user_states[user['_id']]
-                    reply = user['Name'] + ' has been freed from jail.'
-                else:
-                    location_set(user['_id'], location_names[0])
-                    if client.user_states.get(user['_id'], (UserState.Idle, {}))[0] == UserState.Travel:
-                        del client.user_states[user['_id']]
-                    reply = user['Name'] + ' has been sent to jail!'
+                location_set(user['_id'], location_names[0])
+                if client.user_states.get(user['_id'], (UserState.Idle, {}))[0] == UserState.Travel:
+                    del client.user_states[user['_id']]
+                reply = user['Name'] + ' has been sent to jail!'
         else:
             reply = 'You don\'t have permission to do this.'
         client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
@@ -396,12 +438,12 @@ def run_group_command(client, author, command, text, thread_id):
             client.sendLocalImage('./images/dead_mine.png', thread_id=thread_id, thread_type=ThreadType.GROUP)
         elif location in ['Aqua Road', 'Cave of Pianus']:
             client.sendLocalImage('./images/aqua_road.png', thread_id=thread_id, thread_type=ThreadType.GROUP)
+        elif location in ['Ariant', 'Magatia']:
+            client.sendLocalImage('./images/nihal_desert.png', thread_id=thread_id, thread_type=ThreadType.GROUP)
         elif location in ['Korean Folk Town', 'Omega Sector', 'Ludibrium']:
             client.sendLocalImage('./images/ludus_lake.png', thread_id=thread_id, thread_type=ThreadType.GROUP)
         elif location in ['Path of Time', 'Papulatus Clock Tower']:
             client.sendLocalImage('./images/clock_tower.png', thread_id=thread_id, thread_type=ThreadType.GROUP)
-        elif location in ['Nihal Desert', 'Magatia']:
-            client.sendLocalImage('./images/nihal_desert.png', thread_id=thread_id, thread_type=ThreadType.GROUP)
         elif location in ['Leafre', 'Minar Forest', 'Cave of Life']:
             client.sendLocalImage('./images/minar_forest.png', thread_id=thread_id, thread_type=ThreadType.GROUP)
         elif location in ['Temple of Time']:
@@ -483,12 +525,11 @@ def run_group_command(client, author, command, text, thread_id):
             except:
                 generate_group_info(client, author, 'roll', thread_id)
                 return
+            roll = str(random.randint(1, text))
+            if roll[0] == '8' or (roll[0:2] == '18' and len(roll) % 3 == 2):
+                roll = 'an ' + roll
             else:
-                roll = str(random.randint(1, text))
-                if roll[0] == '8' or (roll[0:2] == '18' and len(roll) % 3 == 2):
-                    roll = 'an ' + roll
-                else:
-                    roll = 'a ' + roll
+                roll = 'a ' + roll
         message = Message(user.name + ' rolls ' + roll + '.')
         client.send(message, thread_id=thread_id, thread_type=ThreadType.GROUP)
 

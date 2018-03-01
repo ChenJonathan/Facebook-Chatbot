@@ -30,24 +30,24 @@ _connect(5, 8, 5)
 _connect(8, 9, 3)
 _connect(9, 10, 3)
 # - El Nath
-# _connect(3, 11, 18)
+_connect(3, 11, 12)
 _connect(11, 12, 6)
 _connect(12, 13, 7)
 _connect(13, 14, 0)
 # - Aqua Road
-#_connect(11, 15, 10)
+_connect(11, 15, 10)
 _connect(12, 15, 6)
 _connect(15, 16, 2)
-_connect(15, 20, 5)
+_connect(15, 22, 5)
 # - Ludibrium
-#_connect(11, 17, 16)
-_connect(17, 18, 5)
-_connect(18, 19, 1)
-_connect(17, 20, 8)
-_connect(17, 21, 9)
+_connect(11, 19, 20)
+_connect(19, 20, 5)
+_connect(20, 21, 1)
+_connect(19, 22, 10)
+_connect(19, 23, 10)
 # - Nihal Desert
-#_connect(11, 22, 12)
-_connect(22, 23, 5)
+_connect(11, 17, 14)
+_connect(17, 18, 5)
 # - Leafre
 #_connect(11, 24, 15)
 _connect(24, 25, 5)
@@ -73,7 +73,7 @@ def check_travel(client, user, thread_id):
 
 def travel_to_location(client, user, text, thread_id):
     current = location_names_reverse[user['Location']]
-    location = _query_location(text, adjacent_locations(user))
+    location = query_location(text, adjacent_locations(user))
     if location is None:
         reply = 'Invalid location.'
     else:
@@ -96,7 +96,7 @@ def adjacent_locations(user, discovered=True):
     return locations
 
 
-def _query_location(query, locations):
+def query_location(query, locations):
     query = query.lower()
     locations = [location_names[location] for location in locations]
     for location in locations:

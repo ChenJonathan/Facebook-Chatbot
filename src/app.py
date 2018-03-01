@@ -195,7 +195,7 @@ def index():
     return 'Welcome!'
 
 
-client = ChatBot('jonathanchen1025@gmail.com', b64decode(os.environ.get('PASSWORD')))
+client = ChatBot('jonathanchen413@gmail.com', b64decode(os.environ.get('PASSWORD')))
 
 
 class ServerThread(threading.Thread):

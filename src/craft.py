@@ -8,8 +8,8 @@ def generate_craft_info(client, user, thread_id):
     reply = 'Crafting information has been sent to you. Check your private messages (or message requests).'
     client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
     reply = '<<' + user['Location'] + ' Workshop>>\n'
-    reply += 'Craft things with "!craft <item>" in a group chat. '
-    reply += 'Crafted equipment is automatically equipped.'
+    reply += 'Craft things with "!craft <slot>" in a group chat, where <slot> is the item slot number. '
+    reply += 'Crafted equipment is automatically equipped and old equipment is discarded.'
     for i, item_datum in enumerate(craft_data[user['Location']]):
         reply += '\n\n' + str(i + 1) + '. ' + item_datum['Name']
         reply += '\n-> Type: ' + item_datum['Type']
@@ -19,6 +19,7 @@ def generate_craft_info(client, user, thread_id):
             reply += '\n-> ATK: ' + str(item_datum['ATK'])
             reply += '\n-> DEF: ' + str(item_datum['DEF'])
             reply += '\n-> SPD: ' + str(item_datum['SPD'])
+        reply += '\n-> Level Required: ' + str(item_datum['Level'])
         reply += '\n-> Materials:'
         for material, amount in item_datum['Materials'].items():
             count = user['Inventory'].get(material, 0)
@@ -37,29 +38,35 @@ def craft_item(client, user, slot, thread_id):
     else:
         item_datum = item_list[slot]
 
-        # Check and deduct required materials
-        materials_owned = True
-        for material, amount in item_datum['Materials'].items():
-            if material not in user['Inventory'] or user['Inventory'][material] < amount:
-                materials_owned = False
-        if not materials_owned:
-            reply = 'You don\'t have the materials necessary to craft this.'
+        # Check level
+        if user['Stats']['Level'] < item_datum['Level']:
+            reply = 'Your level is not high enough to craft this.'
         else:
-            for material, amount in item_datum['Materials'].items():
-                if user['Inventory'][material] > amount:
-                    inventory_add(user['_id'], material, -amount)
-                else:
-                    inventory_remove_all(user['_id'], material)
 
-            # Equip the item and send a message
-            item_type = item_datum['Type']
-            if item_type == 'Item':
-                inventory_add(user['_id'], item_datum['Name'], 1)
-                reply = user['Name'] + ' has crafted the ' + item_datum['Name'] + '!'
+            # Check and deduct required materials
+            materials_owned = True
+            for material, amount in item_datum['Materials'].items():
+                if material not in user['Inventory'] or user['Inventory'][material] < amount:
+                    materials_owned = False
+            if not materials_owned:
+                reply = 'You don\'t have the materials necessary to craft this.'
             else:
-                item_datum = item_datum.copy()
-                del item_datum['Type']
-                del item_datum['Materials']
-                equip_item(user['_id'], item_type, item_datum)
-                reply = user['Name'] + ' has crafted and equipped the ' + item_datum['Name'] + '!'
+                for material, amount in item_datum['Materials'].items():
+                    if user['Inventory'][material] > amount:
+                        inventory_add(user['_id'], material, -amount)
+                    else:
+                        inventory_remove_all(user['_id'], material)
+
+                # Equip the item and send a message
+                item_type = item_datum['Type']
+                if item_type == 'Item':
+                    inventory_add(user['_id'], item_datum['Name'], 1)
+                    reply = user['Name'] + ' has crafted the ' + item_datum['Name'] + '!'
+                else:
+                    item_datum = item_datum.copy()
+                    del item_datum['Type']
+                    del item_datum['Level']
+                    del item_datum['Materials']
+                    equip_item(user['_id'], item_type, item_datum)
+                    reply = user['Name'] + ' has crafted and equipped the ' + item_datum['Name'] + '!'
     client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)

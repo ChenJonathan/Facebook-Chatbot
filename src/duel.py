@@ -171,7 +171,7 @@ def complete_duel_quest(client, user, text):
     # Calculate user damage
     quest = user_details['Quest']
     if text == str(quest['Correct'] + 1):
-        damage = _calculate_damage(total_atk(user), base_stat(user['Stats']['Level']), total_def(opponent))
+        damage = _calculate_damage(total_atk(user), total_def(opponent))
         opponent_health = max(user_details['OpponentHealth'] - damage, 0)
         user_details['OpponentHealth'] = opponent_health
         opponent_details['UserHealth'] = opponent_health
@@ -202,11 +202,14 @@ def complete_duel_quest(client, user, text):
     client.send(Message(reply), thread_id=user_id)
 
 
-def _calculate_damage(user_attack, user_base_attack, opponent_defence):
-    damage = (user_attack + user_base_attack) * random.uniform(0.8, 1.2)
-    damage -= opponent_defence * random.uniform(0.8, 1.2)
-    return max(int(damage / 2), 1)
+def _calculate_damage(user_attack, opponent_defence):
+    damage = (user_attack - opponent_defence)
+    if damage >= 0:
+        damage = (damage / 15 + 2) * 5
+    else:
+        damage = math.sqrt(max(damage / 10 + 4, 0)) * 5
+    return max(int(damage * random.uniform(0.8, 1.2)), 1)
 
 
 def _calculate_timer(user_speed, opponent_speed):
-    return 3 + int(math.sqrt(max(opponent_speed - user_speed, 0) * 2))
+    return int(math.sqrt(max(opponent_speed - user_speed, 0) + 9))

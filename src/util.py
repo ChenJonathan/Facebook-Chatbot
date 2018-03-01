@@ -24,23 +24,22 @@ class ChatState(Enum):
 location_names = ['Maple Island', 'Lith Harbor', 'Henesys', 'Ellinia', 'Perion', 'Kerning City']
 location_names += ['Sleepywood', 'Cursed Sanctuary', 'New Leaf City', 'Krakian Jungle', 'Bigger Ben']
 location_names += ['Orbis', 'El Nath', 'Dead Mine', 'Zakum\'s Altar', 'Aqua Road', 'Cave of Pianus']
-location_names += ['Korean Folk Town', 'Omega Sector', 'Ludibrium', 'Path of Time', 'Papulatus Clock Tower']
-location_names += ['Nihal Desert', 'Magatia', 'Leafre', 'Minar Forest', 'Cave of Life', 'Temple of Time']
+location_names += ['Ariant', 'Magatia', 'Ludibrium', 'Path of Time', 'Papulatus Clock Tower']
+location_names += ['Korean Folk Town', 'Omega Sector', 'Leafre', 'Minar Forest', 'Horntail\'s Lair', 'Temple of Time']
 
 location_names_reverse = {location_names[i]: i for i in range(len(location_names))}
 
-item_names = ['Demon Soul', 'Truffle Worm', 'Eye of Fire', 'Cracked Dimension Piece', 'Dragon Soul']
+item_names = ['Demon Soul', 'Ancient Pearl', 'Eye of Fire', 'Cracked Dimension Piece', 'Dragon Soul']
 item_names += ['Brutal Essence', 'Wild Essence', 'Arcane Essence', 'Void Essence']
 item_names += ['Touch of Life', 'Touch of Death', 'Touch of Chaos', 'Touch of Magic']
-item_names += ['Bottled Light', 'Bottled Darkness', 'Lost Magic', 'Lost Memory']
-item_names += ['Howling Wind', 'Formless Water', 'Drop of Earth', 'Living Flame']
-item_names += ['Howling Sky', 'Formless Ice', 'Drop of Sand', 'Living Magma']
-item_names += ['Celestial Fragment', 'Snow Fragment', 'Altar Fragment', 'Energy Fragment']
-item_names += ['Sunlight Shard', 'Moonlight Shard', 'Time Shard', 'Space Shard']
-item_names += ['Iron Shard', 'Diamond Shard', 'Crystal Shard', 'Clockwork Shard']
+item_names += ['Bottled Light', 'Bottled Darkness', 'Lost Song', 'Lost Memory']
+item_names += ['Sunlight Fragment', 'Moonlight Fragment', 'Time Fragment', 'Space Fragment']
+item_names += ['Howling Wind', 'Serene Sky', 'Deformed Water', 'Shapeless Ice']
+item_names += ['Drop of Earth', 'Drop of Sand', 'Living Flame', 'Dying Magma']
+item_names += ['Mithril Shard', 'Crystal Shard', 'Clockwork Shard', 'Plasma Shard']
 item_names += ['Breathing Wood', 'Shifting Vines', 'Weeping Herb', 'Astral Flower']
-item_names += ['Mutated Moss', 'Sleeping Coral', 'Tainted Fur', 'Fairy Feather']
-item_names += ['Warped Bones', 'Warped Entrails', 'Warped Spirit', 'Warped Debris']
+item_names += ['Mutated Moss', 'Wistful Wool', 'Hallowed Feather', 'Primal Taint']
+item_names += ['Warped Bones', 'Warped Entrails', 'Warped Debris', 'Warped Spirit']
 
 
 def base_stat_float(level):

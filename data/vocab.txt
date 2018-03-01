@@ -623,7 +623,7 @@ raiment:clothing
 ramification:implication, consequence
 rarefied:refined
 rationale:fundamental reason
-rebus:puzzle in whic pictures or symbols represent words
+rebus:puzzle in which pictures or symbols represent words
 recalcitrant:resisting authority or control
 recant:retract a statement of opinion
 recluse:person who lives in seclusion and often in solitude

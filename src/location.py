@@ -8,13 +8,20 @@ from util import *
 
 feature_map = {
     'Lith Harbor': ['Shop'],
-    'Henesys': ['Shop'],
-    'Ellinia': ['Meditation - Coming soon!', 'Shop'],
-    'Perion': ['Crafting', 'Shop'],
+    'Henesys': ['Crafting', 'Shop'],
+    'Ellinia': ['Crafting', 'Shop'],
+    'Perion': ['Crafting', 'Crafting', 'Shop'],
     'Kerning City': ['Shop'],
     'Sleepywood': ['Crafting', 'Shop'],
-    'Cursed Sanctuary': ['Boss Fight - Coming soon!'],
-    'New Leaf City': ['Gambling - Coming soon!', 'Shop']
+    'New Leaf City': ['Gambling - Coming soon!', 'Shop'],
+    'Orbis': ['Crafting', 'Shop'],
+    'El Nath': ['Crafting', 'Shop'],
+    'Ariant': ['Crafting', 'Shop'],
+    'Magatia': ['Crafting', 'Shop'],
+    'Ludibrium': ['Crafting', 'Shop'],
+    'Korean Folk Town': ['Crafting', 'Shop'],
+    'Omega Sector': ['Crafting', 'Shop'],
+    'Leafre': ['Crafting', 'Shop'],
 }
 
 
@@ -57,7 +64,8 @@ def explore_location(client, user, thread_id):
             inventory_add(user['_id'], item, final_amount)
 
     # Calculate gold gain
-    delta_gold = int(seed * (500 + random.randint(-50, 50)) * gold_multiplier)
+    delta_gold = int(50 * (user['GoldFlow'] / 100 + 10))
+    delta_gold *= int(seed * gold_multiplier * random.uniform(0.8, 1.2))
     gold_add(user['_id'], delta_gold)
 
     # Check for discovered hunting pet
