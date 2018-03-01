@@ -64,8 +64,8 @@ def explore_location(client, user, thread_id):
             inventory_add(user['_id'], item, final_amount)
 
     # Calculate gold gain
-    delta_gold = int(50 * (user['GoldFlow'] / 100 + 10))
-    delta_gold *= int(seed * gold_multiplier * random.uniform(0.8, 1.2))
+    delta_gold = 50 * (user['GoldFlow'] / 100 + 10)
+    delta_gold = int(delta_gold * seed * gold_multiplier * random.uniform(0.8, 1.2))
     gold_add(user['_id'], delta_gold)
 
     # Check for discovered hunting pet
