@@ -5,7 +5,8 @@ from mongo import *
 
 
 def generate_craft_info(client, user, thread_id):
-    reply = 'Crafting information has been sent to you. Check your private messages (or message requests).'
+    reply = user['Location'] + ' crafting information has been sent to you. '
+    reply += 'Check your private messages (or message requests).'
     client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
     reply = '<<' + user['Location'] + ' Workshop>>\n'
     reply += 'Craft things with "!craft <slot>" in a group chat, where <slot> is the item slot number. '

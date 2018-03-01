@@ -52,7 +52,7 @@ _connect(17, 18, 5)
 #_connect(11, 24, 15)
 _connect(24, 25, 5)
 _connect(25, 26, 2)
-#_connect(24, 27, 60)
+#_connect(24, 27, 30)
 
 
 def check_travel(client, user, thread_id):

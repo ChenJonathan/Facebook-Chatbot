@@ -20,7 +20,10 @@ def generate_battle(client, user, thread_id):
         'ThreadID': thread_id
     }
     monster = battle['Monster']
-    monster['Level'] = random.randint(monster['Level'][0], monster['Level'][1])
+    if 'Level' in monster:
+        monster['Level'] = random.randint(monster['Level'][0], monster['Level'][1])
+    else:
+        monster['Level'] = random.randint(int(user['Stats']['Level'] * 0.9), int(user['Stats']['Level'] * 1.1))
     stat_scale = base_stat(monster['Level']) * 2
     monster['ATK'] = int(monster['ATK'] * stat_scale)
     monster['DEF'] = int(monster['DEF'] * stat_scale)
@@ -125,8 +128,7 @@ def complete_battle_quest(client, user, text):
     monster = details['Monster']
     quest = details['Quest']
     if text == str(quest['Correct'] + 1):
-        user_atk = (base_stat(user['Stats']['Level']) * 3 + equip_atk(user)) // 2
-        damage = _calculate_damage(user_atk, monster['DEF'])
+        damage = _calculate_damage(total_atk(user), monster['DEF'], scale=base_stat(user['Stats']['Level']) / 10)
         monster['Health'] = max(monster['Health'] - damage, 0)
         if details['Timer'] > 1:
             details['Timer'] -= 1
@@ -146,7 +148,7 @@ def complete_battle_quest(client, user, text):
 
     # Calculate opponent damage
     else:
-        damage = _calculate_damage(monster['ATK'], total_def(user), scale_up=False)
+        damage = _calculate_damage(monster['ATK'], total_def(user))
         damage = max(damage, 1)
         client.user_health[user_id] = max(client.user_health[user_id] - damage, 0)
         details['Timer'] = _calculate_timer(total_spd(user), monster['SPD'])
@@ -172,15 +174,13 @@ def complete_battle_quest(client, user, text):
     client.send(Message(reply), thread_id=user_id)
 
 
-def _calculate_damage(user_attack, opponent_defence, scale_up=True):
+def _calculate_damage(user_attack, opponent_defence, scale=1):
     damage = (user_attack - opponent_defence)
     if damage >= 0:
         damage = (damage / 15 + 2) * 5
     else:
         damage = math.sqrt(max(damage / 10 + 4, 0)) * 5
-    if scale_up:
-        damage *= (user_attack / 10)
-    return max(int(damage * random.uniform(0.8, 1.2)), 1)
+    return max(int(damage * scale * random.uniform(0.8, 1.2)), 1)
 
 
 def _calculate_timer(user_speed, monster_speed):
