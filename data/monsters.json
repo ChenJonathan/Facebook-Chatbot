@@ -23,15 +23,15 @@
             "Level": [4, 8],
             "Health":  1.4,
             "ATK": 1.0,
-            "DEF": 0.6,
+            "DEF": 0.7,
             "SPD": 1.0
         },
         {
             "Name": "Iron Hog",
             "Level": [7, 11],
             "Health":  0.9,
-            "ATK": 0.8,
-            "DEF": 1.3,
+            "ATK": 0.9,
+            "DEF": 1.2,
             "SPD": 1.0
         }
     ],
@@ -41,7 +41,7 @@
             "Level": [5, 9],
             "Health":  1.5,
             "ATK": 1.0,
-            "DEF": 0.5,
+            "DEF": 0.6,
             "SPD": 1.0
         },
         {
@@ -49,8 +49,8 @@
             "Level": [8, 12],
             "Health":  0.7,
             "ATK": 1.3,
-            "DEF": 0.7,
-            "SPD": 1.3
+            "DEF": 0.8,
+            "SPD": 1.2
         }
     ],
     "Perion": [
@@ -67,7 +67,7 @@
             "Level": [8, 12],
             "Health":  1.2,
             "ATK": 1.0,
-            "DEF": 0.6,
+            "DEF": 0.7,
             "SPD": 1.2
         }
     ],
@@ -78,14 +78,14 @@
             "Health":  0.8,
             "ATK": 0.9,
             "DEF": 0.9,
-            "SPD": 1.4
+            "SPD": 1.3
         },
         {
             "Name": "Wraith",
             "Level": [10, 14],
             "Health":  0.6,
             "ATK": 1.0,
-            "DEF": 1.4,
+            "DEF": 1.3,
             "SPD": 1.0
         }
     ],
@@ -121,14 +121,14 @@
             "Level": [20, 24],
             "Health":  1.2,
             "ATK": 1.0,
-            "DEF": 1.2,
+            "DEF": 1.1,
             "SPD": 0.8
         },
         {
             "Name": "Taurospear",
             "Level": [21, 25],
             "Health":  1.2,
-            "ATK": 1.2,
+            "ATK": 1.3,
             "DEF": 1.0,
             "SPD": 0.8
         }
@@ -172,8 +172,8 @@
             "Name": "Wolf Spider",
             "Level": [21, 25],
             "Health":  0.7,
-            "ATK": 1.3,
-            "DEF": 0.8,
+            "ATK": 1.2,
+            "DEF": 0.9,
             "SPD": 1.2
         }
     ],
@@ -181,33 +181,33 @@
         {
             "Name": "Sentinel",
             "Level": [25, 29],
-            "Health":  0.8,
+            "Health":  0.9,
             "ATK": 1.0,
-            "DEF": 1.4,
-            "SPD": 0.8
+            "DEF": 1.2,
+            "SPD": 0.9
         },
         {
             "Name": "Lunar Pixie",
             "Level": [27, 31],
             "Health":  1.0,
-            "ATK": 1.3,
-            "DEF": 0.7,
+            "ATK": 1.4,
+            "DEF": 0.8,
             "SPD": 1.0
         },
         {
             "Name": "Luster Pixie",
             "Level": [29, 33],
             "Health":  1.0,
-            "ATK": 1.3,
-            "DEF": 0.7,
+            "ATK": 1.4,
+            "DEF": 0.8,
             "SPD": 1.0
         },
         {
             "Name": "Lucida",
             "Level": [30, 34],
-            "Health":  0.8,
+            "Health":  0.9,
             "ATK": 1.2,
-            "DEF": 0.8,
+            "DEF": 0.9,
             "SPD": 1.2
         }
     ],
@@ -217,7 +217,7 @@
             "Level": [31, 35],
             "Health":  0.7,
             "ATK": 1.3,
-            "DEF": 0.7,
+            "DEF": 0.8,
             "SPD": 1.3
         },
         {
@@ -225,13 +225,13 @@
             "Level": [32, 36],
             "Health":  1.2,
             "ATK": 1.0,
-            "DEF": 1.2,
-            "SPD": 0.6
+            "DEF": 1.1,
+            "SPD": 0.7
         },
         {
             "Name": "Werewolf",
             "Level": [32, 36],
-            "Health":  0.8,
+            "Health":  0.9,
             "ATK": 1.2,
             "DEF": 0.8,
             "SPD": 1.2
@@ -239,7 +239,7 @@
         {
             "Name": "Lycanthrope",
             "Level": [34, 38],
-            "Health":  0.8,
+            "Health":  0.9,
             "ATK": 1.2,
             "DEF": 0.8,
             "SPD": 1.2
@@ -249,7 +249,7 @@
         {
             "Name": "Miner Zombie",
             "Level": [35, 39],
-            "Health":  1.4,
+            "Health":  1.3,
             "ATK": 0.8,
             "DEF": 1.0,
             "SPD": 0.8
@@ -260,7 +260,7 @@
             "Health":  0.8,
             "ATK": 0.8,
             "DEF": 1.0,
-            "SPD": 1.4
+            "SPD": 1.2
         }
     ],
     "Zakum's Altar": [
@@ -268,16 +268,16 @@
             "Name": "Cerebes",
             "Level": [37, 41],
             "Health":  1.2,
-            "ATK": 1.3,
+            "ATK": 1.4,
             "DEF": 1.0,
-            "SPD": 0.7
+            "SPD": 0.8
         },
         {
             "Name": "Cuzco",
             "Level": [38, 42],
             "Health":  1.0,
             "ATK": 1.2,
-            "DEF": 1.2,
+            "DEF": 1.1,
             "SPD": 0.8
         },
         {
@@ -285,7 +285,7 @@
             "Level": [38, 42],
             "Health":  1.0,
             "ATK": 1.2,
-            "DEF": 1.2,
+            "DEF": 1.1,
             "SPD": 0.8
         }
     ],
@@ -303,8 +303,8 @@
             "Level": [47, 51],
             "Health":  1.0,
             "ATK": 1.0,
-            "DEF": 0.7,
-            "SPD": 1.3
+            "DEF": 0.8,
+            "SPD": 1.2
         },
         {
             "Name": "Flower Fish",
@@ -337,7 +337,7 @@
             "Level": [57, 61],
             "Health":  0.8,
             "ATK": 0.8,
-            "DEF": 1.4,
+            "DEF": 1.2,
             "SPD": 1.0
         },
         {
@@ -352,8 +352,8 @@
             "Name": "Cold Shark",
             "Level": [61, 65],
             "Health":  1.0,
-            "ATK": 1.2,
-            "DEF": 1.0,
+            "ATK": 1.3,
+            "DEF": 0.9,
             "SPD": 1.2
         }
     ],
@@ -363,23 +363,23 @@
             "Level": [40, 46],
             "Health":  1.0,
             "ATK": 1.0,
-            "DEF": 0.7,
-            "SPD": 1.3
+            "DEF": 0.8,
+            "SPD": 1.2
         },
         {
             "Name": "Bellamoa",
             "Level": [41, 47],
             "Health":  0.8,
             "ATK": 1.2,
-            "DEF": 0.8,
-            "SPD": 1.2
+            "DEF": 0.9,
+            "SPD": 1.1
         },
         {
             "Name": "Sand Dwarf",
             "Level": [43, 49],
             "Health":  0.8,
             "ATK": 1.4,
-            "DEF": 0.8,
+            "DEF": 0.9,
             "SPD": 1.0
         },
         {
@@ -387,8 +387,8 @@
             "Level": [46, 52],
             "Health":  1.2,
             "ATK": 1.0,
-            "DEF": 1.2,
-            "SPD": 0.6
+            "DEF": 1.1,
+            "SPD": 0.7
         }
     ],
     "Magatia": [
@@ -398,22 +398,22 @@
             "Health":  1.0,
             "ATK": 0.8,
             "DEF": 0.8,
-            "SPD": 1.4
+            "SPD": 1.3
         },
         {
             "Name": "Mithril Mutae",
             "Level": [49, 55],
             "Health":  0.8,
-            "ATK": 0.8,
-            "DEF": 1.4,
+            "ATK": 1.0,
+            "DEF": 1.2,
             "SPD": 1.0
         },
         {
             "Name": "Neo Huroid",
             "Level": [52, 57],
             "Health":  0.8,
-            "ATK": 1.2,
-            "DEF": 1.2,
+            "ATK": 1.3,
+            "DEF": 1.1,
             "SPD": 1.0
         },
         {
@@ -432,14 +432,14 @@
             "Health":  0.7,
             "ATK": 1.0,
             "DEF": 1.0,
-            "SPD": 1.3
+            "SPD": 1.2
         },
         {
             "Name": "Bloctopus",
             "Level": [60, 64],
             "Health":  1.0,
             "ATK": 1.0,
-            "DEF": 1.2,
+            "DEF": 1.1,
             "SPD": 0.8
         },
         {
@@ -447,7 +447,7 @@
             "Level": [61, 65],
             "Health":  1.2,
             "ATK": 1.2,
-            "DEF": 1.2,
+            "DEF": 1.1,
             "SPD": 0.6
         }
     ],
@@ -458,7 +458,7 @@
             "Health":  1.0,
             "ATK": 0.8,
             "DEF": 1.0,
-            "SPD": 1.2
+            "SPD": 1.1
         },
         {
             "Name": "Death Teddy",
@@ -491,7 +491,7 @@
             "Level": [75, 79],
             "Health":  1.2,
             "ATK": 1.0,
-            "DEF": 1.3,
+            "DEF": 1.1,
             "SPD": 0.8
         },
         {
@@ -499,7 +499,7 @@
             "Level": [76, 80],
             "Health":  0.8,
             "ATK": 1.5,
-            "DEF": 0.8,
+            "DEF": 0.9,
             "SPD": 1.2
         }
     ],
@@ -509,8 +509,8 @@
             "Level": [70, 74],
             "Health":  1.0,
             "ATK": 1.0,
-            "DEF": 0.8,
-            "SPD": 1.2
+            "DEF": 0.9,
+            "SPD": 1.1
         },
         {
             "Name": "Hogul",
@@ -525,7 +525,7 @@
             "Level": [73, 77],
             "Health":  0.8,
             "ATK": 1.2,
-            "DEF": 0.7,
+            "DEF": 0.8,
             "SPD": 1.3
         },
         {
@@ -551,7 +551,7 @@
             "Level": [83, 87],
             "Health":  1.2,
             "ATK": 1.0,
-            "DEF": 1.2,
+            "DEF": 1.1,
             "SPD": 0.6
         },
         {
@@ -559,15 +559,15 @@
             "Level": [86, 90],
             "Health":  1.0,
             "ATK": 1.0,
-            "DEF": 1.2,
-            "SPD": 1.2
+            "DEF": 1.1,
+            "SPD": 1.1
         },
         {
             "Name": "Black Robosaucer",
             "Level": [86, 90],
             "Health":  1.0,
             "ATK": 1.2,
-            "DEF": 1.2,
+            "DEF": 1.1,
             "SPD": 1.0
         }
     ]

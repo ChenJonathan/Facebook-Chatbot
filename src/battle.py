@@ -125,9 +125,10 @@ def complete_battle_quest(client, user, text):
     monster = details['Monster']
     quest = details['Quest']
     if text == str(quest['Correct'] + 1):
-        damage = _calculate_damage(total_atk(user), monster['DEF'])
+        user_atk = (base_stat(user['Stats']['Level']) * 3 + equip_atk(user)) // 2
+        damage = _calculate_damage(user_atk, monster['DEF'])
         monster['Health'] = max(monster['Health'] - damage, 0)
-        if details['Timer'] > 4:
+        if details['Timer'] > 1:
             details['Timer'] -= 1
 
         if damage == 1:
@@ -188,7 +189,7 @@ def _calculate_timer(user_speed, monster_speed):
         timer = int(math.sqrt(timer + 9) * 2)
     else:
         timer = int(math.sqrt(max(timer + 36, 0)))
-    return 4 + int(timer)
+    return 3 + int(timer)
 
 
 def _calculate_experience(user_level, monster_level):
