@@ -41,6 +41,8 @@ item_names += ['Breathing Wood', 'Shifting Vines', 'Weeping Herb', 'Astral Flowe
 item_names += ['Mutated Moss', 'Wistful Wool', 'Hallowed Feather', 'Primal Taint']
 item_names += ['Warped Bones', 'Warped Entrails', 'Warped Debris', 'Warped Spirit']
 
+item_names_reverse = {item_names[i]: i for i in range(len(item_names))}
+
 
 def base_stat_float(level):
     return (math.sqrt(level + 64) - 7) * 10

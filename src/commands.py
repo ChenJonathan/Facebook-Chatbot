@@ -377,8 +377,8 @@ def run_group_command(client, author, command, text, thread_id):
         reply = 'Your inventory has been sent to you. Check your private messages (or message requests).'
         client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
         reply = ['<<Inventory>>']
-        for item, amount in author['Inventory'].items():
-            reply.append(item + ' x ' + str(amount))
+        for item_key in sorted(author['Inventory'].keys(), key=lambda x: item_names_reverse[x]):
+            reply.append('-> ' + item_key + ' x ' + str(author['Inventory'][item_key]))
         reply = '\n'.join(reply) if len(reply) > 1 else 'Your inventory is empty.'
         client.send(Message(reply), thread_id=author_id)
 

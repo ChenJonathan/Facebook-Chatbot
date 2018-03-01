@@ -21,10 +21,10 @@ def generate_craft_info(client, user, thread_id):
             reply += '\n-> SPD: ' + str(item_datum['SPD'])
         reply += '\n-> Level Required: ' + str(item_datum['Level'])
         reply += '\n-> Materials:'
-        for material, amount in item_datum['Materials'].items():
-            count = user['Inventory'].get(material, 0)
-            reply += '\n---> ' + material + ' x ' + str(amount)
-            reply += ' (' + str(count) + '/' + str(amount) + ')'
+        for material_key in sorted(item_datum['Materials'].keys(), key=lambda x: item_names_reverse[x]):
+            required = str(item_datum['Materials'][material_key])
+            owned = str(user['Inventory'].get(material_key, 0))
+            reply += '\n---> ' + material_key + ' x ' + required + ' (' + owned + '/' + required + ')'
     client.send(Message(reply), thread_id=user['_id'])
 
 

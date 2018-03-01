@@ -30,7 +30,6 @@ def location_features(location):
 
 
 def explore_location(client, user, thread_id):
-    seed = random.uniform(0.8, 1.2)
     location = location_names_reverse[user['Location']]
 
     # Apply location specific modifiers
@@ -58,20 +57,22 @@ def explore_location(client, user, thread_id):
             while rate > random.random():
                 amount += 1
             trials.append(amount)
-        final_amount = sorted(trials)[-2]
+        final_amount = max(trials)
         if final_amount > 0:
             item_drops[item] = final_amount
             inventory_add(user['_id'], item, final_amount)
+    while len(item_drops) > 3:
+        del item_drops[random.choice(list(item_drops.keys()))]
 
     # Calculate gold gain
     delta_gold = 50 * (user['GoldFlow'] / 100 + 10)
-    delta_gold = int(delta_gold * seed * gold_multiplier * random.uniform(0.8, 1.2))
+    delta_gold = int(delta_gold * gold_multiplier * random.uniform(0.8, 1.2))
     gold_add(user['_id'], delta_gold)
 
     # Check for discovered hunting pet
     beast = None
     delta_rate = 0
-    if seed / 100 * beast_multiplier > random.random():
+    if 0.01 * beast_multiplier > random.random():
         beast = random_beast()
         delta_rate = beast[1] * beast[2]
         gold_rate_add(user['_id'], delta_rate)
@@ -80,18 +81,19 @@ def explore_location(client, user, thread_id):
     current = location_names_reverse[user['Location']]
     progress = user['LocationProgress']
     unlocked = []
-    presence = False
+    presence = None
     for i in adjacent_locations(user, discovered=False):
         if edges[current][i] > 0:
-            new_progress = progress.get(location_names[i], 0) + seed * 2 / edges[current][i]
+            new_progress = progress.get(location_names[i], 0) + random.uniform(1.6, 2.4) / edges[current][i]
+            new_progress = min(new_progress, 1)
         else:
             new_progress = 1
-        if new_progress >= 1:
+        if new_progress == 1:
             location_progress_set(user['_id'], location_names[i], 1)
             unlocked.append(i)
         else:
             location_progress_set(user['_id'], location_names[i], new_progress)
-            presence = True
+            presence = new_progress if presence is None else max(presence, new_progress)
 
     # Create message
     reply = []
@@ -107,16 +109,17 @@ def explore_location(client, user, thread_id):
         line = 'During this time, you randomly stumbled upon '
         line += ' and '.join([location_names[new] for new in unlocked]) + '!'
         reply.append(line)
-    if presence:
+    if presence is not None:
         line = 'On the way back, you sensed the presence of an'
-        line += ('other' if unlocked else '') + ' undiscovered location nearby.'
+        line += ('other' if unlocked else '') + ' undiscovered location nearby. ('
+        line += str(int(presence * 100)) + '% to discovery)'
         reply.append(line)
     reply = ' '.join(reply)
     if len(item_drops) > 0:
         singular = len(item_drops) == 1 and list(item_drops.values())[0] == 1
         reply += '\n\nYou found the following item' + ('' if singular else 's') + ':'
-        for item, amount in item_drops.items():
-            reply += '\n-> ' + item + ' x ' + str(amount)
+        for item_key in sorted(item_drops.keys(), key=lambda x: item_names_reverse[x]):
+            reply += '\n-> ' + item_key + ' x ' + str(item_drops[item_key])
 
     message = Message(reply)
     client.send(message, thread_id=thread_id, thread_type=ThreadType.GROUP)
