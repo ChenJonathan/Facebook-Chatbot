@@ -8,11 +8,10 @@ from craft import generate_craft_info, craft_item
 from data import random_emoji
 from duel import send_duel_request, cancel_duel_request, cancel_duel
 from info import generate_user_info, generate_group_info
-from location import location_features, explore_location
+from location import *
 from mongo import *
 from quest import set_quest_type, generate_quest
 from shop import generate_shop_info, shop_purchase
-from travel import check_travel, travel_to_location, query_location
 from util import *
 
 
@@ -205,7 +204,7 @@ def run_group_command(client, author, command, text, thread_id):
             reply = 'You\'re on the brink of death! Buy a life elixir from the shop '
             reply += 'or wait until the next hour to restore your health. ('
             reply += ((str(minutes) + ' min ') if minutes > 0 else '')
-            reply += str(seconds) + ' secs remaining)'
+            reply += str(seconds) + ' sec' + ('' if seconds == 1 else 's') + ' remaining)'
             client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
         else:
             generate_battle(client, author, thread_id)
@@ -248,7 +247,12 @@ def run_group_command(client, author, command, text, thread_id):
         elif len(text) == 0:
             generate_craft_info(client, author, thread_id)
         else:
-            craft_item(client, author, text, thread_id)
+            try:
+                slot = int(text)
+            except:
+                generate_group_info(client, author, 'craft', thread_id)
+            else:
+                craft_item(client, author, slot, thread_id)
 
     elif command == 'daily':
         if text not in ['color', 'emoji']:
@@ -308,17 +312,17 @@ def run_group_command(client, author, command, text, thread_id):
         accessory = user['Equipment']['Accessory']
         reply = '<<Equipment>>\n'
         reply += 'Weapon: ' + weapon['Name'] + '\n'
-        reply += '-> ATK: ' + str(weapon['ATK']) + '\n'
-        reply += '-> DEF: ' + str(weapon['DEF']) + '\n'
-        reply += '-> SPD: ' + str(weapon['SPD']) + '\n'
+        reply += '-> ATK: ' + format_num(weapon['ATK'], sign=True) + '\n'
+        reply += '-> DEF: ' + format_num(weapon['DEF'], sign=True) + '\n'
+        reply += '-> SPD: ' + format_num(weapon['SPD'], sign=True) + '\n'
         reply += 'Armor: ' + armor['Name'] + '\n'
-        reply += '-> ATK: ' + str(armor['ATK']) + '\n'
-        reply += '-> DEF: ' + str(armor['DEF']) + '\n'
-        reply += '-> SPD: ' + str(armor['SPD']) + '\n'
+        reply += '-> ATK: ' + format_num(armor['ATK'], sign=True) + '\n'
+        reply += '-> DEF: ' + format_num(armor['DEF'], sign=True) + '\n'
+        reply += '-> SPD: ' + format_num(armor['SPD'], sign=True) + '\n'
         reply += 'Accessory: ' + accessory['Name'] + '\n'
-        reply += '-> ATK: ' + str(accessory['ATK']) + '\n'
-        reply += '-> DEF: ' + str(accessory['DEF']) + '\n'
-        reply += '-> SPD: ' + str(accessory['SPD'])
+        reply += '-> ATK: ' + format_num(accessory['ATK'], sign=True) + '\n'
+        reply += '-> DEF: ' + format_num(accessory['DEF'], sign=True) + '\n'
+        reply += '-> SPD: ' + format_num(accessory['SPD'], sign=True)
         client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
 
     elif command == 'explore' or command == 'e':
@@ -329,7 +333,7 @@ def run_group_command(client, author, command, text, thread_id):
             minutes, seconds = seconds // 60, seconds % 60
             reply = 'You can only explore once per hour. ('
             reply += ((str(minutes) + ' min ') if minutes > 0 else '')
-            reply += str(seconds) + ' secs remaining)'
+            reply += str(seconds) + ' sec' + ('' if seconds == 1 else 's') + ' remaining)'
             client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
         elif not _check_busy(client, author, thread_id):
             if author_id != master_id:
@@ -413,7 +417,15 @@ def run_group_command(client, author, command, text, thread_id):
         if _check_busy(client, author, thread_id):
             return
         features = location_features(author['Location'])
+        level_range = location_level(author['Location'])
         reply = 'Welcome to ' + author['Location'] + '! '
+        if level_range is None:
+            reply += 'There are no monsters here. '
+        elif level_range == (None, None):
+            reply += 'The monsters here scale to your level. '
+        else:
+            reply += 'The monsters here are levels ' + str(level_range[0])
+            reply += ' to ' + str(level_range[1]) + '. '
         if features:
             reply += 'The following services are available here:'
             for feature in features:
@@ -566,7 +578,14 @@ def run_group_command(client, author, command, text, thread_id):
         elif len(text) == 0:
             generate_shop_info(client, author, thread_id)
         else:
-            shop_purchase(client, author, text, thread_id)
+            try:
+                slot, amount, *_ = text.split(' ', 1) + ['']
+                slot = int(slot)
+                amount = int(amount) if len(amount) > 0 else 1
+            except:
+                generate_group_info(client, author, 'shop', thread_id)
+            else:
+                shop_purchase(client, author, slot, amount, thread_id)
 
     elif command == 'travel' or command == 't':
         if not _check_busy(client, author, thread_id):
@@ -594,7 +613,8 @@ def _check_busy(client, user, thread_id, allow_duel_requests=False):
         seconds = int((details['EndTime'] - datetime.now()).total_seconds())
         minutes, seconds = seconds // 60, seconds % 60
         reply = 'You\'re busy traveling to ' + details['Destination'] + '. ('
-        reply += ((str(minutes) + ' min ') if minutes > 0 else '') + str(seconds) + ' secs remaining)'
+        reply += ((str(minutes) + ' min ') if minutes > 0 else '')
+        reply += str(seconds) + ' sec' + ('' if seconds == 1 else 's') + ' remaining)'
         client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
 
     elif state == UserState.Battle:
@@ -615,12 +635,13 @@ def _check_to_string(client, user):
     text += 'Priority: ' + priority_names[user['Priority']] + '\n'
     text += 'Level: ' + str(user['Stats']['Level']) + ' (' + str(user['Stats']['Experience']) + '/100 exp)\n'
     base_stat_val = str(base_stat(user['Stats']['Level']))
-    text += '-> ATK: ' + str(total_atk(user)) + ' (' + base_stat_val + format_num(equip_atk(user)) + ')\n'
-    text += '-> DEF: ' + str(total_def(user)) + ' (' + base_stat_val + format_num(equip_def(user)) + ')\n'
-    text += '-> SPD: ' + str(total_spd(user)) + ' (' + base_stat_val + format_num(equip_spd(user)) + ')\n'
+    text += '-> ATK: ' + str(total_atk(user)) + ' (' + base_stat_val + format_num(equip_atk(user), sign=True) + ')\n'
+    text += '-> DEF: ' + str(total_def(user)) + ' (' + base_stat_val + format_num(equip_def(user), sign=True) + ')\n'
+    text += '-> SPD: ' + str(total_spd(user)) + ' (' + base_stat_val + format_num(equip_spd(user), sign=True) + ')\n'
     text += 'Health: ' + str(client.user_health.get(user['_id'], user['Stats']['Health'])) + \
             '/' + str(user['Stats']['Health']) + '\n'
-    text += 'Gold: ' + str(user['Gold']) + ' (+' + str(user['GoldFlow']) + '/hour)\n'
+    text += 'Gold: ' + format_num(user['Gold'], truncate=True)
+    text += ' (' + format_num(user['GoldFlow'], sign=True, truncate=True) + '/hour)\n'
     text += 'Location: ' + user['Location']
     state, details = client.user_states.get(user['_id'], (UserState.Idle, {}))
 
@@ -629,7 +650,7 @@ def _check_to_string(client, user):
         minutes, seconds = seconds // 60, seconds % 60
         text += ' -> ' + details['Destination'] + '\n('
         text += ((str(minutes) + ' min ') if minutes > 0 else '')
-        text += str(seconds) + ' secs remaining)'
+        text += str(seconds) + ' sec' + ('' if seconds == 1 else 's') + ' remaining)'
     elif state == UserState.Battle:
         text += '\n(In battle with ' + details['Monster']['Name'] + ')'
     elif state == UserState.Duel:

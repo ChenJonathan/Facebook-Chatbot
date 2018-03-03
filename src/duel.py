@@ -212,4 +212,4 @@ def _calculate_damage(user_attack, opponent_defence):
 
 
 def _calculate_timer(user_speed, opponent_speed):
-    return int(math.sqrt(max(opponent_speed - user_speed, 0) + 9))
+    return int(math.sqrt(max(opponent_speed - user_speed, 0) * 4 / 3 + 9))

@@ -1,5 +1,4 @@
 from fbchat.models import *
-import math
 import requests
 import string
 
@@ -59,6 +58,11 @@ def _generate_vocab_quest(choices):
 
 def _generate_mcq_quest(dataset):
     quest = random.choice(dataset).copy()
+    answers = quest['Answers']
+    correct_answer = answers.pop(quest['Correct'])
+    random.shuffle(answers)
+    quest['Correct'] = random.randint(0, len(answers))
+    answers.insert(quest['Correct'], correct_answer)
     for i, answer in enumerate(quest['Answers']):
         quest['Question'] += '\n' + str(i + 1) + '. ' + answer
     return quest
@@ -69,6 +73,7 @@ def _generate_trivia_quest():
     url = 'https://opentdb.com/api.php?amount=1&category=' + str(category) + '&type=multiple'
     trivia = requests.get(url).json()['results'][0]
     answers = [unescape(answer) for answer in trivia['incorrect_answers']]
+    random.shuffle(answers)
     correct = random.randint(0, len(answers))
     answers.insert(correct, unescape(trivia['correct_answer']))
     reply = unescape(trivia['question'])
@@ -98,16 +103,16 @@ def complete_quest(client, user, text, thread_id):
         delta = int(delta)
         gold_add(user_id, delta)
         quest_stat_track(user_id, quest_type, True)
-        reply = user['Name'] + ' has gained ' + str(delta) + ' gold and is now at '
-        reply += str(user['Gold'] + delta) + ' gold total!'
+        reply = user['Name'] + ' has gained ' + format_num(delta, truncate=True) + ' gold and is now at '
+        reply += format_num(user['Gold'] + delta, truncate=True) + ' gold total!'
 
     else:
         delta *= random.uniform(-10, -2)
         delta = int(delta)
         gold_add(user_id, delta)
         quest_stat_track(user_id, quest_type, False)
-        reply = user['Name'] + ' has lost ' + str(-delta) + ' gold and is now at '
-        reply += str(user['Gold'] + delta) + ' gold total. The correct answer was '
-        reply += '"' + quest['Answers'][correct] + '".'
+        reply = user['Name'] + ' has lost ' + format_num(-delta, truncate=True) + ' gold and is now at '
+        reply += format_num(user['Gold'] + delta, truncate=True) + ' gold total. '
+        reply += 'The correct answer was "' + quest['Answers'][correct] + '".'
 
     client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)

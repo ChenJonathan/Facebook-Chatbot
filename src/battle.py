@@ -74,7 +74,7 @@ def complete_battle(client, user, victory):
         reply = 'You won the battle!'
         client.send(Message(reply), thread_id=user_id)
         reply = user['Name'] + ' has emerged victorious over the ' + monster['Name'] + ' and has received '
-        reply += str(delta_experience) + ' experience and ' + str(delta_gold) + ' gold.'
+        reply += str(delta_experience) + ' experience and ' + format_num(delta_gold, truncate=True) + ' gold.'
         if delta_level:
             reply += ' ' + user['Name'] + ' has reached level ' + str(user['Stats']['Level'] + delta_level) + '!'
         client.send(Message(reply), thread_id=details['ThreadID'], thread_type=ThreadType.GROUP)
@@ -170,7 +170,8 @@ def complete_battle_quest(client, user, text):
     details['StartTime'] = datetime.now()
     details['EndTime'] = details['StartTime'] + timedelta(seconds=3)
     details['Status'] = ChatState.Delay
-    reply += '\n\nYou will have ' + str(details['Timer']) + ' seconds to complete the next question.'
+    reply += '\n\nYou will have ' + str(details['Timer']) + ' second'
+    reply += ('' if details['Timer'] == 1 else 's') + ' to complete the next question.'
     client.send(Message(reply), thread_id=user_id)
 
 
@@ -198,5 +199,5 @@ def _calculate_experience(user_level, monster_level):
 
 
 def _calculate_gold(user_level, monster_level, user_gold_flow):
-    percent = max(monster_level - user_level + 10, 0) * random.uniform(4, 6)
+    percent = max(monster_level - user_level + 10, 0) * random.uniform(2, 3)
     return int(percent * (user_gold_flow / 100 + 10))

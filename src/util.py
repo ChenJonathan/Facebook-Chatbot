@@ -34,7 +34,7 @@ item_names += ['Brutal Essence', 'Wild Essence', 'Arcane Essence', 'Void Essence
 item_names += ['Touch of Life', 'Touch of Death', 'Touch of Chaos', 'Touch of Magic']
 item_names += ['Bottled Light', 'Bottled Darkness', 'Lost Song', 'Lost Memory']
 item_names += ['Sunlight Fragment', 'Moonlight Fragment', 'Time Fragment', 'Space Fragment']
-item_names += ['Howling Wind', 'Serene Sky', 'Deformed Water', 'Shapeless Ice']
+item_names += ['Howling Wind', 'Soft Breeze', 'Deformed Water', 'Shapeless Ice']
 item_names += ['Drop of Earth', 'Drop of Sand', 'Living Flame', 'Dying Magma']
 item_names += ['Mithril Shard', 'Crystal Shard', 'Clockwork Shard', 'Plasma Shard']
 item_names += ['Breathing Wood', 'Shifting Vines', 'Weeping Herb', 'Astral Flower']
@@ -82,8 +82,15 @@ def total_spd(user):
     return base_stat(user['Stats']['Level']) + equip_spd(user)
 
 
-def format_num(num):
-    return ('+' + str(num)) if num >= 0 else str(num)
+def format_num(num, sign=False, truncate=False):
+    suffixes = ['', 'k', 'm', 'b', 't']
+    scale = 0
+    if truncate:
+        while abs(num) >= 100000 and scale < len(suffixes) - 1:
+            num = num // 1000
+            scale += 1
+    num = ('+' + str(num)) if sign and num >= 0 else str(num)
+    return num + suffixes[scale]
 
 
 def calculate_score(user):

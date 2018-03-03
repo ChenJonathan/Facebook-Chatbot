@@ -78,7 +78,7 @@
             "SPD": 8,
             "Level": 10,
             "Materials": {
-                "Arcane Essence": 20,
+                "Arcane Essence": 10,
                 "Howling Wind": 5,
                 "Deformed Water": 5,
                 "Plasma Shard": 1
@@ -136,7 +136,7 @@
             "SPD": 5,
             "Level": 10,
             "Materials": {
-                "Brutal Essence": 20,
+                "Brutal Essence": 10,
                 "Touch of Death": 1,
                 "Bottled Darkness": 3,
                 "Mithril Shard": 5,
@@ -151,7 +151,7 @@
             "SPD": 11,
             "Level": 10,
             "Materials": {
-                "Void Essence": 20,
+                "Void Essence": 10,
                 "Touch of Death": 1,
                 "Time Fragment": 5,
                 "Wistful Wool": 10
@@ -165,7 +165,7 @@
             "SPD": 0,
             "Level": 10,
             "Materials": {
-                "Wild Essence": 20,
+                "Wild Essence": 10,
                 "Touch of Death": 1,
                 "Breathing Wood": 20,
                 "Shifting Vines": 10,
@@ -213,10 +213,10 @@
             "SPD": 17,
             "Level": 20,
             "Materials": {
-                "Void Essence": 30,
+                "Void Essence": 20,
                 "Space Fragment": 5,
                 "Howling Wind": 10,
-                "Serene Sky": 20,
+                "Soft Breeze": 20,
                 "Astral Flower": 10
             }
         }
@@ -225,12 +225,12 @@
         {
             "Name": "Frozen Bonespike",
             "Type": "Weapon",
-            "ATK": 12,
+            "ATK": 17,
             "DEF": 6,
-            "SPD": 21,
+            "SPD": 16,
             "Level": 30,
             "Materials": {
-                "Brutal Essence": 40,
+                "Brutal Essence": 30,
                 "Shapeless Ice": 30,
                 "Crystal Shard": 10,
                 "Primal Taint": 10,
@@ -261,7 +261,7 @@
             "SPD": 13,
             "Level": 30,
             "Materials": {
-                "Arcane Essence": 40,
+                "Arcane Essence": 30,
                 "Touch of Chaos": 1,
                 "Lost Memory": 5,
                 "Deformed Water": 30,
@@ -280,7 +280,7 @@
             "Materials": {
                 "Touch of Chaos": 1,
                 "Lost Song": 5,
-                "Brutal Essence": 50,
+                "Brutal Essence": 40,
                 "Howling Wind": 30,
                 "Drop of Sand": 30,
                 "Mithril Shard": 10,
@@ -296,7 +296,7 @@
             "Level": 40,
             "Materials": {
                 "Bottled Light": 5,
-                "Void Essence": 50,
+                "Void Essence": 40,
                 "Sunlight Fragment": 20,
                 "Moonlight Fragment": 20,
                 "Space Fragment": 10,
@@ -311,7 +311,7 @@
             "SPD": 17,
             "Level": 40,
             "Materials": {
-                "Wild Essence": 50,
+                "Wild Essence": 40,
                 "Lost Song": 5,
                 "Drop of Earth": 20,
                 "Shifting Vines": 20,
@@ -380,7 +380,7 @@
             "SPD": 10,
             "Level": 60,
             "Materials": {
-                "Brutal Essence": 50,
+                "Brutal Essence": 60,
                 "Touch of Chaos": 3,
                 "Bottled Light": 5,
                 "Sunlight Fragment": 20,
@@ -397,7 +397,7 @@
             "SPD": 23,
             "Level": 60,
             "Materials": {
-                "Arcane Essence": 50,
+                "Arcane Essence": 60,
                 "Touch of Chaos": 1,
                 "Lost Memory": 5,
                 "Time Fragment": 10,
@@ -414,7 +414,7 @@
             "SPD": 20,
             "Level": 60,
             "Materials": {
-                "Void Essence": 50,
+                "Void Essence": 60,
                 "Touch of Death": 3,
                 "Bottled Light": 3,
                 "Bottled Darkness": 3,
@@ -433,7 +433,7 @@
             "SPD": 26,
             "Level": 70,
             "Materials": {
-                "Void Essence": 50,
+                "Void Essence": 70,
                 "Touch of Death": 3,
                 "Bottled Darkness": 5,
                 "Moonlight Fragment": 20,
@@ -451,9 +451,9 @@
             "SPD": 33,
             "Level": 70,
             "Materials": {
-                "Wild Essence": 50,
+                "Wild Essence": 70,
                 "Lost Song": 3,
-                "Serene Sky": 10,
+                "Soft Breeze": 10,
                 "Drop of Earth": 10,
                 "Shifting Vines": 30,
                 "Weeping Herb": 30,
@@ -470,7 +470,7 @@
             "SPD": 15,
             "Level": 70,
             "Materials": {
-                "Wild Essence": 50,
+                "Wild Essence": 70,
                 "Touch of Chaos": 1,
                 "Bottled Light": 5,
                 "Moonlight Fragment": 20,
@@ -490,7 +490,7 @@
             "SPD": 18,
             "Level": 80,
             "Materials": {
-                "Brutal Essence": 50,
+                "Brutal Essence": 80,
                 "Touch of Chaos": 5,
                 "Bottled Light": 5,
                 "Time Fragment": 40,
@@ -509,11 +509,11 @@
             "SPD": 28,
             "Level": 80,
             "Materials": {
-                "Void Essence": 50,
+                "Void Essence": 80,
                 "Touch of Death": 5,
                 "Sunlight Fragment": 40,
                 "Moonlight Fragment": 40,
-                "Serene Sky": 20,
+                "Soft Breeze": 20,
                 "Living Flame": 20,
                 "Mithril Shard": 20,
                 "Crystal Shard": 20,

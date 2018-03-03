@@ -1,9 +1,9 @@
 from fbchat.models import *
+from datetime import datetime, timedelta
 import random
 
-from data import item_drop_data, random_beast
+from data import item_drop_data, monster_data, random_beast
 from mongo import *
-from travel import edges, adjacent_locations
 from util import *
 
 feature_map = {
@@ -25,8 +25,75 @@ feature_map = {
 }
 
 
+edges = [[-1 for _ in range(len(location_names))] for _ in range(len(location_names))]
+
+
+def _connect(a, b, time):
+    edges[a][b] = time
+    edges[b][a] = time
+
+
+# - Lith Harbor
+_connect(1, 2, 2)
+_connect(1, 5, 2)
+# - Victoria Island
+_connect(2, 3, 3)
+_connect(3, 4, 3)
+_connect(4, 5, 3)
+_connect(5, 2, 2)
+# - Sleepywood
+_connect(2, 6, 2)
+_connect(3, 6, 2)
+_connect(4, 6, 2)
+_connect(5, 6, 2)
+_connect(6, 7, 2)
+# - Masteria
+_connect(5, 8, 5)
+_connect(8, 9, 3)
+_connect(9, 10, 3)
+# - El Nath
+_connect(3, 11, 12)
+_connect(11, 12, 6)
+_connect(12, 13, 7)
+_connect(13, 14, 0)
+# - Aqua Road
+_connect(11, 15, 10)
+_connect(12, 15, 6)
+_connect(15, 16, 2)
+_connect(15, 22, 5)
+# - Ludibrium
+_connect(11, 19, 20)
+_connect(19, 20, 5)
+_connect(20, 21, 1)
+_connect(19, 22, 10)
+_connect(19, 23, 10)
+# - Nihal Desert
+_connect(11, 17, 14)
+_connect(17, 18, 5)
+# - Leafre
+#_connect(11, 24, 15)
+_connect(24, 25, 5)
+_connect(25, 26, 2)
+#_connect(24, 27, 30)
+
+
 def location_features(location):
     return feature_map.get(location, [])
+
+
+def location_level(location):
+    if location in monster_data:
+        level_min, level_max = None, None
+        for monster_datum in monster_data[location]:
+            if 'Level' in monster_datum:
+                monster_min, monster_max = monster_datum['Level']
+                level_min = monster_min if level_min is None else min(level_min, monster_min)
+                level_max = monster_max if level_max is None else max(level_max, monster_max)
+            else:
+                return None, None
+        return level_min, level_max
+    else:
+        return None
 
 
 def explore_location(client, user, thread_id):
@@ -51,13 +118,12 @@ def explore_location(client, user, thread_id):
     # Calculate item drops
     item_drops = {}
     for item, rate in item_drop_data.get(user['Location'], {}).items():
-        trials = []
+        final_amount = 0
         for _ in range(8):
             amount = 0
             while rate > random.random():
                 amount += 1
-            trials.append(amount)
-        final_amount = max(trials)
+            final_amount = max(amount, final_amount)
         if final_amount > 0:
             item_drops[item] = final_amount
             inventory_add(user['_id'], item, final_amount)
@@ -71,48 +137,44 @@ def explore_location(client, user, thread_id):
 
     # Check for discovered hunting pet
     beast = None
-    delta_rate = 0
-    if 0.01 * beast_multiplier > random.random():
+    delta_flow = 0
+    if beast_multiplier > random.random() * 100:
         beast = random_beast()
-        delta_rate = beast[1] * beast[2]
-        gold_rate_add(user['_id'], delta_rate)
+        delta_flow = beast[1] * beast[2]
+        gold_flow_add(user['_id'], delta_flow)
 
     # Check for discovered location
     current = location_names_reverse[user['Location']]
     progress = user['LocationProgress']
-    unlocked = []
-    presence = None
-    for i in adjacent_locations(user, discovered=False):
-        if edges[current][i] > 0:
-            new_progress = progress.get(location_names[i], 0) + random.uniform(1.6, 2.4) / edges[current][i]
-            new_progress = min(new_progress, 1)
+    adjacent = adjacent_locations(user, discovered=False)
+    unlocked, presence = None, None
+    if len(adjacent) > 0:
+        name = location_names[adjacent[0]]
+        distance = max(edges[current][adjacent[0]], 1)
+        presence = progress.get(name, 0) + random.uniform(1, 2) / distance
+        if presence >= 1:
+            location_progress_set(user['_id'], name, 1)
+            unlocked = name
+            presence = progress.get(location_names[adjacent[1]], 0) if len(adjacent) > 1 else None
         else:
-            new_progress = 1
-        if new_progress == 1:
-            location_progress_set(user['_id'], location_names[i], 1)
-            unlocked.append(i)
-        else:
-            location_progress_set(user['_id'], location_names[i], new_progress)
-            presence = new_progress if presence is None else max(presence, new_progress)
+            location_progress_set(user['_id'], name, presence)
 
     # Create message
     reply = []
     line = 'You spent some time exploring ' + location_names[current]
-    line += ' and found ' + str(delta_gold) + ' gold.'
+    line += ' and found ' + format_num(delta_gold, truncate=True) + ' gold.'
     reply.append(line)
     if beast:
         line = 'A wild ' + str(beast[1]) + '/' + str(beast[2]) + ' '
         line += beast[0] + ' took a liking to you! It follows you around, '
-        line += 'granting you an additional ' + str(delta_rate) + ' gold per hour.'
+        line += 'granting you an additional ' + format_num(delta_flow, truncate=True) + ' gold per hour.'
         reply.append(line)
-    if len(unlocked) > 0:
-        line = 'During this time, you randomly stumbled upon '
-        line += ' and '.join([location_names[new] for new in unlocked]) + '!'
+    if unlocked is not None:
+        line = 'During this time, you randomly stumbled upon ' + unlocked + '!'
         reply.append(line)
     if presence is not None:
-        line = 'On the way back, you sensed the presence of an'
-        line += ('other' if unlocked else '') + ' undiscovered location nearby. ('
-        line += str(int(presence * 100)) + '% to discovery)'
+        line = 'On the way back, you sensed the presence of an' + ('other' if unlocked is not None else '')
+        line += ' undiscovered location nearby. (' + str(int(presence * 100)) + '% to discovery)'
         reply.append(line)
     reply = ' '.join(reply)
     if len(item_drops) > 0:
@@ -123,3 +185,59 @@ def explore_location(client, user, thread_id):
 
     message = Message(reply)
     client.send(message, thread_id=thread_id, thread_type=ThreadType.GROUP)
+
+
+def check_travel(client, user, thread_id):
+    current = location_names_reverse[user['Location']]
+    if current == 0:
+        reply = 'You cannot travel anywhere.'
+    else:
+        reply = ['You are in ' + location_names[current]]
+        reply[0] += ' and can travel to the following places:'
+        for i in adjacent_locations(user):
+            reply.append('-> ' + location_names[i] + ': ' + str(edges[current][i]) + ' minutes away')
+        if len(reply) > 1:
+            reply = '\n'.join(reply)
+        else:
+            reply = 'You have not discovered any surrounding locations yet.'
+    client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
+
+
+def travel_to_location(client, user, text, thread_id):
+    current = location_names_reverse[user['Location']]
+    location = query_location(text, adjacent_locations(user))
+    if location is None:
+        reply = 'Invalid location.'
+    else:
+        user_id = user['_id']
+        client.user_states[user_id] = (UserState.Travel, {
+            'Destination': location_names[location],
+            'EndTime': datetime.now() + timedelta(minutes=edges[current][location])
+        })
+        reply = user['Name'] + ' is now traveling to ' + location_names[location] + '.'
+    client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
+
+
+def adjacent_locations(user, discovered=True):
+    current = location_names_reverse[user['Location']]
+    progress = user['LocationProgress']
+    locations = []
+    for i, time in enumerate(edges[current]):
+        if time >= 0 and ((progress.get(location_names[i], 0) >= 1) == discovered):
+            locations.append(i)
+    return locations
+
+
+def query_location(query, locations):
+    query = query.lower()
+    locations = [location_names[location] for location in locations]
+    for location in locations:
+        if query == location.lower():
+            return location_names_reverse[location]
+    for location in locations:
+        if query in location.lower().split():
+            return location_names_reverse[location]
+    for location in locations:
+        if location.lower().startswith(query):
+            return location_names_reverse[location]
+    return None

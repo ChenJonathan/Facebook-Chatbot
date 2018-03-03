@@ -309,10 +309,11 @@ def generate_group_info(client, author, command, thread_id):
         reply += 'Usage: "!shop"\n'
         reply += 'Lists all the items available in the shop. Shop items are the same '
         reply += 'in every location that has a shop.\n\n'
-        reply += 'Usage: "!shop <slot>"\n'
-        reply += 'Example: "!shop 1"\n'
-        reply += 'Purchases the shop item designated by <slot>. Make sure to check the '
-        reply += 'shop first to see which item is in each slot.'
+        reply += 'Usage: "!shop <slot> <amount>"\n'
+        reply += 'Example: "!shop 1 10"\n'
+        reply += 'Purchases <amount> copies of the shop item designated by <slot>. '
+        reply += '<amount> defaults to 1 if left blank. Make sure to check the shop '
+        reply += 'first to see which item is in each slot.'
 
     elif command == 'travel':
         reply = '<<Travel>>\n'

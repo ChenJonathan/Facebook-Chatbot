@@ -17,9 +17,13 @@ def generate_craft_info(client, user, thread_id):
         if item_datum['Type'] == 'Item':
             reply += '\n-> Description: ' + item_datum['Description']
         else:
-            reply += '\n-> ATK: ' + str(item_datum['ATK'])
-            reply += '\n-> DEF: ' + str(item_datum['DEF'])
-            reply += '\n-> SPD: ' + str(item_datum['SPD'])
+            current = user['Equipment'][item_datum['Type']]
+            reply += '\n-> ATK: ' + str(item_datum['ATK']) + ' ('
+            reply += format_num(item_datum['ATK'] - current['ATK'], sign=True) + ' change)'
+            reply += '\n-> DEF: ' + str(item_datum['DEF']) + ' ('
+            reply += format_num(item_datum['DEF'] - current['DEF'], sign=True) + ' change)'
+            reply += '\n-> SPD: ' + str(item_datum['SPD']) + ' ('
+            reply += format_num(item_datum['SPD'] - current['SPD'], sign=True) + ' change)'
         reply += '\n-> Level Required: ' + str(item_datum['Level'])
         reply += '\n-> Materials:'
         for material_key in sorted(item_datum['Materials'].keys(), key=lambda x: item_names_reverse[x]):
@@ -30,11 +34,9 @@ def generate_craft_info(client, user, thread_id):
 
 
 def craft_item(client, user, slot, thread_id):
-    try:
-        slot = int(slot) - 1
-        item_list = craft_data[user['Location']]
-        assert 0 <= slot < len(item_list)
-    except:
+    item_list = craft_data[user['Location']]
+    slot -= 1
+    if slot < 0 or slot >= len(item_list):
         reply = 'Invalid slot number.'
     else:
         item_datum = item_list[slot]
@@ -47,8 +49,9 @@ def craft_item(client, user, slot, thread_id):
             # Check and deduct required materials
             materials_owned = True
             for material, amount in item_datum['Materials'].items():
-                if material not in user['Inventory'] or user['Inventory'][material] < amount:
+                if user['Inventory'].get(material, 0) < amount:
                     materials_owned = False
+                    break
             if not materials_owned:
                 reply = 'You don\'t have the materials necessary to craft this.'
             else:

@@ -16,7 +16,6 @@
     "Ellinia": {
         "Arcane Essence": 0.8,
         "Moonlight Fragment": 0.2,
-        "Serene Sky": 0.2,
         "Crystal Shard": 0.4,
         "Breathing Wood": 0.6,
         "Shifting Vines": 0.2,
@@ -34,7 +33,7 @@
         "Void Essence": 0.8,
         "Moonlight Fragment": 0.2,
         "Howling Wind": 0.4,
-        "Serene Sky": 0.2
+        "Soft Breeze": 0.2
     },
     "Sleepywood": {
         "Bottled Darkness": 0.1,
@@ -70,7 +69,7 @@
         "Bottled Light": 0.1,
         "Sunlight Fragment": 0.3,
         "Space Fragment": 0.1,
-        "Serene Sky": 0.4,
+        "Soft Breeze": 0.4,
         "Astral Flower": 0.4,
         "Wistful Wool": 0.4,
         "Hallowed Feather": 0.6
@@ -112,7 +111,7 @@
     "Ariant": {
         "Lost Song": 0.1,
         "Sunlight Fragment": 0.2,
-        "Serene Sky": 0.2,
+        "Soft Breeze": 0.2,
         "Drop of Sand": 0.8,
         "Living Flame": 0.2
     },
@@ -127,7 +126,7 @@
     "Ludibrium": {
         "Bottled Light": 0.1,
         "Sunlight Fragment": 0.2,
-        "Serene Sky": 0.4,
+        "Soft Breeze": 0.4,
         "Clockwork Shard": 0.4
     },
     "Path of Time": {
