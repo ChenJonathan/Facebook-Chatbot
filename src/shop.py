@@ -6,15 +6,17 @@ from mongo import *
 
 
 def generate_shop_info(client, user, thread_id):
+    gold = user['Gold']
+    healthy = client.user_health.get(user['_id'], user['Stats']['Health']) == user['Stats']['Health']
     reply = 'Shop information has been sent to you. Check your private messages (or message requests).'
     client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
     reply = ['<<The Wong Shoppe>>']
     reply.append('Buy things with "!shop <slot> <amount>" in a group chat. <amount> defaults to 1 if left blank.\n')
-    reply.append('1. Charity donation: 100 gold')
+    reply.append('1. Charity donation: 100 gold (' + str(max(gold // 100, 0)) + ' max)')
     reply.append('-> Donates some gold to your local charity.\n')
-    reply.append('2. Life Elixir: 1000 gold')
+    reply.append('2. Life Elixir: 1000 gold (' + ('1' if gold >= 1000 and not healthy else '0') + ' max)')
     reply.append('-> Restores your life to its maximum.\n')
-    reply.append('3. Hunting pet: 2500 gold')
+    reply.append('3. Hunting pet: 2500 gold (' + str(max(gold // 2500, 0)) + ' max)')
     reply.append('-> Hunts monsters for you, granting some gold every hour.')
     reply = '\n'.join(reply)
     client.send(Message(reply), thread_id=user['_id'])

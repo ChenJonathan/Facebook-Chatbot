@@ -195,7 +195,12 @@ def check_travel(client, user, thread_id):
         reply = ['You are in ' + location_names[current]]
         reply[0] += ' and can travel to the following places:'
         for i in adjacent_locations(user):
-            reply.append('-> ' + location_names[i] + ': ' + str(edges[current][i]) + ' minutes away')
+            level_range = location_level(location_names[i])
+            line = '-> ' + location_names[i]
+            if level_range is not None:
+                line += ' (Levels ' + str('???' if level_range[0] is None else level_range[0])
+                line += ' - ' + str('???' if level_range[1] is None else level_range[1]) + ')'
+            reply.append(line + ': ' + str(edges[current][i]) + ' minutes away')
         if len(reply) > 1:
             reply = '\n'.join(reply)
         else:

@@ -59,11 +59,14 @@ def run_user_command(client, author, command, text):
         text = text.strip()
         if len(text) > 0:
             client.defines[command] = text
+            reply = '!' + command + ' has been redefined!'
         elif len(command) > 0:
             del client.defines[command]
+            reply = '!' + command + ' has been cleared to default.'
         else:
             generate_user_info(client, author, 'define')
-        client.send(Message('Define added!'), thread_id=author_id)
+            return
+        client.send(Message(reply), thread_id=author_id)
 
     elif command == 'equip' or command == 'e':
         try:
@@ -132,9 +135,11 @@ def run_user_command(client, author, command, text):
     elif command == 'response' or command == 'r':
         if len(text) > 0:
             client.responses.append(text)
+            reply = 'Response added!'
         else:
             client.responses.clear()
-        client.send(Message('Response added!'), thread_id=author_id)
+            reply = 'All responses cleared.'
+        client.send(Message(reply), thread_id=author_id)
 
     elif command == 'secret' or command == 's':
         reply = []
