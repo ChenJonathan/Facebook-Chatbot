@@ -25,7 +25,7 @@ def generate_battle(client, user, thread_id):
         monster['Level'] = random.randint(monster['Level'][0], monster['Level'][1])
     else:
         monster['Level'] = random.randint(int(user['Stats']['Level'] * 0.9), int(user['Stats']['Level'] * 1.1))
-    stat_scale = base_stat(monster['Level']) * 2.5
+    stat_scale = base_stat(monster['Level']) * 2.25
     monster['ATK'] = int(monster['ATK'] * stat_scale)
     monster['DEF'] = int(monster['DEF'] * stat_scale)
     monster['SPD'] = int(monster['SPD'] * stat_scale)

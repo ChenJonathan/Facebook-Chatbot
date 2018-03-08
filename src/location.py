@@ -7,14 +7,10 @@ from enums import UserState, Region, Item
 from mongo import *
 from util import *
 
-_edges = {}
+_edges = {location: {} for location in Location.__members__.values()}
 
 
 def _connect(a, b, time):
-    if a not in _edges:
-        _edges[a] = {}
-    if b not in _edges:
-        _edges[b] = {}
     _edges[a][b] = time
     _edges[b][a] = time
 

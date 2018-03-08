@@ -323,7 +323,7 @@ def generate_group_info(client, author, command, thread_id):
         reply += 'Sets your character on a journey to <location>. You will be unable to '
         reply += 'take most actions (such as shopping or exploring) while traveling.\n\n'
         reply += 'Usage: "!travel cancel"\n'
-        reply += 'Cancels your current journey. You will be returned to your previous location\n\n'
+        reply += 'Cancels your current journey. You will be returned to your previous location.\n\n'
         reply += 'Usage: "!travel"\n'
         reply += 'Check which locations you can travel to from your current location. '
         reply += 'New locations can be found through exploration.'
