@@ -8,7 +8,7 @@
             "SPD": 8,
             "Level": 10,
             "Materials": {
-                "Mithril Shard": 10,
+                "Mythril Shard": 10,
                 "Clockwork Shard": 20,
                 "Breathing Wood": 10
             }
@@ -52,7 +52,7 @@
             "Materials": {
                 "Arcane Essence": 10,
                 "Bottled Darkness": 1,
-                "Moonlight Fragment": 5,
+                "Moonlight Fragment": 1,
                 "Crystal Shard": 5
             }
         },
@@ -97,7 +97,7 @@
                 "Brutal Essence": 10,
                 "Breathing Wood": 5,
                 "Drop of Earth": 5,
-                "Mithril Shard": 5
+                "Mythril Shard": 5
             }
         },
         {
@@ -108,7 +108,7 @@
             "SPD": 2,
             "Level": 10,
             "Materials": {
-                "Mithril Shard": 10,
+                "Mythril Shard": 10,
                 "Living Flame": 5,
                 "Dying Magma": 10
             }
@@ -139,7 +139,7 @@
                 "Brutal Essence": 10,
                 "Touch of Death": 1,
                 "Bottled Darkness": 3,
-                "Mithril Shard": 5,
+                "Mythril Shard": 5,
                 "Warped Spirit": 10
             }
         },
@@ -184,8 +184,8 @@
             "Materials": {
                 "Bottled Light": 3,
                 "Bottled Darkness": 3,
-                "Sunlight Fragment": 10,
-                "Moonlight Fragment": 10,
+                "Sunlight Fragment": 5,
+                "Moonlight Fragment": 5,
                 "Shapeless Ice": 20,
                 "Living Flame": 20
             }
@@ -199,7 +199,7 @@
             "Level": 20,
             "Materials": {
                 "Bottled Light": 5,
-                "Sunlight Fragment": 20,
+                "Sunlight Fragment": 10,
                 "Crystal Shard": 10,
                 "Wistful Wool": 30,
                 "Hallowed Feather": 30
@@ -248,7 +248,7 @@
                 "Lost Song": 1,
                 "Howling Wind": 10,
                 "Shapeless Ice": 30,
-                "Mithril Shard": 10,
+                "Mythril Shard": 10,
                 "Wistful Wool": 10,
                 "Warped Debris": 10
             }
@@ -283,7 +283,7 @@
                 "Brutal Essence": 40,
                 "Howling Wind": 30,
                 "Drop of Sand": 30,
-                "Mithril Shard": 10,
+                "Mythril Shard": 10,
                 "Primal Taint": 10
             }
         },
@@ -297,9 +297,9 @@
             "Materials": {
                 "Bottled Light": 5,
                 "Void Essence": 40,
-                "Sunlight Fragment": 20,
-                "Moonlight Fragment": 20,
-                "Space Fragment": 10,
+                "Sunlight Fragment": 10,
+                "Moonlight Fragment": 10,
+                "Space Fragment": 5,
                 "Wistful Wool": 20
             }
         },
@@ -332,7 +332,7 @@
                 "Arcane Essence": 50,
                 "Bottled Darkness": 5,
                 "Lost Song": 5,
-                "Moonlight Fragment": 20,
+                "Moonlight Fragment": 10,
                 "Weeping Herb": 10,
                 "Astral Flower": 20,
                 "Hallowed Feather": 10
@@ -348,7 +348,7 @@
             "Materials": {
                 "Time Fragment": 10,
                 "Living Flame": 10,
-                "Mithril Shard": 20,
+                "Mythril Shard": 20,
                 "Clockwork Shard": 30,
                 "Wistful Wool": 20,
                 "Warped Debris": 10
@@ -383,9 +383,9 @@
                 "Brutal Essence": 60,
                 "Touch of Chaos": 3,
                 "Bottled Light": 5,
-                "Sunlight Fragment": 20,
+                "Sunlight Fragment": 10,
                 "Living Flame": 20,
-                "Mithril Shard": 20,
+                "Mythril Shard": 20,
                 "Plasma Shard": 20
             }
         },
@@ -401,7 +401,7 @@
                 "Touch of Chaos": 1,
                 "Lost Memory": 5,
                 "Time Fragment": 10,
-                "Space Fragment": 20,
+                "Space Fragment": 10,
                 "Deformed Water": 30,
                 "Crystal Shard": 10
             }
@@ -418,8 +418,8 @@
                 "Touch of Death": 3,
                 "Bottled Light": 3,
                 "Bottled Darkness": 3,
-                "Lost Memory": 5,
-                "Space Fragment": 30,
+                "Lost Memory": 10,
+                "Space Fragment": 20,
                 "Astral Flower": 30
             }
         }
@@ -438,7 +438,7 @@
                 "Bottled Darkness": 5,
                 "Moonlight Fragment": 20,
                 "Howling Wind": 30,
-                "Mithril Shard": 30,
+                "Mythril Shard": 30,
                 "Hallowed Feather": 10,
                 "Warped Spirit": 10
             }
@@ -493,12 +493,12 @@
                 "Brutal Essence": 80,
                 "Touch of Chaos": 5,
                 "Bottled Light": 5,
-                "Time Fragment": 40,
-                "Space Fragment": 40,
-                "Mithril Shard": 20,
-                "Crystal Shard": 20,
-                "Clockwork Shard": 20,
-                "Plasma Shard": 20
+                "Time Fragment": 20,
+                "Space Fragment": 20,
+                "Mythril Shard": 40,
+                "Crystal Shard": 40,
+                "Clockwork Shard": 40,
+                "Plasma Shard": 40
             }
         },
         {
@@ -511,12 +511,12 @@
             "Materials": {
                 "Void Essence": 80,
                 "Touch of Death": 5,
-                "Sunlight Fragment": 40,
-                "Moonlight Fragment": 40,
-                "Soft Breeze": 20,
-                "Living Flame": 20,
-                "Mithril Shard": 20,
-                "Crystal Shard": 20,
+                "Sunlight Fragment": 20,
+                "Moonlight Fragment": 20,
+                "Soft Breeze": 30,
+                "Living Flame": 30,
+                "Mythril Shard": 30,
+                "Crystal Shard": 30,
                 "Plasma Shard": 40
             }
         },
@@ -533,7 +533,7 @@
                 "Drop of Earth": 30,
                 "Drop of Sand": 30,
                 "Dying Magma": 30,
-                "Mithril Shard": 40,
+                "Mythril Shard": 40,
                 "Clockwork Shard": 40,
                 "Plasma Shard": 40,
                 "Warped Debris": 20

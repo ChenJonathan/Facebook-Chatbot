@@ -1,4 +1,4 @@
-Economics deals primarily with the concept of
+﻿Economics deals primarily with the concept of
 0 change.
 0 power.
 0 poverty.
@@ -3079,12 +3079,6 @@ Which of the following curves will always be below the ATC curve?
 1 the AFC and AVC curves
 0 the AVC and MC curves
 0 the AFC, AVC, and MC curves
-
-Which of the total cost curves is consistent with marginal cost curves and average total cost curves that are both U-shaped?
-0 both (i.) and (ii.)
-1 only (i.)
-0 only (ii.)
-0 neither (i.) nor (ii.)
 
 	Which of the following is true concerning the long-run average-total-cost curve?
 0 it is likely to be U-shaped.

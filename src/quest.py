@@ -4,6 +4,7 @@ import string
 
 from data import *
 from mongo import *
+from util import *
 
 trivia_categories = list(range(9, 25)) + list(range(27, 31)) + [32]
 

@@ -8,9 +8,10 @@ import time
 import traceback
 
 from battle import begin_battle, cancel_battle, complete_battle_quest
-from duel import begin_duel, cancel_duel, complete_duel_quest
 from clock import set_timer
 from commands import run_group_command, run_user_command
+from duel import begin_duel, cancel_duel, complete_duel_quest
+from enums import UserState, ChatState
 from mongo import *
 from polling import loop
 from quest import complete_quest
@@ -90,27 +91,27 @@ class ChatBot(Client):
             if thread_type == ThreadType.USER:
 
                 # Handle battle messages
-                state, details = self.user_states.get(author_id, (UserState.Idle, {}))
-                if state == UserState.Battle:
+                state, details = self.user_states.get(author_id, (UserState.IDLE, {}))
+                if state == UserState.BATTLE:
                     author = user_from_id(author_id)
                     if command == 'flee' or command == 'f':
                         cancel_battle(self, author)
-                    elif details['Status'] == ChatState.Preparing:
+                    elif details['Status'] == ChatState.PREPARING:
                         if command == 'ready' or command == 'r':
                             begin_battle(self, author)
-                    elif details['Status'] == ChatState.Quest:
+                    elif details['Status'] == ChatState.QUEST:
                         complete_battle_quest(self, author, text)
                     return
 
                 # Handle duel messages
-                elif state == UserState.Duel:
+                elif state == UserState.DUEL:
                     author = user_from_id(author_id)
                     if command == 'flee' or command == 'f':
                         cancel_duel(self, author)
-                    elif details['Status'] == ChatState.Preparing:
+                    elif details['Status'] == ChatState.PREPARING:
                         if command == 'ready' or command == 'r':
                             begin_duel(self, author)
-                    elif details['Status'] == ChatState.Quest:
+                    elif details['Status'] == ChatState.QUEST:
                         complete_duel_quest(self, author, text)
                     return
 
@@ -177,7 +178,9 @@ class ChatBot(Client):
                 run_group_command(self, user_from_id(author_id), command, text, thread_id)
 
         except:
-            self.send(Message('Main: ' + traceback.format_exc()), thread_id=master_id)
+            stack = 'Main: ' + traceback.format_exc()
+            print(stack)
+            self.send(Message(stack), thread_id=master_id)
         finally:
             lock.release()
 
@@ -222,7 +225,9 @@ class ActiveThread(threading.Thread):
             try:
                 loop(client)
             except:
-                client.send(Message('Polling: ' + traceback.format_exc()), thread_id=master_id)
+                stack = 'Polling: ' + traceback.format_exc()
+                print(stack)
+                client.send(Message(stack), thread_id=master_id)
             finally:
                 lock.release()
 

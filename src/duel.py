@@ -2,6 +2,7 @@ from fbchat.models import *
 from datetime import datetime, timedelta
 import random
 
+from enums import UserState, ChatState
 from mongo import *
 from quest import generate_quest
 from util import *
@@ -40,7 +41,7 @@ def cancel_duel_request(client, user, thread_id):
 
 def generate_duel(client, user_1, user_2, gold, thread_id):
     duel_1 = {
-        'Status': ChatState.Preparing,
+        'Status': ChatState.PREPARING,
         'Gold': gold,
         'UserHealth': user_1['Stats']['Health'],
         'OpponentHealth': user_2['Stats']['Health'],
@@ -52,8 +53,8 @@ def generate_duel(client, user_1, user_2, gold, thread_id):
     duel_2['OpponentHealth'] = user_1['Stats']['Health']
     duel_2['OpponentID'] = user_1['_id']
 
-    client.user_states[user_1['_id']] = (UserState.Duel, duel_1)
-    client.user_states[user_2['_id']] = (UserState.Duel, duel_2)
+    client.user_states[user_1['_id']] = (UserState.DUEL, duel_1)
+    client.user_states[user_2['_id']] = (UserState.DUEL, duel_2)
     reply = user_2['Name'] + ' has accepted a duel with ' + user_1['Name'] + ' for ' + str(gold)
     reply += ' gold! Check your private messages (or message requests) to begin the duel.'
     client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
@@ -74,11 +75,11 @@ def begin_duel(client, user):
     opponent = user_from_id(opponent_id)
     opponent_state, opponent_details = client.user_states[opponent_id]
 
-    if opponent_details['Status'] == ChatState.Ready:
-        user_details['Status'] = ChatState.Delay
+    if opponent_details['Status'] == ChatState.READY:
+        user_details['Status'] = ChatState.DELAY
         user_details['StartTime'] = datetime.now()
         user_details['EndTime'] = user_details['StartTime'] + timedelta(seconds=3)
-        opponent_details['Status'] = ChatState.Delay
+        opponent_details['Status'] = ChatState.DELAY
         opponent_details['StartTime'] = user_details['StartTime']
         opponent_details['EndTime'] = user_details['EndTime']
 
@@ -87,7 +88,7 @@ def begin_duel(client, user):
         reply = user['Name'] + ' is ready. ' + reply
         client.send(Message(reply), thread_id=opponent_id)
     else:
-        user_details['Status'] = ChatState.Ready
+        user_details['Status'] = ChatState.READY
 
         reply = 'Now waiting for ' + opponent['Name'] + ' to be ready.'
         client.send(Message(reply), thread_id=user_id)
@@ -127,7 +128,7 @@ def cancel_duel(client, user):
 
     gold = user_details['Gold']
 
-    if user_details['Status'] == ChatState.Preparing or user_details['Status'] == ChatState.Ready:
+    if user_details['Status'] == ChatState.PREPARING or user_details['Status'] == ChatState.READY:
         gold_add(user_id, gold)
         gold_add(opponent_id, gold)
 
@@ -152,7 +153,7 @@ def cancel_duel(client, user):
 def begin_duel_quest(client, user):
     user_id = user['_id']
     state, details = client.user_states[user_id]
-    details['Status'] = ChatState.Quest
+    details['Status'] = ChatState.QUEST
     details['Quest'] = generate_quest('Vocab')
     client.send(Message(details['Quest']['Question']), thread_id=user_id)
 
@@ -194,7 +195,7 @@ def complete_duel_quest(client, user, text):
         return
 
     # Battle ongoing
-    user_details['Status'] = ChatState.Delay
+    user_details['Status'] = ChatState.DELAY
     user_details['Timer'] = _calculate_timer(total_spd(user), total_spd(opponent))
     user_details['StartTime'] = datetime.now()
     user_details['EndTime'] = user_details['StartTime'] + timedelta(seconds=user_details['Timer'])

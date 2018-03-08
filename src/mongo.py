@@ -1,7 +1,7 @@
 import os
 import pymongo
 
-from util import *
+from enums import Location
 
 db_groups = None
 db_users = None
@@ -77,8 +77,20 @@ def user_try_add(user_id):
             'Priority': 1,
             'Gold': 0,
             'GoldFlow': 0,
-            'Location': 'Lith Harbor',
-            'LocationProgress': {location_names[i]: 1 for i in list(range(6)) + [8, 11, 17, 19, 24]},
+            'Location': Location['Lith Harbor'].name,
+            'LocationProgress': {
+                Location['Maple Island'].name: 1,
+                Location['Lith Harbor'].name: 1,
+                Location['Henesys'].name: 1,
+                Location['Ellinia'].name: 1,
+                Location['Perion'].name: 1,
+                Location['Kerning City'].name: 1,
+                Location['New Leaf City'].name: 1,
+                Location['Orbis'].name: 1,
+                Location['Ariant'].name: 1,
+                Location['Ludibrium'].name: 1,
+                Location['Leafre'].name: 1,
+            },
             'Stats': {
                 'Level': 1,
                 'Experience': 0,
@@ -212,16 +224,16 @@ def inventory_remove_all(user_id, item):
 
 # Quest methods
 
-def quest_type_set(user_id, type):
+def quest_type_set(user_id, quest_type):
     user_try_add(user_id)
-    update = {'$set': {'Quest.Type': type}}
+    update = {'$set': {'Quest.Type': quest_type}}
     db_users.update_one({'_id': user_id}, update)
 
 
-def quest_stat_track(user_id, type, correct):
+def quest_stat_track(user_id, quest_type, correct):
     user_try_add(user_id)
     update = {'$inc': {
-        ('Quest.' + type + '.Correct'): 1 if correct else 0,
-        ('Quest.' + type + '.Total'): 1
+        ('Quest.' + quest_type + '.Correct'): 1 if correct else 0,
+        ('Quest.' + quest_type + '.Total'): 1
     }}
     db_users.update_one({'_id': user_id}, update)

@@ -1,6 +1,3 @@
-from fbchat.models import *
-from datetime import datetime
-import random
 import requests
 
 from battle import generate_battle, cancel_battle
@@ -158,13 +155,12 @@ def run_user_command(client, author, command, text):
         if len(text) == 0:
             generate_group_info(client, author, 'warp', author_id)
             return
-        try:
-            location = location_names[query_location(text, range(len(location_names)))]
-        except:
+        location = query_location(text)
+        if location is None:
             reply = 'Not a valid location.'
         else:
             location_set(author_id, location)
-            if client.user_states.get(author_id, (UserState.Idle, {}))[0] == UserState.Travel:
+            if client.user_states.get(author_id, (UserState.IDLE, {}))[0] == UserState.TRAVEL:
                 del client.user_states[author_id]
             reply = 'You have been warped to ' + location + '!'
         client.send(Message(reply), thread_id=author_id)
@@ -315,7 +311,7 @@ def run_group_command(client, author, command, text, thread_id):
         weapon = user['Equipment']['Weapon']
         armor = user['Equipment']['Armor']
         accessory = user['Equipment']['Accessory']
-        reply = '<<Equipment>>\n'
+        reply = '<<' + user['Name'] + '>>\n'
         reply += 'Weapon: ' + weapon['Name'] + '\n'
         reply += '-> ATK: ' + format_num(weapon['ATK'], sign=True) + '\n'
         reply += '-> DEF: ' + format_num(weapon['DEF'], sign=True) + '\n'
@@ -346,10 +342,10 @@ def run_group_command(client, author, command, text, thread_id):
             explore_location(client, author, thread_id)
 
     elif command == 'flee' or command == 'f':
-        state, details = client.user_states.get(author_id, (UserState.Idle, {}))
-        if state == UserState.Battle:
+        state, details = client.user_states.get(author_id, (UserState.IDLE, {}))
+        if state == UserState.BATTLE:
             cancel_battle(client, author)
-        elif state == UserState.Duel:
+        elif state == UserState.DUEL:
             cancel_duel(client, author)
 
     elif command == 'give' or command == 'g':
@@ -386,7 +382,7 @@ def run_group_command(client, author, command, text, thread_id):
         reply = 'Your inventory has been sent to you. Check your private messages (or message requests).'
         client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
         reply = ['<<Inventory>>']
-        for item_key in sorted(author['Inventory'].keys(), key=lambda x: item_names_reverse[x]):
+        for item_key in sorted(author['Inventory'].keys(), key=lambda x: Item[x].value):
             reply.append('-> ' + item_key + ' x ' + str(author['Inventory'][item_key]))
         reply = '\n'.join(reply) if len(reply) > 1 else 'Your inventory is empty.'
         client.send(Message(reply), thread_id=author_id)
@@ -404,14 +400,14 @@ def run_group_command(client, author, command, text, thread_id):
             user = user_from_id(user.uid)
             if user['_id'] == master_id and author_id != master_id:
                 user = author
-            if location_names_reverse[user['Location']] == 0:
-                location_set(user['_id'], location_names[1])
-                if client.user_states.get(user['_id'], (UserState.Idle, {}))[0] == UserState.Travel:
+            if Location[user['Location']] == Location['Maple Island']:
+                location_set(user['_id'], Location['Lith Harbor'].name)
+                if client.user_states.get(user['_id'], (UserState.IDLE, {}))[0] == UserState.TRAVEL:
                     del client.user_states[user['_id']]
                 reply = user['Name'] + ' has been freed from jail.'
             else:
-                location_set(user['_id'], location_names[0])
-                if client.user_states.get(user['_id'], (UserState.Idle, {}))[0] == UserState.Travel:
+                location_set(user['_id'], Location['Maple Island'].name)
+                if client.user_states.get(user['_id'], (UserState.IDLE, {}))[0] == UserState.TRAVEL:
                     del client.user_states[user['_id']]
                 reply = user['Name'] + ' has been sent to jail!'
         else:
@@ -440,34 +436,13 @@ def run_group_command(client, author, command, text, thread_id):
         client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
 
     elif command == 'map' or command == 'm':
-        location = author['Location']
-        if location in ['Maple Island']:
-            client.sendLocalImage('./images/maple_island.png', thread_id=thread_id, thread_type=ThreadType.GROUP)
-        elif location in ['Lith Harbor', 'Henesys', 'Ellinia', 'Perion', 'Kerning City']:
-            client.sendLocalImage('./images/victoria_island.png', thread_id=thread_id, thread_type=ThreadType.GROUP)
-        elif location in ['Sleepywood', 'Cursed Sanctuary']:
-            client.sendLocalImage('./images/sleepywood.png', thread_id=thread_id, thread_type=ThreadType.GROUP)
-        elif location in ['New Leaf City', 'Krakian Jungle', 'Bigger Ben']:
-            client.sendLocalImage('./images/masteria.png', thread_id=thread_id, thread_type=ThreadType.GROUP)
-        elif location in ['Orbis', 'El Nath']:
-            client.sendLocalImage('./images/el_nath_mts.png', thread_id=thread_id, thread_type=ThreadType.GROUP)
-        elif location in ['Dead Mine', 'Zakum\'s Altar']:
-            client.sendLocalImage('./images/dead_mine.png', thread_id=thread_id, thread_type=ThreadType.GROUP)
-        elif location in ['Aqua Road', 'Cave of Pianus']:
-            client.sendLocalImage('./images/aqua_road.png', thread_id=thread_id, thread_type=ThreadType.GROUP)
-        elif location in ['Ariant', 'Magatia']:
-            client.sendLocalImage('./images/nihal_desert.png', thread_id=thread_id, thread_type=ThreadType.GROUP)
-        elif location in ['Korean Folk Town', 'Omega Sector', 'Ludibrium']:
-            client.sendLocalImage('./images/ludus_lake.png', thread_id=thread_id, thread_type=ThreadType.GROUP)
-        elif location in ['Path of Time', 'Papulatus Clock Tower']:
-            client.sendLocalImage('./images/clock_tower.png', thread_id=thread_id, thread_type=ThreadType.GROUP)
-        elif location in ['Leafre', 'Minar Forest', 'Cave of Life']:
-            client.sendLocalImage('./images/minar_forest.png', thread_id=thread_id, thread_type=ThreadType.GROUP)
-        elif location in ['Temple of Time']:
-            client.sendLocalImage('./images/temple_of_time.png', thread_id=thread_id, thread_type=ThreadType.GROUP)
-        else:
+        region = location_region(author['Location'])
+        if region is None:
             message = Message('No map available for this region.')
             client.send(message, thread_id=thread_id, thread_type=ThreadType.GROUP)
+        else:
+            path = './images/' + region.value + '.png'
+            client.sendLocalImage(path, thread_id=thread_id, thread_type=ThreadType.GROUP)
 
     elif command == 'mute':
         if len(text) == 0:
@@ -511,7 +486,7 @@ def run_group_command(client, author, command, text, thread_id):
     elif command == 'quest' or command == 'q':
         if len(text) > 0:
             reply = set_quest_type(author, text)
-        elif location_names_reverse[author['Location']] == 0:
+        elif Location[author['Location']] == Location['Maple Island']:
             reply = 'There are no quests to be found here.'
         else:
             quest = generate_quest(author['Quest']['Type'])
@@ -593,7 +568,14 @@ def run_group_command(client, author, command, text, thread_id):
                 shop_purchase(client, author, slot, amount, thread_id)
 
     elif command == 'travel' or command == 't':
-        if not _check_busy(client, author, thread_id):
+        if text.lower() == 'cancel':
+            if client.user_states.get(author_id, (UserState.IDLE, {}))[0] == UserState.TRAVEL:
+                del client.user_states[author_id]
+                reply = author['Name'] + '\'s journey has been cancelled.'
+            else:
+                reply = 'You are not currently traveling anywhere.'
+            client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
+        elif not _check_busy(client, author, thread_id):
             if len(text) == 0:
                 check_travel(client, author, thread_id)
             else:
@@ -614,7 +596,7 @@ def _check_busy(client, user, thread_id, allow_duel_requests=False):
 
     state, details = client.user_states[user_id]
 
-    if state == UserState.Travel:
+    if state == UserState.TRAVEL:
         seconds = int((details['EndTime'] - datetime.now()).total_seconds())
         minutes, seconds = seconds // 60, seconds % 60
         reply = 'You\'re busy traveling to ' + details['Destination'] + '. ('
@@ -622,12 +604,12 @@ def _check_busy(client, user, thread_id, allow_duel_requests=False):
         reply += str(seconds) + ' sec' + ('' if seconds == 1 else 's') + ' remaining)'
         client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
 
-    elif state == UserState.Battle:
+    elif state == UserState.BATTLE:
         reply = 'You\'re busy fighting a level ' + str(details['Monster']['Level'])
         reply += ' ' + details['Monster']['Name'] + '!'
         client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
 
-    elif state == UserState.Duel:
+    elif state == UserState.DUEL:
         opponent = user_from_id(details['OpponentID'])
         reply = 'You\'re busy dueling ' + opponent['Name'] + ' for ' + str(details['Gold']) + ' gold!'
         client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
@@ -648,17 +630,17 @@ def _check_to_string(client, user):
     text += 'Gold: ' + format_num(user['Gold'], truncate=True)
     text += ' (' + format_num(user['GoldFlow'], sign=True, truncate=True) + '/hour)\n'
     text += 'Location: ' + user['Location']
-    state, details = client.user_states.get(user['_id'], (UserState.Idle, {}))
+    state, details = client.user_states.get(user['_id'], (UserState.IDLE, {}))
 
-    if state == UserState.Travel:
+    if state == UserState.TRAVEL:
         seconds = int((details['EndTime'] - datetime.now()).total_seconds())
         minutes, seconds = seconds // 60, seconds % 60
         text += ' -> ' + details['Destination'] + '\n('
         text += ((str(minutes) + ' min ') if minutes > 0 else '')
         text += str(seconds) + ' sec' + ('' if seconds == 1 else 's') + ' remaining)'
-    elif state == UserState.Battle:
+    elif state == UserState.BATTLE:
         text += '\n(In battle with ' + details['Monster']['Name'] + ')'
-    elif state == UserState.Duel:
+    elif state == UserState.DUEL:
         opponent = user_from_id(details['OpponentID'])
         text += '\n(In a duel with ' + opponent['Name'] + ')'
 

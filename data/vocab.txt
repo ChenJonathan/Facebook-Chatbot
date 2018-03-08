@@ -298,7 +298,7 @@ exorcise:to expel evil spirits; free from bad influences
 expatiate:to speak or write at length
 expatriate:to send into exile
 expiate:to atone for
-explicate:to explain;interpret;clarify
+explicate:to explain; interpret; clarify
 expository:explanatory
 extant:in existence; not lost
 extemporaneous:unrehearsed

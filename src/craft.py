@@ -1,7 +1,9 @@
 from fbchat.models import *
 
 from data import craft_data
+from enums import Item
 from mongo import *
+from util import *
 
 
 def generate_craft_info(client, user, thread_id):
@@ -25,8 +27,8 @@ def generate_craft_info(client, user, thread_id):
             reply += '\n-> SPD: ' + str(item_datum['SPD']) + ' ('
             reply += format_num(item_datum['SPD'] - current['SPD'], sign=True) + ' change)'
         reply += '\n-> Level Required: ' + str(item_datum['Level'])
-        reply += '\n-> Materials:'
-        for material_key in sorted(item_datum['Materials'].keys(), key=lambda x: item_names_reverse[x]):
+        reply += '\n-> Materials Required:'
+        for material_key in sorted(item_datum['Materials'].keys(), key=lambda x: Item[x].value):
             required = str(item_datum['Materials'][material_key])
             owned = str(user['Inventory'].get(material_key, 0))
             reply += '\n---> ' + material_key + ' x ' + required + ' (' + owned + '/' + required + ')'

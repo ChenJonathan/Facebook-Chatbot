@@ -1,5 +1,6 @@
 from fbchat.models import *
 
+from enums import Location
 from util import *
 
 
@@ -239,9 +240,9 @@ def generate_group_info(client, author, command, thread_id):
     elif command == 'jail':
         reply = '<<Jail>>\n'
         reply += 'Usage: "!jail"\n'
-        reply += 'Sends a person to jail, preventing them from taking any actions '
-        reply += '(such as questing or exploring). If the person is already in jail, '
-        reply += 'they will be freed from jail instead and sent to Lith Harbor. '
+        reply += 'Sends a person to jail, preventing them from taking any actions (such as '
+        reply += 'questing or exploring). If the person is already in jail, they will be '
+        reply += 'freed from jail instead and sent to ' + Location['Lith Harbor'].name + '. '
         reply += 'Only usable by ' + priority_names[master_priority - 1] + ' priority and above.'
 
     elif command == 'location':
@@ -278,13 +279,13 @@ def generate_group_info(client, author, command, thread_id):
         reply += 'Example: "!quest psych"\n'
         reply += 'Sets the type of multiple choice question that will be generated '
         reply += 'for you. Current quest types include the following:\n'
-        reply += '-> "Vocab" - GRE vocabulary questions\n'
-        reply += '-> "Econ" - Economics questions\n'
-        reply += '-> "Gov" - U.S. government questions\n'
-        reply += '-> "History" - World history questions\n'
-        reply += '-> "Psych" - Psychology questions\n'
-        reply += '-> "Science" - Physics / chemistry / biology questions\n'
-        reply += '-> "Trivia" - Trivia questions from various topics\n'
+        reply += '-> "Vocab" - GRE vocabulary\n'
+        reply += '-> "Econ" - Economics\n'
+        reply += '-> "Gov" - U.S. government\n'
+        reply += '-> "History" - World history\n'
+        reply += '-> "Psych" - Psychology\n'
+        reply += '-> "Science" - Physics / chemistry / biology\n'
+        reply += '-> "Trivia" - Trivia (many topics)\n'
 
     elif command == 'random':
         reply = '<<Random>>\n'
@@ -321,6 +322,8 @@ def generate_group_info(client, author, command, thread_id):
         reply += 'Example: "!travel Ellinia"\n'
         reply += 'Sets your character on a journey to <location>. You will be unable to '
         reply += 'take most actions (such as shopping or exploring) while traveling.\n\n'
+        reply += 'Usage: "!travel cancel"\n'
+        reply += 'Cancels your current journey. You will be returned to your previous location\n\n'
         reply += 'Usage: "!travel"\n'
         reply += 'Check which locations you can travel to from your current location. '
         reply += 'New locations can be found through exploration.'

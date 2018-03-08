@@ -3,85 +3,124 @@ from datetime import datetime, timedelta
 import random
 
 from data import item_drop_data, monster_data, random_beast
+from enums import UserState, Region, Item
 from mongo import *
 from util import *
 
-feature_map = {
-    'Lith Harbor': ['Shop'],
-    'Henesys': ['Crafting', 'Shop'],
-    'Ellinia': ['Crafting', 'Shop'],
-    'Perion': ['Crafting', 'Crafting', 'Shop'],
-    'Kerning City': ['Shop'],
-    'Sleepywood': ['Crafting', 'Shop'],
-    'New Leaf City': ['Gambling - Coming soon!', 'Shop'],
-    'Orbis': ['Crafting', 'Shop'],
-    'El Nath': ['Crafting', 'Shop'],
-    'Ariant': ['Crafting', 'Shop'],
-    'Magatia': ['Crafting', 'Shop'],
-    'Ludibrium': ['Crafting', 'Shop'],
-    'Korean Folk Town': ['Crafting', 'Shop'],
-    'Omega Sector': ['Crafting', 'Shop'],
-    'Leafre': ['Crafting', 'Shop'],
-}
-
-
-edges = [[-1 for _ in range(len(location_names))] for _ in range(len(location_names))]
+_edges = {}
 
 
 def _connect(a, b, time):
-    edges[a][b] = time
-    edges[b][a] = time
+    if a not in _edges:
+        _edges[a] = {}
+    if b not in _edges:
+        _edges[b] = {}
+    _edges[a][b] = time
+    _edges[b][a] = time
 
 
-# - Lith Harbor
-_connect(1, 2, 2)
-_connect(1, 5, 2)
 # - Victoria Island
-_connect(2, 3, 3)
-_connect(3, 4, 3)
-_connect(4, 5, 3)
-_connect(5, 2, 2)
+_connect(Location['Lith Harbor'], Location['Henesys'], 2)
+_connect(Location['Lith Harbor'], Location['Kerning City'], 2)
+_connect(Location['Henesys'], Location['Ellinia'], 3)
+_connect(Location['Ellinia'], Location['Perion'], 3)
+_connect(Location['Perion'], Location['Kerning City'], 3)
+_connect(Location['Kerning City'], Location['Henesys'], 2)
 # - Sleepywood
-_connect(2, 6, 2)
-_connect(3, 6, 2)
-_connect(4, 6, 2)
-_connect(5, 6, 2)
-_connect(6, 7, 2)
+_connect(Location['Henesys'], Location['Sleepywood'], 2)
+_connect(Location['Ellinia'], Location['Sleepywood'], 2)
+_connect(Location['Perion'], Location['Sleepywood'], 2)
+_connect(Location['Kerning City'], Location['Sleepywood'], 2)
+_connect(Location['Sleepywood'], Location['Cursed Sanctuary'], 2)
 # - Masteria
-_connect(5, 8, 5)
-_connect(8, 9, 3)
-_connect(9, 10, 3)
-# - El Nath
-_connect(3, 11, 12)
-_connect(11, 12, 6)
-_connect(12, 13, 7)
-_connect(13, 14, 0)
+_connect(Location['Kerning City'], Location['New Leaf City'], 5)
+_connect(Location['New Leaf City'], Location['Krakian Jungle'], 3)
+_connect(Location['New Leaf City'], Location['Bigger Ben'], 3)
+# - El Nath Mountains
+_connect(Location['Ellinia'], Location['Orbis'], 12)
+_connect(Location['Orbis'], Location['El Nath'], 6)
+_connect(Location['El Nath'], Location['Dead Mine'], 7)
+_connect(Location['Dead Mine'], Location['Zakum\'s Altar'], 2)
 # - Aqua Road
-_connect(11, 15, 10)
-_connect(12, 15, 6)
-_connect(15, 16, 2)
-_connect(15, 22, 5)
-# - Ludibrium
-_connect(11, 19, 20)
-_connect(19, 20, 5)
-_connect(20, 21, 1)
-_connect(19, 22, 10)
-_connect(19, 23, 10)
+_connect(Location['Orbis'], Location['Aqua Road'], 10)
+_connect(Location['El Nath'], Location['Aqua Road'], 6)
+_connect(Location['Aqua Road'], Location['Cave of Pianus'], 2)
+_connect(Location['Aqua Road'], Location['Korean Folk Town'], 5)
+# - Ludus Lake
+_connect(Location['Orbis'], Location['Ludibrium'], 20)
+_connect(Location['Ludibrium'], Location['Path of Time'], 5)
+_connect(Location['Path of Time'], Location['Papulatus Clock Tower'], 1)
+_connect(Location['Ludibrium'], Location['Korean Folk Town'], 10)
+_connect(Location['Ludibrium'], Location['Omega Sector'], 10)
 # - Nihal Desert
-_connect(11, 17, 14)
-_connect(17, 18, 5)
+_connect(Location['Orbis'], Location['Ariant'], 14)
+_connect(Location['Ariant'], Location['Magatia'], 5)
 # - Leafre
-#_connect(11, 24, 15)
-_connect(24, 25, 5)
-_connect(25, 26, 2)
-#_connect(24, 27, 30)
+#_connect(Location['Orbis'], Location['Leafre'], 15)
+_connect(Location['Leafre'], Location['Minar Forest'], 5)
+_connect(Location['Minar Forest'], Location['Horntail\'s Lair'], 2)
+#_connect(Location['Leafre'], Location['Temple of Time'], 30)
+
+_feature_map = {
+    Location['Lith Harbor']: ['Shop'],
+    Location['Henesys']: ['Crafting', 'Shop'],
+    Location['Ellinia']: ['Crafting', 'Shop'],
+    Location['Perion']: ['Crafting', 'Shop'],
+    Location['Kerning City']: ['Shop'],
+    Location['Sleepywood']: ['Crafting', 'Shop'],
+    Location['New Leaf City']: ['Shop'],
+    Location['Orbis']: ['Crafting', 'Shop'],
+    Location['El Nath']: ['Crafting', 'Shop'],
+    Location['Ariant']: ['Crafting', 'Shop'],
+    Location['Magatia']: ['Crafting', 'Shop'],
+    Location['Ludibrium']: ['Crafting', 'Shop'],
+    Location['Korean Folk Town']: ['Crafting', 'Shop'],
+    Location['Omega Sector']: ['Crafting', 'Shop'],
+    Location['Leafre']: ['Crafting', 'Shop'],
+}
+
+_region_map = {
+    Location['Maple Island']: Region.MAPLE_ISLAND,
+    Location['Lith Harbor']: Region.VICTORIA_ISLAND,
+    Location['Henesys']: Region.VICTORIA_ISLAND,
+    Location['Ellinia']: Region.VICTORIA_ISLAND,
+    Location['Perion']: Region.VICTORIA_ISLAND,
+    Location['Kerning City']: Region.VICTORIA_ISLAND,
+    Location['Sleepywood']: Region.SLEEPYWOOD,
+    Location['Cursed Sanctuary']: Region.SLEEPYWOOD,
+    Location['New Leaf City']: Region.MASTERIA,
+    Location['Krakian Jungle']: Region.MASTERIA,
+    Location['Bigger Ben']: Region.MASTERIA,
+    Location['Orbis']: Region.EL_NATH_MOUNTAINS,
+    Location['El Nath']: Region.EL_NATH_MOUNTAINS,
+    Location['Dead Mine']: Region.DEAD_MINE,
+    Location['Zakum\'s Altar']: Region.DEAD_MINE,
+    Location['Aqua Road']: Region.AQUA_ROAD,
+    Location['Cave of Pianus']: Region.AQUA_ROAD,
+    Location['Ariant']: Region.NIHAL_DESERT,
+    Location['Magatia']: Region.NIHAL_DESERT,
+    Location['Ludibrium']: Region.LUDUS_LAKE,
+    Location['Path of Time']: Region.CLOCK_TOWER,
+    Location['Papulatus Clock Tower']: Region.CLOCK_TOWER,
+    Location['Korean Folk Town']: Region.LUDUS_LAKE,
+    Location['Omega Sector']: Region.LUDUS_LAKE,
+    Location['Leafre']: Region.MINAR_FOREST,
+    Location['Minar Forest']: Region.MINAR_FOREST,
+    Location['Horntail\'s Lair']: Region.MINAR_FOREST,
+    Location['Temple of Time']: Region.TEMPLE_OF_TIME,
+}
 
 
 def location_features(location):
-    return feature_map.get(location, [])
+    return _feature_map.get(Location[location], [])
+
+
+def location_region(location):
+    return _region_map.get(Location[location], None)
 
 
 def location_level(location):
+    location = Location[location].name
     if location in monster_data:
         level_min, level_max = None, None
         for monster_datum in monster_data[location]:
@@ -97,36 +136,34 @@ def location_level(location):
 
 
 def explore_location(client, user, thread_id):
-    location = location_names_reverse[user['Location']]
+    location = Location[user['Location']]
 
     # Apply location specific modifiers
     gold_multiplier = 1
     beast_multiplier = 1
-    if location == 0:
+    if location == Location['Maple Island']:
         gold_multiplier = 0
         beast_multiplier = 0
-    elif location == 1:
+    elif location == Location['Lith Harbor']:
         gold_multiplier = 0.5
-    elif location == 2:
+    elif location == Location['Henesys']:
         beast_multiplier = 3
-    elif location == 8:
+    elif location == Location['New Leaf City']:
         gold_multiplier = 2
         beast_multiplier = 0
-    elif location == 9:
+    elif location == Location['Krakian Jungle']:
         beast_multiplier = 5
 
     # Calculate item drops
     item_drops = {}
-    for item, rate in item_drop_data.get(user['Location'], {}).items():
-        final_amount = 0
-        for _ in range(8):
-            amount = 0
-            while rate > random.random():
+    for item, rate in item_drop_data.get(location.name, {}).items():
+        amount = 0
+        for _ in range(int(rate * 10)):
+            while random.random() < 0.1:
                 amount += 1
-            final_amount = max(amount, final_amount)
-        if final_amount > 0:
-            item_drops[item] = final_amount
-            inventory_add(user['_id'], item, final_amount)
+        if amount > 0:
+            item_drops[item] = amount
+            inventory_add(user['_id'], item, amount)
     while len(item_drops) > 3:
         del item_drops[random.choice(list(item_drops.keys()))]
 
@@ -144,24 +181,24 @@ def explore_location(client, user, thread_id):
         gold_flow_add(user['_id'], delta_flow)
 
     # Check for discovered location
-    current = location_names_reverse[user['Location']]
+    current = Location[user['Location']]
     progress = user['LocationProgress']
     adjacent = adjacent_locations(user, discovered=False)
     unlocked, presence = None, None
     if len(adjacent) > 0:
-        name = location_names[adjacent[0]]
-        distance = max(edges[current][adjacent[0]], 1)
-        presence = progress.get(name, 0) + random.uniform(1, 2) / distance
+        location = Location[adjacent[0]]
+        distance = max(_edges[current][location], 1)
+        presence = progress.get(location.name, 0) + random.uniform(1, 2) / distance
         if presence >= 1:
-            location_progress_set(user['_id'], name, 1)
-            unlocked = name
-            presence = progress.get(location_names[adjacent[1]], 0) if len(adjacent) > 1 else None
+            location_progress_set(user['_id'], location.name, 1)
+            unlocked = location.name
+            presence = progress.get(adjacent[1], 0) if len(adjacent) > 1 else None
         else:
-            location_progress_set(user['_id'], name, presence)
+            location_progress_set(user['_id'], location.name, presence)
 
     # Create message
     reply = []
-    line = 'You spent some time exploring ' + location_names[current]
+    line = 'You spent some time exploring ' + current.name
     line += ' and found ' + format_num(delta_gold, truncate=True) + ' gold.'
     reply.append(line)
     if beast:
@@ -180,7 +217,7 @@ def explore_location(client, user, thread_id):
     if len(item_drops) > 0:
         singular = len(item_drops) == 1 and list(item_drops.values())[0] == 1
         reply += '\n\nYou found the following item' + ('' if singular else 's') + ':'
-        for item_key in sorted(item_drops.keys(), key=lambda x: item_names_reverse[x]):
+        for item_key in sorted(item_drops.keys(), key=lambda x: Item[x].value):
             reply += '\n-> ' + item_key + ' x ' + str(item_drops[item_key])
 
     message = Message(reply)
@@ -188,19 +225,18 @@ def explore_location(client, user, thread_id):
 
 
 def check_travel(client, user, thread_id):
-    current = location_names_reverse[user['Location']]
-    if current == 0:
+    current = Location[user['Location']]
+    if current == Location['Maple Island']:
         reply = 'You cannot travel anywhere.'
     else:
-        reply = ['You are in ' + location_names[current]]
-        reply[0] += ' and can travel to the following places:'
-        for i in adjacent_locations(user):
-            level_range = location_level(location_names[i])
-            line = '-> ' + location_names[i]
+        reply = ['You are in ' + current.name + ' and can travel to the following places:']
+        for location in adjacent_locations(user):
+            level_range = location_level(location)
+            line = '-> ' + location
             if level_range is not None:
                 line += ' (Levels ' + str('???' if level_range[0] is None else level_range[0])
                 line += ' - ' + str('???' if level_range[1] is None else level_range[1]) + ')'
-            reply.append(line + ': ' + str(edges[current][i]) + ' minutes away')
+            reply.append(line + ': ' + str(_edges[current][Location[location]]) + ' minutes away')
         if len(reply) > 1:
             reply = '\n'.join(reply)
         else:
@@ -209,40 +245,40 @@ def check_travel(client, user, thread_id):
 
 
 def travel_to_location(client, user, text, thread_id):
-    current = location_names_reverse[user['Location']]
+    current = Location[user['Location']]
     location = query_location(text, adjacent_locations(user))
     if location is None:
         reply = 'Invalid location.'
     else:
         user_id = user['_id']
-        client.user_states[user_id] = (UserState.Travel, {
-            'Destination': location_names[location],
-            'EndTime': datetime.now() + timedelta(minutes=edges[current][location])
+        client.user_states[user_id] = (UserState.TRAVEL, {
+            'Destination': location,
+            'EndTime': datetime.now() + timedelta(minutes=_edges[current][Location[location]])
         })
-        reply = user['Name'] + ' is now traveling to ' + location_names[location] + '.'
+        reply = user['Name'] + ' is now traveling to ' + location + '.'
     client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
 
 
 def adjacent_locations(user, discovered=True):
-    current = location_names_reverse[user['Location']]
+    current = Location[user['Location']]
     progress = user['LocationProgress']
     locations = []
-    for i, time in enumerate(edges[current]):
-        if time >= 0 and ((progress.get(location_names[i], 0) >= 1) == discovered):
-            locations.append(i)
+    for location, time in _edges[current].items():
+        if time >= 0 and ((progress.get(location.name, 0) >= 1) == discovered):
+            locations.append(location.name)
     return locations
 
 
-def query_location(query, locations):
+def query_location(query, locations=Location.__members__.keys()):
     query = query.lower()
-    locations = [location_names[location] for location in locations]
+    locations = [Location[location].name for location in locations]
     for location in locations:
         if query == location.lower():
-            return location_names_reverse[location]
+            return location
     for location in locations:
         if query in location.lower().split():
-            return location_names_reverse[location]
+            return location
     for location in locations:
         if location.lower().startswith(query):
-            return location_names_reverse[location]
+            return location
     return None

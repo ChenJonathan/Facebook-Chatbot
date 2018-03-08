@@ -3,6 +3,7 @@ from datetime import datetime, timedelta
 import random
 
 from data import monster_data
+from enums import UserState, ChatState
 from mongo import *
 from quest import generate_quest
 from util import *
@@ -15,7 +16,7 @@ def generate_battle(client, user, thread_id):
         return
 
     battle = {
-        'Status': ChatState.Preparing,
+        'Status': ChatState.PREPARING,
         'Monster': random.choice(monster_data[user['Location']]).copy(),
         'ThreadID': thread_id
     }
@@ -24,13 +25,13 @@ def generate_battle(client, user, thread_id):
         monster['Level'] = random.randint(monster['Level'][0], monster['Level'][1])
     else:
         monster['Level'] = random.randint(int(user['Stats']['Level'] * 0.9), int(user['Stats']['Level'] * 1.1))
-    stat_scale = base_stat(monster['Level']) * 2
+    stat_scale = base_stat(monster['Level']) * 2.5
     monster['ATK'] = int(monster['ATK'] * stat_scale)
     monster['DEF'] = int(monster['DEF'] * stat_scale)
     monster['SPD'] = int(monster['SPD'] * stat_scale)
     monster['Health'] = int(monster['Health'] * (stat_scale ** 2) / 20) // 10 * 10
 
-    client.user_states[user['_id']] = (UserState.Battle, battle)
+    client.user_states[user['_id']] = (UserState.BATTLE, battle)
     reply = user['Name'] + ' has encountered a level ' + str(battle['Monster']['Level']) + ' '
     reply += battle['Monster']['Name'] + '! Check your private messages (or message requests) to fight it.'
     client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
@@ -44,7 +45,7 @@ def begin_battle(client, user):
     user_id = user['_id']
     state, details = client.user_states[user_id]
 
-    details['Status'] = ChatState.Delay
+    details['Status'] = ChatState.DELAY
     details['Timer'] = _calculate_timer(total_spd(user), details['Monster']['SPD'])
     details['StartTime'] = datetime.now()
     details['EndTime'] = details['StartTime'] + timedelta(seconds=3)
@@ -111,7 +112,7 @@ def cancel_battle(client, user):
 def begin_battle_quest(client, user):
     user_id = user['_id']
     state, details = client.user_states[user_id]
-    details['Status'] = ChatState.Quest
+    details['Status'] = ChatState.QUEST
     details['Quest'] = generate_quest('Vocab')
     details['StartTime'] = datetime.now()
     details['EndTime'] = details['StartTime'] + timedelta(seconds=details['Timer'])
@@ -169,7 +170,7 @@ def complete_battle_quest(client, user, text):
     # Battle ongoing
     details['StartTime'] = datetime.now()
     details['EndTime'] = details['StartTime'] + timedelta(seconds=3)
-    details['Status'] = ChatState.Delay
+    details['Status'] = ChatState.DELAY
     reply += '\n\nYou will have ' + str(details['Timer']) + ' second'
     reply += ('' if details['Timer'] == 1 else 's') + ' to complete the next question.'
     client.send(Message(reply), thread_id=user_id)

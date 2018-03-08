@@ -5,6 +5,7 @@ import threading
 import traceback
 
 from data import random_emoji
+from enums import UserState
 from mongo import *
 from util import *
 
@@ -16,8 +17,8 @@ def apply_gold_rates():
 
 def restore_health(client):
     for user_id, health in list(client.user_health.items()):
-        state, details = client.user_states.get(user_id, (UserState.Idle, {}))
-        if state != UserState.Battle:
+        state, details = client.user_states.get(user_id, (UserState.IDLE, {}))
+        if state != UserState.BATTLE:
             del client.user_health[user_id]
 
 
@@ -46,7 +47,9 @@ def reset_timer(client, lock):
         if datetime.today().hour == 0:
             manage_subscriptions(client)
     except:
-        client.send(Message('Timer: ' + traceback.format_exc()), thread_id=master_id)
+        stack = 'Timer: ' + traceback.format_exc()
+        print(stack)
+        client.send(Message(stack), thread_id=master_id)
     finally:
         lock.release()
 

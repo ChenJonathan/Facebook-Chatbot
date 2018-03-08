@@ -1,187 +1,190 @@
 {
     "Lith Harbor": {
         "Bottled Light": 0.1,
-        "Sunlight Fragment": 0.4,
-        "Deformed Water": 0.4,
-        "Drop of Sand": 0.4
+        "Sunlight Fragment": 0.5,
+        "Deformed Water": 2,
+        "Drop of Sand": 2
     },
     "Henesys": {
-        "Wild Essence": 0.8,
-        "Sunlight Fragment": 0.2,
-        "Drop of Earth": 0.2,
-        "Breathing Wood": 0.6,
-        "Wistful Wool": 0.4,
-        "Hallowed Feather": 0.2
+        "Wild Essence": 6,
+        "Sunlight Fragment": 0.5,
+        "Drop of Earth": 2,
+        "Breathing Wood": 2,
+        "Wistful Wool": 3,
+        "Hallowed Feather": 1
     },
     "Ellinia": {
-        "Arcane Essence": 0.8,
-        "Moonlight Fragment": 0.2,
-        "Crystal Shard": 0.4,
-        "Breathing Wood": 0.6,
-        "Shifting Vines": 0.2,
-        "Astral Flower": 0.2,
-        "Mutated Moss": 0.2
+        "Arcane Essence": 6,
+        "Moonlight Fragment": 0.5,
+        "Crystal Shard": 2,
+        "Breathing Wood": 3,
+        "Shifting Vines": 2,
+        "Astral Flower": 1,
+        "Mutated Moss": 2
     },
     "Perion": {
-        "Brutal Essence": 0.8,
-        "Sunlight Fragment": 0.2,
-        "Drop of Earth": 0.4,
-        "Mithril Shard": 0.4,
-        "Primal Taint": 0.2
+        "Brutal Essence": 6,
+        "Sunlight Fragment": 0.5,
+        "Drop of Earth": 3,
+        "Mythril Shard": 3,
+        "Primal Taint": 1
     },
     "Kerning City": {
-        "Void Essence": 0.8,
-        "Moonlight Fragment": 0.2,
-        "Howling Wind": 0.4,
-        "Soft Breeze": 0.2
+        "Void Essence": 6,
+        "Moonlight Fragment": 0.5,
+        "Howling Wind": 3,
+        "Soft Breeze": 2
     },
     "Sleepywood": {
         "Bottled Darkness": 0.1,
-        "Moonlight Fragment": 0.2,
-        "Breathing Wood": 0.6,
-        "Shifting Vines": 0.6,
-        "Mutated Moss": 0.4,
-        "Primal Taint": 0.2
+        "Moonlight Fragment": 0.5,
+        "Breathing Wood": 2,
+        "Shifting Vines": 3,
+        "Mutated Moss": 2,
+        "Primal Taint": 1
     },
     "Cursed Sanctuary": {
         "Touch of Death": 0.1,
         "Bottled Darkness": 0.1,
-        "Shifting Vines": 0.4,
-        "Mutated Moss": 0.2,
-        "Primal Taint": 0.2
+        "Shifting Vines": 2,
+        "Mutated Moss": 2,
+        "Primal Taint": 2
     },
     "Krakian Jungle": {
-        "Breathing Wood": 0.8,
-        "Shifting Vines": 0.8,
-        "Astral Flower": 0.4,
-        "Mutated Moss": 0.2,
-        "Wistful Wool": 0.2,
-        "Hallowed Feather": 0.2,
-        "Primal Taint": 0.4
+        "Breathing Wood": 3,
+        "Shifting Vines": 3,
+        "Astral Flower": 1,
+        "Mutated Moss": 1,
+        "Wistful Wool": 2,
+        "Hallowed Feather": 2,
+        "Primal Taint": 3
     },
     "Bigger Ben": {
-        "Sunlight Fragment": 0.2,
-        "Time Fragment": 0.2,
-        "Howling Wind": 0.4,
-        "Clockwork Shard": 0.8
+        "Sunlight Fragment": 0.5,
+        "Time Fragment": 0.1,
+        "Howling Wind": 2,
+        "Clockwork Shard": 3
     },
     "Orbis": {
         "Bottled Light": 0.1,
-        "Sunlight Fragment": 0.3,
-        "Space Fragment": 0.1,
-        "Soft Breeze": 0.4,
-        "Astral Flower": 0.4,
-        "Wistful Wool": 0.4,
-        "Hallowed Feather": 0.6
+        "Sunlight Fragment": 0.5,
+        "Space Fragment": 0.25,
+        "Soft Breeze": 2,
+        "Astral Flower": 3,
+        "Wistful Wool": 2,
+        "Hallowed Feather": 3
     },
     "El Nath": {
         "Bottled Light": 0.1,
-        "Howling Wind": 0.4,
-        "Shapeless Ice": 0.4,
-        "Breathing Wood": 0.4,
-        "Wistful Wool": 0.4,
-        "Primal Taint": 0.4
+        "Howling Wind": 3,
+        "Shapeless Ice": 3,
+        "Breathing Wood": 1,
+        "Wistful Wool": 2,
+        "Primal Taint": 1
     },
     "Dead Mine": {
         "Bottled Darkness": 0.1,
-        "Drop of Earth": 0.4,
-        "Living Flame": 0.4,
-        "Dying Magma": 0.2,
-        "Mithril Shard": 0.6
+        "Drop of Earth": 3,
+        "Living Flame": 2,
+        "Dying Magma": 2,
+        "Mythril Shard": 3
     },
     "Zakum's Altar": {
         "Touch of Chaos": 0.1,
         "Bottled Darkness": 0.1,
-        "Living Flame": 0.4,
-        "Dying Magma": 0.6
+        "Living Flame": 3,
+        "Dying Magma": 3
     },
     "Aqua Road": {
         "Bottled Light": 0.1,
-        "Deformed Water": 0.6,
-        "Crystal Shard": 0.4,
-        "Mutated Moss": 0.4
+        "Deformed Water": 4,
+        "Shapeless Ice": 2,
+        "Crystal Shard": 2,
+        "Mutated Moss": 1
     },
     "Cave of Pianus": {
         "Touch of Chaos": 0.1,
         "Bottled Light": 0.1,
-        "Deformed Water": 0.6,
-        "Crystal Shard": 0.2,
-        "Mutated Moss": 0.2
+        "Deformed Water": 2,
+        "Crystal Shard": 2,
+        "Mutated Moss": 1
     },
     "Ariant": {
         "Lost Song": 0.1,
-        "Sunlight Fragment": 0.2,
-        "Soft Breeze": 0.2,
-        "Drop of Sand": 0.8,
-        "Living Flame": 0.2
+        "Sunlight Fragment": 0.5,
+        "Soft Breeze": 2,
+        "Drop of Sand": 4,
+        "Living Flame": 2
     },
     "Magatia": {
-        "Lost Song": 0.2,
-        "Moonlight Fragment": 0.4,
-        "Drop of Sand": 0.2,
-        "Mithril Shard": 0.4,
-        "Crystal Shard": 0.2,
-        "Plasma Shard": 0.4
+        "Lost Song": 0.1,
+        "Moonlight Fragment": 0.5,
+        "Drop of Sand": 2,
+        "Mythril Shard": 3,
+        "Crystal Shard": 1,
+        "Plasma Shard": 3
     },
     "Ludibrium": {
         "Bottled Light": 0.1,
-        "Sunlight Fragment": 0.2,
-        "Soft Breeze": 0.4,
-        "Clockwork Shard": 0.4
+        "Sunlight Fragment": 0.5,
+        "Soft Breeze": 3,
+        "Clockwork Shard": 3
     },
     "Path of Time": {
         "Bottled Darkness": 0.1,
-        "Lost Memory": 0.2,
-        "Time Fragment": 0.4,
-        "Space Fragment": 0.2,
-        "Clockwork Shard": 0.2
+        "Lost Memory": 0.25,
+        "Time Fragment": 0.5,
+        "Space Fragment": 0.25,
+        "Clockwork Shard": 2
     },
     "Papulatus Clock Tower": {
         "Touch of Chaos": 0.1,
         "Bottled Darkness": 0.1,
-        "Lost Memory": 0.1,
-        "Time Fragment": 0.2,
-        "Space Fragment": 0.1,
-        "Clockwork Shard": 0.4
+        "Lost Memory": 0.25,
+        "Time Fragment": 0.5,
+        "Space Fragment": 0.25,
+        "Clockwork Shard": 3
     },
     "Korean Folk Town": {
         "Bottled Light": 0.1,
-        "Moonlight Fragment": 0.4,
-        "Drop of Earth": 0.4,
-        "Breathing Wood": 0.2,
-        "Weeping Herb": 0.8,
-        "Wistful Wool": 0.4
+        "Moonlight Fragment": 0.5,
+        "Drop of Earth": 2,
+        "Mythril Shard": 1,
+        "Breathing Wood": 2,
+        "Weeping Herb": 4,
+        "Wistful Wool": 2
     },
     "Omega Sector": {
         "Bottled Light": 0.1,
-        "Sunlight Fragment": 0.2,
-        "Space Fragment": 0.4,
-        "Drop of Earth": 0.2,
-        "Plasma Shard": 0.6,
-        "Breathing Wood": 0.2
+        "Sunlight Fragment": 0.5,
+        "Space Fragment": 0.5,
+        "Drop of Earth": 2,
+        "Plasma Shard": 4,
+        "Breathing Wood": 1
     },
     "Leafre": {
-        "Drop of Earth": 0.4,
-        "Breathing Wood": 0.6,
-        "Shifting Vines": 0.4,
-        "Weeping Herb": 0.2,
-        "Astral Flower": 0.2,
-        "Mutated Moss": 0.2,
-        "Wistful Wool": 0.2,
-        "Hallowed Feather": 0.2,
-        "Primal Taint": 0.4
+        "Drop of Earth": 2,
+        "Breathing Wood": 3,
+        "Shifting Vines": 3,
+        "Weeping Herb": 2,
+        "Astral Flower": 1,
+        "Mutated Moss": 2,
+        "Wistful Wool": 2,
+        "Hallowed Feather": 1,
+        "Primal Taint": 3
     },
     "Minar Forest": {
-        "Howling Wind": 0.4,
-        "Shapeless Ice": 0.4,
-        "Crystal Shard": 0.4,
-        "Hallowed Feather": 0.1,
-        "Primal Taint": 0.2
+        "Howling Wind": 3,
+        "Shapeless Ice": 3,
+        "Crystal Shard": 2,
+        "Hallowed Feather": 2,
+        "Primal Taint": 2
     },
     "Horntail's Lair": {
         "Touch of Life": 0.1,
-        "Howling Wind": 0.2,
-        "Shapeless Ice": 0.6,
-        "Crystal Shard": 0.6
+        "Howling Wind": 2,
+        "Shapeless Ice": 2,
+        "Crystal Shard": 2,
+        "Primal Taint": 2
     }
 }
