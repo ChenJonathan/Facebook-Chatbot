@@ -4,17 +4,17 @@
             "Name": "Blue Snail",
             "Level": [1, 4],
             "Health": 0,
-            "ATK": -5,
+            "ATK": -10,
             "DEF": 10,
-            "SPD": -5
+            "SPD": -10
         },
         {
             "Name": "Red Snail",
             "Level": [2, 5],
             "Health": 0,
-            "ATK": -5,
+            "ATK": -10,
             "DEF": 10,
-            "SPD": -5
+            "SPD": -10
         }
     ],
     "Henesys": [
