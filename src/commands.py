@@ -92,6 +92,10 @@ def run_user_command(client, author, command, text):
         else:
             client.send(Message('Level and stats changed!'), thread_id=author_id)
 
+    elif command == 'explore':
+        reply = str(len(client.explore_record)) + ' people have explored this hour.'
+        client.send(Message(reply), thread_id=author_id)
+
     elif command == 'help' or command == 'h':
         generate_user_info(client, author, text)
 

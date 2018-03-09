@@ -3,572 +3,572 @@
         {
             "Name": "Blue Snail",
             "Level": [1, 4],
-            "Health":  0.8,
-            "ATK": 0.8,
-            "DEF": 1.1,
-            "SPD": 0.6
+            "Health": 0,
+            "ATK": -5,
+            "DEF": 10,
+            "SPD": -5
         },
         {
             "Name": "Red Snail",
             "Level": [2, 5],
-            "Health":  0.8,
-            "ATK": 0.8,
-            "DEF": 1.1,
-            "SPD": 0.6
+            "Health": 0,
+            "ATK": -5,
+            "DEF": 10,
+            "SPD": -5
         }
     ],
     "Henesys": [
         {
             "Name": "Orange Mushroom",
             "Level": [4, 8],
-            "Health":  1.2,
-            "ATK": 0.9,
-            "DEF": 0.7,
-            "SPD": 0.9
+            "Health": 20,
+            "ATK": 0,
+            "DEF": -20,
+            "SPD": 0
         },
         {
             "Name": "Iron Hog",
-            "Level": [7, 11],
-            "Health":  0.9,
-            "ATK": 0.9,
-            "DEF": 1.1,
-            "SPD": 0.9
+            "Level": [6, 10],
+            "Health": -20,
+            "ATK": 0,
+            "DEF": 20,
+            "SPD": 0
         }
     ],
     "Ellinia": [
         {
             "Name": "Slime",
             "Level": [5, 9],
-            "Health":  1.5,
-            "ATK": 1.0,
-            "DEF": 0.6,
-            "SPD": 1.0
+            "Health": 20,
+            "ATK": 0,
+            "DEF": -20,
+            "SPD": 0
         },
         {
             "Name": "Lupin",
             "Level": [8, 12],
-            "Health":  0.7,
-            "ATK": 1.3,
-            "DEF": 0.8,
-            "SPD": 1.2
+            "Health": -10,
+            "ATK": 10,
+            "DEF": -10,
+            "SPD": 10
         }
     ],
     "Perion": [
         {
             "Name": "Axe Stump",
             "Level": [5, 9],
-            "Health":  1.0,
-            "ATK": 1.0,
-            "DEF": 1.1,
-            "SPD": 0.9
+            "Health": 0,
+            "ATK": 0,
+            "DEF": 10,
+            "SPD": -10
         },
         {
             "Name": "Wild Boar",
             "Level": [8, 12],
-            "Health":  1.2,
-            "ATK": 1.0,
-            "DEF": 0.7,
-            "SPD": 1.2
+            "Health": 10,
+            "ATK": 0,
+            "DEF": -20,
+            "SPD": 10
         }
     ],
     "Kerning City": [
         {
             "Name": "Stirge",
             "Level": [4, 8],
-            "Health":  0.8,
-            "ATK": 0.9,
-            "DEF": 0.9,
-            "SPD": 1.2
+            "Health": -10,
+            "ATK": -10,
+            "DEF": -10,
+            "SPD": 30
         },
         {
             "Name": "Wraith",
             "Level": [10, 14],
-            "Health":  0.6,
-            "ATK": 1.0,
-            "DEF": 1.2,
-            "SPD": 1.0
+            "Health": -20,
+            "ATK": 0,
+            "DEF": 20,
+            "SPD": 0
         }
     ],
     "Sleepywood": [
         {
             "Name": "Zombie Mushroom",
             "Level": [12, 16],
-            "Health":  1.4,
-            "ATK": 1.0,
-            "DEF": 0.6,
-            "SPD": 1.0
+            "Health": 20,
+            "ATK": 0,
+            "DEF": -20,
+            "SPD": 0
         },
         {
             "Name": "Dark Drake",
             "Level": [15, 19],
-            "Health":  1.0,
-            "ATK": 1.4,
-            "DEF": 1.0,
-            "SPD": 0.6
+            "Health": 0,
+            "ATK": 15,
+            "DEF": 0,
+            "SPD": -15
         },
         {
             "Name": "Wild Kargo",
             "Level": [16, 20],
-            "Health":  1.0,
-            "ATK": 1.2,
-            "DEF": 1.0,
-            "SPD": 0.8
+            "Health": 0,
+            "ATK": 5,
+            "DEF": 5,
+            "SPD": -10
         }
     ],
     "Cursed Sanctuary": [
         {
             "Name": "Tauromacis",
             "Level": [20, 24],
-            "Health":  1.2,
-            "ATK": 1.0,
-            "DEF": 1.1,
-            "SPD": 0.8
+            "Health": 10,
+            "ATK": 0,
+            "DEF": 10,
+            "SPD": -10
         },
         {
             "Name": "Taurospear",
             "Level": [21, 25],
-            "Health":  1.2,
-            "ATK": 1.3,
-            "DEF": 1.0,
-            "SPD": 0.8
+            "Health": 10,
+            "ATK": 10,
+            "DEF": 0,
+            "SPD": -10
         }
     ],
     "Krakian Jungle": [
         {
             "Name": "Electrophant",
             "Level": [17, 21],
-            "Health":  1.3,
-            "ATK": 1.0,
-            "DEF": 1.0,
-            "SPD": 0.7
+            "Health": 15,
+            "ATK": 0,
+            "DEF": 0,
+            "SPD": -15
         },
         {
             "Name": "Mighty Maple Eater",
             "Level": [19, 23],
-            "Health":  1.3,
-            "ATK": 1.3,
-            "DEF": 0.7,
-            "SPD": 0.7
+            "Health": 15,
+            "ATK": 0,
+            "DEF": -10,
+            "SPD": -5
         }
     ],
     "Bigger Ben": [
         {
             "Name": "Killa Bee",
             "Level": [18, 22],
-            "Health":  0.8,
-            "ATK": 1.0,
-            "DEF": 0.8,
-            "SPD": 1.4
+            "Health": -20,
+            "ATK": 0,
+            "DEF": -10,
+            "SPD": 30
         },
         {
             "Name": "Electrophant",
             "Level": [20, 24],
-            "Health":  1.3,
-            "ATK": 1.0,
-            "DEF": 1.0,
-            "SPD": 0.7
+            "Health": 15,
+            "ATK": 0,
+            "DEF": 0,
+            "SPD": -15
         },
         {
             "Name": "Wolf Spider",
             "Level": [21, 25],
-            "Health":  0.7,
-            "ATK": 1.2,
-            "DEF": 0.9,
-            "SPD": 1.2
+            "Health": -15,
+            "ATK": 10,
+            "DEF": -5,
+            "SPD": 10
         }
     ],
     "Orbis": [
         {
             "Name": "Sentinel",
             "Level": [25, 29],
-            "Health":  0.9,
-            "ATK": 1.0,
-            "DEF": 1.2,
-            "SPD": 0.9
+            "Health": -5,
+            "ATK": 0,
+            "DEF": 10,
+            "SPD": -5
         },
         {
             "Name": "Lunar Pixie",
             "Level": [27, 31],
-            "Health":  1.0,
-            "ATK": 1.4,
-            "DEF": 0.8,
-            "SPD": 1.0
+            "Health": 0,
+            "ATK": 20,
+            "DEF": -20,
+            "SPD": 0
         },
         {
             "Name": "Luster Pixie",
             "Level": [29, 33],
-            "Health":  1.0,
-            "ATK": 1.4,
-            "DEF": 0.8,
-            "SPD": 1.0
+            "Health": 0,
+            "ATK": 20,
+            "DEF": -20,
+            "SPD": 0
         },
         {
             "Name": "Lucida",
             "Level": [30, 34],
-            "Health":  0.9,
-            "ATK": 1.2,
-            "DEF": 0.9,
-            "SPD": 1.2
+            "Health": -10,
+            "ATK": 10,
+            "DEF": -10,
+            "SPD": 10
         }
     ],
     "El Nath": [
         {
             "Name": "White Fang",
             "Level": [31, 35],
-            "Health":  0.7,
-            "ATK": 1.3,
-            "DEF": 0.8,
-            "SPD": 1.3
+            "Health": -20,
+            "ATK": 10,
+            "DEF": -10,
+            "SPD": 20
         },
         {
             "Name": "Yeti",
             "Level": [32, 36],
-            "Health":  1.2,
-            "ATK": 1.0,
-            "DEF": 1.1,
-            "SPD": 0.7
+            "Health": 20,
+            "ATK": 0,
+            "DEF": 10,
+            "SPD": -30
         },
         {
             "Name": "Werewolf",
             "Level": [32, 36],
-            "Health":  0.9,
-            "ATK": 1.2,
-            "DEF": 0.8,
-            "SPD": 1.2
+            "Health": -10,
+            "ATK": 10,
+            "DEF": -10,
+            "SPD": 10
         },
         {
             "Name": "Lycanthrope",
             "Level": [34, 38],
-            "Health":  0.9,
-            "ATK": 1.2,
-            "DEF": 0.8,
-            "SPD": 1.2
+            "Health": -10,
+            "ATK": 10,
+            "DEF": -10,
+            "SPD": 10
         }
     ],
     "Dead Mine": [
         {
             "Name": "Miner Zombie",
             "Level": [35, 39],
-            "Health":  1.3,
-            "ATK": 0.8,
-            "DEF": 1.0,
-            "SPD": 0.8
+            "Health": 20,
+            "ATK": -10,
+            "DEF": 0,
+            "SPD": 10
         },
         {
             "Name": "Flyeye",
             "Level": [35, 39],
-            "Health":  0.8,
-            "ATK": 0.8,
-            "DEF": 1.0,
-            "SPD": 1.2
+            "Health": -10,
+            "ATK": -10,
+            "DEF": -10,
+            "SPD": 30
         }
     ],
     "Zakum's Altar": [
         {
             "Name": "Cerebes",
             "Level": [37, 41],
-            "Health":  1.2,
-            "ATK": 1.4,
-            "DEF": 1.0,
-            "SPD": 0.8
+            "Health": 10,
+            "ATK": 20,
+            "DEF": 0,
+            "SPD": -20
         },
         {
             "Name": "Cuzco",
             "Level": [38, 42],
-            "Health":  1.0,
-            "ATK": 1.2,
-            "DEF": 1.1,
-            "SPD": 0.8
+            "Health": 0,
+            "ATK": 20,
+            "DEF": 10,
+            "SPD": -20
         },
         {
             "Name": "Opachu",
             "Level": [38, 42],
-            "Health":  1.0,
-            "ATK": 1.2,
-            "DEF": 1.1,
-            "SPD": 0.8
+            "Health": 0,
+            "ATK": 20,
+            "DEF": 10,
+            "SPD": -20
         }
     ],
     "Aqua Road": [
         {
             "Name": "Cico",
             "Level": [44, 48],
-            "Health":  1.0,
-            "ATK": 1.0,
-            "DEF": 1.0,
-            "SPD": 1.0
+            "Health": 0,
+            "ATK": 0,
+            "DEF": 0,
+            "SPD": 0
         },
         {
             "Name": "Bubble Fish",
             "Level": [47, 51],
-            "Health":  1.0,
-            "ATK": 1.0,
-            "DEF": 0.8,
-            "SPD": 1.2
+            "Health": 0,
+            "ATK": 0,
+            "DEF": -10,
+            "SPD": 10
         },
         {
             "Name": "Flower Fish",
             "Level": [48, 52],
-            "Health":  1.4,
-            "ATK": 0.8,
-            "DEF": 0.9,
-            "SPD": 0.9
+            "Health": 30,
+            "ATK": -10,
+            "DEF": -10,
+            "SPD": -10
         },
         {
             "Name": "Poison Poopa",
             "Level": [50, 54],
-            "Health":  0.8,
-            "ATK": 1.4,
-            "DEF": 0.8,
-            "SPD": 1.0
+            "Health": -10,
+            "ATK": 20,
+            "DEF": -10,
+            "SPD": 0
         }
     ],
     "Cave of Pianus": [
         {
             "Name": "Bombing Fish House",
             "Level": [56, 60],
-            "Health":  1.2,
-            "ATK": 1.2,
-            "DEF": 1.0,
-            "SPD": 0.6
+            "Health": 10,
+            "ATK": 20,
+            "DEF": 10,
+            "SPD": -30
         },
         {
             "Name": "Bone Fish",
             "Level": [57, 61],
-            "Health":  0.8,
-            "ATK": 0.8,
-            "DEF": 1.2,
-            "SPD": 1.0
+            "Health": 0,
+            "ATK": 0,
+            "DEF": 10,
+            "SPD": 0
         },
         {
             "Name": "Risell Squid",
             "Level": [60, 64],
-            "Health":  1.2,
-            "ATK": 1.2,
-            "DEF": 0.8,
-            "SPD": 1.0
+            "Health": 0,
+            "ATK": 10,
+            "DEF": 0,
+            "SPD": 0
         },
         {
             "Name": "Cold Shark",
             "Level": [61, 65],
-            "Health":  1.0,
-            "ATK": 1.3,
-            "DEF": 0.9,
-            "SPD": 1.2
+            "Health": 0,
+            "ATK": 20,
+            "DEF": -20,
+            "SPD": 10
         }
     ],
     "Ariant": [
         {
             "Name": "Desert Rabbit",
             "Level": [40, 46],
-            "Health":  1.0,
-            "ATK": 1.0,
-            "DEF": 0.8,
-            "SPD": 1.2
+            "Health": 0,
+            "ATK": 0,
+            "DEF": -15,
+            "SPD": 15
         },
         {
             "Name": "Bellamoa",
             "Level": [41, 47],
-            "Health":  0.8,
-            "ATK": 1.2,
-            "DEF": 0.9,
-            "SPD": 1.1
+            "Health": -10,
+            "ATK": 10,
+            "DEF": -10,
+            "SPD": 10
         },
         {
             "Name": "Sand Dwarf",
             "Level": [43, 49],
-            "Health":  0.8,
-            "ATK": 1.4,
-            "DEF": 0.9,
-            "SPD": 1.0
+            "Health": -10,
+            "ATK": 20,
+            "DEF": -10,
+            "SPD": 0
         },
         {
             "Name": "Desert Giant",
             "Level": [46, 52],
-            "Health":  1.2,
-            "ATK": 1.0,
-            "DEF": 1.1,
-            "SPD": 0.7
+            "Health": 10,
+            "ATK": 0,
+            "DEF": 10,
+            "SPD": -20
         }
     ],
     "Magatia": [
         {
             "Name": "Rumo",
             "Level": [47, 53],
-            "Health":  1.0,
-            "ATK": 0.8,
-            "DEF": 0.8,
-            "SPD": 1.3
+            "Health": 0,
+            "ATK": -10,
+            "DEF": -10,
+            "SPD": 20
         },
         {
             "Name": "Mithril Mutae",
             "Level": [49, 55],
-            "Health":  0.8,
-            "ATK": 1.0,
-            "DEF": 1.2,
-            "SPD": 1.0
+            "Health": -20,
+            "ATK": 0,
+            "DEF": 20,
+            "SPD": 0
         },
         {
             "Name": "Neo Huroid",
             "Level": [52, 57],
-            "Health":  0.8,
-            "ATK": 1.3,
-            "DEF": 1.1,
-            "SPD": 1.0
+            "Health": -5,
+            "ATK": 10,
+            "DEF": 5,
+            "SPD": 0
         },
         {
             "Name": "Homunscullo",
             "Level": [53, 59],
-            "Health":  1.0,
-            "ATK": 1.4,
-            "DEF": 0.8,
-            "SPD": 1.0
+            "Health": 0,
+            "ATK": 20,
+            "DEF": -10,
+            "SPD": 0
         }
     ],
     "Ludibrium": [
         {
             "Name": "Propelly",
             "Level": [58, 62],
-            "Health":  0.7,
-            "ATK": 1.0,
-            "DEF": 1.0,
-            "SPD": 1.2
+            "Health": -20,
+            "ATK": 0,
+            "DEF": 0,
+            "SPD": 20
         },
         {
             "Name": "Bloctopus",
             "Level": [60, 64],
-            "Health":  1.0,
-            "ATK": 1.0,
-            "DEF": 1.1,
-            "SPD": 0.8
+            "Health": 0,
+            "ATK": 0,
+            "DEF": 10,
+            "SPD": -10
         },
         {
             "Name": "Block Golem",
             "Level": [61, 65],
-            "Health":  1.2,
-            "ATK": 1.2,
-            "DEF": 1.1,
-            "SPD": 0.6
+            "Health": 20,
+            "ATK": 0,
+            "DEF": 10,
+            "SPD": -30
         }
     ],
     "Path of Time": [
         {
             "Name": "Dark Klock",
             "Level": [64, 68],
-            "Health":  1.0,
-            "ATK": 0.8,
-            "DEF": 1.0,
-            "SPD": 1.1
+            "Health": 0,
+            "ATK": -10,
+            "DEF": 0,
+            "SPD": 10
         },
         {
             "Name": "Death Teddy",
             "Level": [66, 70],
-            "Health":  0.8,
-            "ATK": 1.4,
-            "DEF": 0.8,
-            "SPD": 1.0
+            "Health": -15,
+            "ATK": 30,
+            "DEF": -15,
+            "SPD": 0
         },
         {
             "Name": "Spirit Viking",
             "Level": [67, 71],
-            "Health":  1.3,
-            "ATK": 0.9,
-            "DEF": 0.9,
-            "SPD": 0.9
+            "Health": 30,
+            "ATK": -10,
+            "DEF": -10,
+            "SPD": -10
         },
         {
             "Name": "Phantom Watch",
             "Level": [69, 73],
-            "Health":  0.8,
-            "ATK": 1.2,
-            "DEF": 0.8,
-            "SPD": 1.2
+            "Health": -20,
+            "ATK": 0,
+            "DEF": 10,
+            "SPD": 10
         }
     ],
     "Papulatus Clock Tower": [
         {
             "Name": "Gatekeeper",
             "Level": [75, 79],
-            "Health":  1.2,
-            "ATK": 1.0,
-            "DEF": 1.1,
-            "SPD": 0.8
+            "Health": 10,
+            "ATK": 0,
+            "DEF": 10,
+            "SPD": -10
         },
         {
             "Name": "Thanatos",
             "Level": [76, 80],
-            "Health":  0.8,
-            "ATK": 1.5,
-            "DEF": 0.9,
-            "SPD": 1.2
+            "Health": -20,
+            "ATK": 30,
+            "DEF": -10,
+            "SPD": 10
         }
     ],
     "Korean Folk Town": [
         {
             "Name": "Moon Bunny",
             "Level": [70, 74],
-            "Health":  1.0,
-            "ATK": 1.0,
-            "DEF": 0.9,
-            "SPD": 1.1
+            "Health": 0,
+            "ATK": 0,
+            "DEF": -15,
+            "SPD": 15
         },
         {
             "Name": "Hogul",
             "Level": [72, 76],
-            "Health":  0.7,
-            "ATK": 1.1,
-            "DEF": 1.1,
-            "SPD": 1.1
+            "Health": -30,
+            "ATK": 10,
+            "DEF": 10,
+            "SPD": 10
         },
         {
             "Name": "Three-Tailed Fox",
             "Level": [73, 77],
-            "Health":  0.8,
-            "ATK": 1.2,
-            "DEF": 0.8,
-            "SPD": 1.3
+            "Health": -15,
+            "ATK": 15,
+            "DEF": -15,
+            "SPD": 15
         },
         {
             "Name": "King Goblin",
             "Level": [76, 80],
-            "Health":  1.2,
-            "ATK": 1.3,
-            "DEF": 1.0,
-            "SPD": 0.7
+            "Health": 20,
+            "ATK": 10,
+            "DEF": 0,
+            "SPD": -20
         }
     ],
     "Omega Sector": [
         {
             "Name": "Barnard Gray",
             "Level": [81, 85],
-            "Health":  1.0,
-            "ATK": 1.0,
-            "DEF": 1.0,
-            "SPD": 1.0
+            "Health":  0,
+            "ATK": 0,
+            "DEF": 0,
+            "SPD": 0
         },
         {
             "Name": "Mecateon",
             "Level": [83, 87],
-            "Health":  1.2,
-            "ATK": 1.0,
-            "DEF": 1.1,
-            "SPD": 0.6
+            "Health":  10,
+            "ATK": 0,
+            "DEF": 10,
+            "SPD": -20
         },
         {
             "Name": "White Robosaucer",
             "Level": [86, 90],
-            "Health":  1.0,
-            "ATK": 1.0,
-            "DEF": 1.1,
-            "SPD": 1.1
+            "Health": 0,
+            "ATK": -20,
+            "DEF": 10,
+            "SPD": 20
         },
         {
             "Name": "Black Robosaucer",
             "Level": [86, 90],
-            "Health":  1.0,
-            "ATK": 1.2,
-            "DEF": 1.1,
-            "SPD": 1.0
+            "Health": 0,
+            "ATK": 20,
+            "DEF": 10,
+            "SPD": -20
         }
     ]
 }

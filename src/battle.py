@@ -26,10 +26,11 @@ def generate_battle(client, user, thread_id):
     else:
         monster['Level'] = random.randint(int(user['Stats']['Level'] * 0.9), int(user['Stats']['Level'] * 1.1))
     stat_scale = base_stat(monster['Level']) * 2.25
-    monster['ATK'] = int(monster['ATK'] * stat_scale)
-    monster['DEF'] = int(monster['DEF'] * stat_scale)
-    monster['SPD'] = int(monster['SPD'] * stat_scale)
-    monster['Health'] = int(monster['Health'] * (stat_scale ** 2) / 20) // 10 * 10
+    health_scale = (monster['Health'] / 30 + 1) if monster['Health'] >= 0 else (1 / (monster['Health'] / -30 + 1))
+    monster['Health'] = int(stat_scale * health_scale * (base_stat(monster['Level']) / 10)) // 10 * 10
+    monster['ATK'] = int(stat_scale + monster['ATK'])
+    monster['DEF'] = int(stat_scale + monster['DEF'])
+    monster['SPD'] = int(stat_scale + monster['SPD'])
 
     client.user_states[user['_id']] = (UserState.BATTLE, battle)
     reply = user['Name'] + ' has encountered a level ' + str(battle['Monster']['Level']) + ' '
@@ -52,7 +53,8 @@ def begin_battle(client, user):
 
     reply = 'The battle has begun!'
     client.send(Message(reply), thread_id=user_id)
-    reply = 'You will have ' + str(details['Timer']) + ' seconds to complete the next question.'
+    reply = 'The enemy ' + details['Monster']['Name'] + ' has ' + str(details['Monster']['Health'])
+    reply += ' health.\n\nYou will have ' + str(details['Timer']) + ' seconds to complete the next question.'
     client.send(Message(reply), thread_id=user_id)
 
 
@@ -179,7 +181,7 @@ def complete_battle_quest(client, user, text):
 def _calculate_damage(user_attack, opponent_defence, scale=1):
     damage = (user_attack - opponent_defence)
     if damage >= 0:
-        damage = (damage / 15 + 2) * 5
+        damage = damage / 3 + 10
     else:
         damage = math.sqrt(max(damage / 10 + 4, 0)) * 5
     return max(int(damage * scale * random.uniform(0.8, 1.2)), 1)
@@ -188,10 +190,9 @@ def _calculate_damage(user_attack, opponent_defence, scale=1):
 def _calculate_timer(user_speed, monster_speed):
     timer = user_speed - monster_speed
     if timer >= 0:
-        timer = int(math.sqrt(timer + 9) * 2)
+        return int(math.sqrt(timer * 25 / 6 + 100))
     else:
-        timer = int(math.sqrt(max(timer + 36, 0)))
-    return 3 + int(timer)
+        return max(int(timer / 6 + 10), 3)
 
 
 def _calculate_experience(user_level, monster_level):

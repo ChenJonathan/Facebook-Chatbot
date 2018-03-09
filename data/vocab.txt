@@ -678,7 +678,7 @@ shard:a piece of broken glass or pottery
 sidereal:relating to the stars
 simian:apelike, relating to apes
 simile:comparison of one thing with another using "like" or "as"
-sinecure:well-paying job that requieres little or no work
+sinecure:well-paying job that requires little or no work
 singular:unique, extraordinary, odd
 sinuous:intricate, complex
 skeptic:one who doubts

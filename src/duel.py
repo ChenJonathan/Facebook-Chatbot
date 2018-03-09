@@ -206,7 +206,7 @@ def complete_duel_quest(client, user, text):
 def _calculate_damage(user_attack, opponent_defence):
     damage = (user_attack - opponent_defence)
     if damage >= 0:
-        damage = (damage / 15 + 2) * 5
+        damage = damage / 3 + 10
     else:
         damage = math.sqrt(max(damage / 10 + 4, 0)) * 5
     return max(int(damage * random.uniform(0.8, 1.2)), 1)
