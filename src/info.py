@@ -16,6 +16,7 @@ def generate_user_info(client, author, command):
         reply += '!check: See user statistics\n'
         reply += '!define: Command remapping\n'
         reply += '!equip: Change level / stats\n'
+        reply += '!explore: Check activity\n'
         reply += '!help: Read documentation\n'
         reply += '!message: Gateway messaging\n'
         reply += '!perm: Change user priority\n'
@@ -56,6 +57,12 @@ def generate_user_info(client, author, command):
         reply += 'Example: "!equip 1 2 2 2"\n'
         reply += 'Sets your level to <level> and equips items with a stat total of '
         reply += '<attack> attack, <defence> defence, and <speed> speed.'
+
+    elif command == 'explore':
+        reply = '<<Explore>>\n'
+        reply += 'Usage: "!explore"\n'
+        reply += 'Shows the number of people that have explored this hour. '
+        reply += 'Used as a measure of activity.'
 
     elif command == 'help':
         reply = '<<Help>>\n'
@@ -126,7 +133,6 @@ def generate_group_info(client, author, command, thread_id):
         reply += '!give: Give someone gold\n'
         reply += '!inventory: Check your inventory\n'
         reply += '!jail: Send someone to jail\n'
-        reply += '!location: Current location details\n'
         reply += '!map: See your location\n'
         reply += '!quest: Solve quizzes for gold\n'
         reply += '!score: Show group rankings\n'
@@ -245,12 +251,6 @@ def generate_group_info(client, author, command, thread_id):
         reply += 'freed from jail instead and sent to ' + Location['Lith Harbor'].name + '. '
         reply += 'Only usable by ' + priority_names[master_priority - 1] + ' priority and above.'
 
-    elif command == 'location':
-        reply = '<<Location>>\n'
-        reply += 'Usage: "!location"\n'
-        reply += 'Lists the services available in your current location. This can '
-        reply += 'include things like shops, crafting stations, boss fights, and more.'
-
     elif command == 'map':
         reply = '<<Map>>\n'
         reply += 'Usage: "!map>"\n'
@@ -325,8 +325,8 @@ def generate_group_info(client, author, command, thread_id):
         reply += 'Usage: "!travel cancel"\n'
         reply += 'Cancels your current journey. You will be returned to your previous location.\n\n'
         reply += 'Usage: "!travel"\n'
-        reply += 'Check which locations you can travel to from your current location. '
-        reply += 'New locations can be found through exploration.'
+        reply += 'Shows your information about your current location as well as which locations you '
+        reply += 'can travel to from your current location. New locations can be found through exploration.'
 
     else:
         reply = 'Not a valid command.'

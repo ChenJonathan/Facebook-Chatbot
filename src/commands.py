@@ -93,7 +93,9 @@ def run_user_command(client, author, command, text):
             client.send(Message('Level and stats changed!'), thread_id=author_id)
 
     elif command == 'explore':
-        reply = str(len(client.explore_record)) + ' people have explored this hour.'
+        reply = str(len(client.explore_record))
+        reply += (' person has' if len(client.explore_record) == 1 else ' people have')
+        reply += ' explored this hour.'
         client.send(Message(reply), thread_id=author_id)
 
     elif command == 'help' or command == 'h':
@@ -168,6 +170,9 @@ def run_user_command(client, author, command, text):
                 del client.user_states[author_id]
             reply = 'You have been warped to ' + location + '!'
         client.send(Message(reply), thread_id=author_id)
+
+    else:
+        client.send(Message('Not a valid command.'), thread_id=author_id)
 
 
 def run_group_command(client, author, command, text, thread_id):
@@ -418,27 +423,6 @@ def run_group_command(client, author, command, text, thread_id):
             reply = 'You don\'t have permission to do this.'
         client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
 
-    elif command == 'location' or command == 'l':
-        if _check_busy(client, author, thread_id):
-            return
-        features = location_features(author['Location'])
-        level_range = location_level(author['Location'])
-        reply = 'Welcome to ' + author['Location'] + '! '
-        if level_range is None:
-            reply += 'There are no monsters here. '
-        elif level_range == (None, None):
-            reply += 'The monsters here scale to your level. '
-        else:
-            reply += 'The monsters here are levels ' + str(level_range[0])
-            reply += ' to ' + str(level_range[1]) + '. '
-        if features:
-            reply += 'The following services are available here:'
-            for feature in features:
-                reply += '\n-> ' + feature
-        else:
-            reply += 'There are no services available here.'
-        client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
-
     elif command == 'map' or command == 'm':
         region = location_region(author['Location'])
         if region is None:
@@ -584,6 +568,9 @@ def run_group_command(client, author, command, text, thread_id):
                 check_travel(client, author, thread_id)
             else:
                 travel_to_location(client, author, text, thread_id)
+
+    else:
+        client.send(Message('Not a valid command.'), thread_id=thread_id, thread_type=ThreadType.GROUP)
 
 
 def _check_busy(client, user, thread_id, allow_duel_requests=False):

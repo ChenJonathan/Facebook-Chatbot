@@ -23,18 +23,29 @@ class Region(Enum):
     EL_NATH_MOUNTAINS = 'el_nath_mountains'
     DEAD_MINE = 'dead_mine'
     AQUA_ROAD = 'aqua_road'
-    NIHAL_DESERT = 'nihal_desert'
     LUDUS_LAKE = 'ludus_lake'
     CLOCK_TOWER = 'clock_tower'
+    KOREAN_FOLK_TOWN = 'korean_folk_town'
+    OMEGA_SECTOR = 'omega_sector'
     MINAR_FOREST = 'minar_forest'
+    NIHAL_DESERT = 'nihal_desert'
     TEMPLE_OF_TIME = 'temple_of_time'
 
 
-_location_names = ['Maple Island', 'Lith Harbor', 'Henesys', 'Ellinia', 'Perion', 'Kerning City']
-_location_names += ['Sleepywood', 'Cursed Sanctuary', 'New Leaf City', 'Krakian Jungle', 'Bigger Ben']
-_location_names += ['Orbis', 'El Nath', 'Dead Mine', 'Zakum\'s Altar', 'Aqua Road', 'Cave of Pianus']
-_location_names += ['Ariant', 'Magatia', 'Ludibrium', 'Path of Time', 'Papulatus Clock Tower']
-_location_names += ['Korean Folk Town', 'Omega Sector', 'Leafre', 'Minar Forest', 'Horntail\'s Lair', 'Temple of Time']
+_location_names = ['Maple Island']
+_location_names += ['Lith Harbor', 'Henesys', 'Ellinia', 'Perion', 'Kerning City']
+_location_names += ['Sleepywood', 'Silent Swamp', 'Drake Cave', 'Temple Entrance', 'Cursed Sanctuary']
+_location_names += ['New Leaf City', 'Meso Gears Tower', 'Krakian Jungle', 'Alien Base']
+_location_names += ['Orbis', 'Cloud Park', 'Garden of Colors', 'Orbis Tower', 'El Nath', 'Ice Valley']
+_location_names += ['Sharp Cliffs', 'Dead Mine', 'Caves of Trial', 'Altar of Flame']
+_location_names += ['Aquarium', 'Coral Forest', 'Seaweed Road', 'Wrecked Ship Grave', 'Deepest Cave']
+_location_names += ['Ludibrium', 'Toy Factory', 'Helios Tower', 'Eos Tower']
+_location_names += ['Path of Time', 'Warped Passage', 'Forgotten Passage', 'Clock Tower Origin']
+_location_names += ['Korean Folk Town', 'Black Mountain', 'Goblin Ridge']
+_location_names += ['Omega Sector', 'Boswell Field', 'Mothership Interior']
+_location_names += ['Leafre', 'Forest Valley', 'Dragon Forest', 'Dragon Canyon', 'Cave of Life']
+_location_names += ['Ariant', 'Burning Sands', 'Sunset Road', 'Magatia', 'Zenumist Laboratory', 'Alcadno Laboratory']
+_location_names += ['Temple of Time']
 
 Location = Enum('Location', _location_names)
 

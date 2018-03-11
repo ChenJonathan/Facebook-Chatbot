@@ -87,9 +87,14 @@ def user_try_add(user_id):
                 Location['Kerning City'].name: 1,
                 Location['New Leaf City'].name: 1,
                 Location['Orbis'].name: 1,
-                Location['Ariant'].name: 1,
+                Location['El Nath'].name: 1,
+                Location['Aquarium'].name: 1,
                 Location['Ludibrium'].name: 1,
+                Location['Korean Folk Town'].name: 1,
+                Location['Omega Sector'].name: 1,
                 Location['Leafre'].name: 1,
+                Location['Ariant'].name: 1,
+                Location['Magatia'].name: 1
             },
             'Stats': {
                 'Level': 1,

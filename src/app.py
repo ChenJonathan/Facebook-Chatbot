@@ -147,7 +147,7 @@ class ChatBot(Client):
                     complete_quest(self, user_from_id(author_id), text, thread_id)
 
                 # Cleverbot messaging
-                if not command:
+                if command is None:
                     text = text.split()
                     if text and text[0].lower() == 'wong,':
                         try:
@@ -198,7 +198,10 @@ def index():
     return 'Welcome!'
 
 
-client = ChatBot('jonathanchen1025@gmail.com', b64decode(os.environ.get('PASSWORD')))
+if os.environ.get('ON_HEROKU'):
+    client = ChatBot('jonathanchen1025@gmail.com', b64decode(os.environ.get('PASSWORD')))
+else:
+    client = ChatBot('Avenlokh@gmail.com', b64decode(os.environ.get('PASSWORD')))
 
 
 class ServerThread(threading.Thread):

@@ -61,5 +61,5 @@ def calculate_score(user):
     for location, progress in user['LocationProgress'].items():
         if progress == 1:
             score += 50
-    score -= 11 * 50
+    score -= 16 * 50
     return int(score)

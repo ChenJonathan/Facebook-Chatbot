@@ -15,47 +15,78 @@ def _connect(a, b, time):
     _edges[b][a] = time
 
 
-# - Victoria Island
+# Victoria Island
 _connect(Location['Lith Harbor'], Location['Henesys'], 2)
 _connect(Location['Lith Harbor'], Location['Kerning City'], 2)
 _connect(Location['Henesys'], Location['Ellinia'], 3)
 _connect(Location['Ellinia'], Location['Perion'], 3)
 _connect(Location['Perion'], Location['Kerning City'], 3)
 _connect(Location['Kerning City'], Location['Henesys'], 2)
-# - Sleepywood
+# Sleepywood
 _connect(Location['Henesys'], Location['Sleepywood'], 2)
 _connect(Location['Ellinia'], Location['Sleepywood'], 2)
 _connect(Location['Perion'], Location['Sleepywood'], 2)
 _connect(Location['Kerning City'], Location['Sleepywood'], 2)
-_connect(Location['Sleepywood'], Location['Cursed Sanctuary'], 2)
-# - Masteria
-_connect(Location['Kerning City'], Location['New Leaf City'], 5)
-_connect(Location['New Leaf City'], Location['Krakian Jungle'], 3)
-_connect(Location['New Leaf City'], Location['Bigger Ben'], 3)
-# - El Nath Mountains
+_connect(Location['Sleepywood'], Location['Silent Swamp'], 2)
+_connect(Location['Sleepywood'], Location['Drake Cave'], 3)
+_connect(Location['Drake Cave'], Location['Temple Entrance'], 2)
+_connect(Location['Temple Entrance'], Location['Cursed Sanctuary'], 2)
+# Masteria
+_connect(Location['Kerning City'], Location['New Leaf City'], 6)
+_connect(Location['New Leaf City'], Location['Krakian Jungle'], 4)
+_connect(Location['New Leaf City'], Location['Meso Gears Tower'], 2)
+# El Nath Mountains
 _connect(Location['Ellinia'], Location['Orbis'], 12)
-_connect(Location['Orbis'], Location['El Nath'], 6)
-_connect(Location['El Nath'], Location['Dead Mine'], 7)
-_connect(Location['Dead Mine'], Location['Zakum\'s Altar'], 2)
-# - Aqua Road
-_connect(Location['Orbis'], Location['Aqua Road'], 10)
-_connect(Location['El Nath'], Location['Aqua Road'], 6)
-_connect(Location['Aqua Road'], Location['Cave of Pianus'], 2)
-_connect(Location['Aqua Road'], Location['Korean Folk Town'], 5)
-# - Ludus Lake
-_connect(Location['Orbis'], Location['Ludibrium'], 20)
-_connect(Location['Ludibrium'], Location['Path of Time'], 5)
-_connect(Location['Path of Time'], Location['Papulatus Clock Tower'], 1)
-_connect(Location['Ludibrium'], Location['Korean Folk Town'], 10)
-_connect(Location['Ludibrium'], Location['Omega Sector'], 10)
-# - Nihal Desert
+_connect(Location['Orbis'], Location['Cloud Park'], 4)
+_connect(Location['Cloud Park'], Location['Garden of Colors'], 4)
+_connect(Location['Orbis'], Location['Orbis Tower'], 3)
+_connect(Location['Orbis Tower'], Location['El Nath'], 5)
+_connect(Location['El Nath'], Location['Ice Valley'], 3)
+# Dead Mine
+_connect(Location['Ice Valley'], Location['Sharp Cliffs'], 4)
+_connect(Location['Sharp Cliffs'], Location['Dead Mine'], 4)
+_connect(Location['Dead Mine'], Location['Caves of Trial'], 2)
+_connect(Location['Caves of Trial'], Location['Altar of Flame'], 2)
+# Aqua Road
+_connect(Location['Coral Forest'], Location['Orbis Tower'], 8)
+_connect(Location['Coral Forest'], Location['Aquarium'], 3)
+_connect(Location['Coral Forest'], Location['Wrecked Ship Grave'], 6)
+_connect(Location['Seaweed Road'], Location['Aquarium'], 3)
+_connect(Location['Seaweed Road'], Location['Wrecked Ship Grave'], 6)
+_connect(Location['Seaweed Road'], Location['Korean Folk Town'], 4)
+_connect(Location['Wrecked Ship Grave'], Location['Deepest Cave'], 2)
+# Nihal Desert
 _connect(Location['Orbis'], Location['Ariant'], 14)
-_connect(Location['Ariant'], Location['Magatia'], 5)
-# - Leafre
-#_connect(Location['Orbis'], Location['Leafre'], 15)
-_connect(Location['Leafre'], Location['Minar Forest'], 5)
-_connect(Location['Minar Forest'], Location['Horntail\'s Lair'], 2)
-#_connect(Location['Leafre'], Location['Temple of Time'], 30)
+_connect(Location['Ariant'], Location['Burning Sands'], 3)
+_connect(Location['Ariant'], Location['Sunset Road'], 5)
+_connect(Location['Sunset Road'], Location['Magatia'], 5)
+_connect(Location['Magatia'], Location['Zenumist Laboratory'], 2)
+_connect(Location['Magatia'], Location['Alcadno Laboratory'], 2)
+_connect(Location['Zenumist Laboratory'], Location['Alcadno Laboratory'], 2)
+# Ludus Lake
+_connect(Location['Orbis'], Location['Ludibrium'], 20)
+_connect(Location['Ludibrium'], Location['Toy Factory'], 2)
+_connect(Location['Ludibrium'], Location['Eos Tower'], 3)
+_connect(Location['Ludibrium'], Location['Helios Tower'], 3)
+# Clock Tower
+_connect(Location['Toy Factory'], Location['Path of Time'], 4)
+_connect(Location['Path of Time'], Location['Warped Passage'], 3)
+_connect(Location['Path of Time'], Location['Forgotten Passage'], 3)
+_connect(Location['Warped Passage'], Location['Clock Tower Origin'], 2)
+_connect(Location['Forgotten Passage'], Location['Clock Tower Origin'], 2)
+# Korean Folk Town
+_connect(Location['Eos Tower'], Location['Korean Folk Town'], 12)
+_connect(Location['Korean Folk Town'], Location['Black Mountain'], 6)
+_connect(Location['Black Mountain'], Location['Goblin Ridge'], 4)
+# Omega Sector
+_connect(Location['Helios Tower'], Location['Omega Sector'], 12)
+_connect(Location['Omega Sector'], Location['Boswell Field'], 6)
+_connect(Location['Boswell Field'], Location['Mothership Interior'], 4)
+# Leafre
+_connect(Location['Leafre'], Location['Forest Valley'], 6)
+_connect(Location['Forest Valley'], Location['Dragon Forest'], 3)
+_connect(Location['Dragon Forest'], Location['Dragon Canyon'], 5)
+_connect(Location['Dragon Canyon'], Location['Cave of Life'], 2)
 
 _feature_map = {
     Location['Lith Harbor']: ['Shop'],
@@ -67,12 +98,13 @@ _feature_map = {
     Location['New Leaf City']: ['Shop'],
     Location['Orbis']: ['Crafting', 'Shop'],
     Location['El Nath']: ['Crafting', 'Shop'],
-    Location['Ariant']: ['Crafting', 'Shop'],
-    Location['Magatia']: ['Crafting', 'Shop'],
+    Location['Aquarium']: ['Shop'],
     Location['Ludibrium']: ['Crafting', 'Shop'],
     Location['Korean Folk Town']: ['Crafting', 'Shop'],
     Location['Omega Sector']: ['Crafting', 'Shop'],
     Location['Leafre']: ['Crafting', 'Shop'],
+    Location['Ariant']: ['Crafting', 'Shop'],
+    Location['Magatia']: ['Crafting', 'Shop']
 }
 
 _region_map = {
@@ -83,26 +115,54 @@ _region_map = {
     Location['Perion']: Region.VICTORIA_ISLAND,
     Location['Kerning City']: Region.VICTORIA_ISLAND,
     Location['Sleepywood']: Region.SLEEPYWOOD,
+    Location['Silent Swamp']: Region.SLEEPYWOOD,
+    Location['Drake Cave']: Region.SLEEPYWOOD,
+    Location['Temple Entrance']: Region.SLEEPYWOOD,
     Location['Cursed Sanctuary']: Region.SLEEPYWOOD,
     Location['New Leaf City']: Region.MASTERIA,
+    Location['Meso Gears Tower']: Region.MASTERIA,
     Location['Krakian Jungle']: Region.MASTERIA,
-    Location['Bigger Ben']: Region.MASTERIA,
+    Location['Alien Base']: Region.MASTERIA,
     Location['Orbis']: Region.EL_NATH_MOUNTAINS,
+    Location['Cloud Park']: Region.EL_NATH_MOUNTAINS,
+    Location['Garden of Colors']: Region.EL_NATH_MOUNTAINS,
+    Location['Orbis Tower']: Region.EL_NATH_MOUNTAINS,
     Location['El Nath']: Region.EL_NATH_MOUNTAINS,
+    Location['Ice Valley']: Region.EL_NATH_MOUNTAINS,
+    Location['Sharp Cliffs']: Region.DEAD_MINE,
     Location['Dead Mine']: Region.DEAD_MINE,
-    Location['Zakum\'s Altar']: Region.DEAD_MINE,
-    Location['Aqua Road']: Region.AQUA_ROAD,
-    Location['Cave of Pianus']: Region.AQUA_ROAD,
-    Location['Ariant']: Region.NIHAL_DESERT,
-    Location['Magatia']: Region.NIHAL_DESERT,
+    Location['Caves of Trial']: Region.DEAD_MINE,
+    Location['Altar of Flame']: Region.DEAD_MINE,
+    Location['Aquarium']: Region.AQUA_ROAD,
+    Location['Coral Forest']: Region.AQUA_ROAD,
+    Location['Seaweed Road']: Region.AQUA_ROAD,
+    Location['Wrecked Ship Grave']: Region.AQUA_ROAD,
+    Location['Deepest Cave']: Region.AQUA_ROAD,
     Location['Ludibrium']: Region.LUDUS_LAKE,
+    Location['Toy Factory']: Region.LUDUS_LAKE,
+    Location['Helios Tower']: Region.LUDUS_LAKE,
+    Location['Eos Tower']: Region.LUDUS_LAKE,
     Location['Path of Time']: Region.CLOCK_TOWER,
-    Location['Papulatus Clock Tower']: Region.CLOCK_TOWER,
-    Location['Korean Folk Town']: Region.LUDUS_LAKE,
-    Location['Omega Sector']: Region.LUDUS_LAKE,
+    Location['Warped Passage']: Region.CLOCK_TOWER,
+    Location['Forgotten Passage']: Region.CLOCK_TOWER,
+    Location['Clock Tower Origin']: Region.CLOCK_TOWER,
+    Location['Korean Folk Town']: Region.KOREAN_FOLK_TOWN,
+    Location['Black Mountain']: Region.KOREAN_FOLK_TOWN,
+    Location['Goblin Ridge']: Region.KOREAN_FOLK_TOWN,
+    Location['Omega Sector']: Region.OMEGA_SECTOR,
+    Location['Boswell Field']: Region.OMEGA_SECTOR,
+    Location['Mothership Interior']: Region.OMEGA_SECTOR,
     Location['Leafre']: Region.MINAR_FOREST,
-    Location['Minar Forest']: Region.MINAR_FOREST,
-    Location['Horntail\'s Lair']: Region.MINAR_FOREST,
+    Location['Forest Valley']: Region.MINAR_FOREST,
+    Location['Dragon Forest']: Region.MINAR_FOREST,
+    Location['Dragon Canyon']: Region.MINAR_FOREST,
+    Location['Cave of Life']: Region.MINAR_FOREST,
+    Location['Ariant']: Region.NIHAL_DESERT,
+    Location['Burning Sands']: Region.NIHAL_DESERT,
+    Location['Sunset Road']: Region.NIHAL_DESERT,
+    Location['Magatia']: Region.NIHAL_DESERT,
+    Location['Zenumist Laboratory']: Region.NIHAL_DESERT,
+    Location['Alcadno Laboratory']: Region.NIHAL_DESERT,
     Location['Temple of Time']: Region.TEMPLE_OF_TIME,
 }
 
@@ -184,7 +244,7 @@ def explore_location(client, user, thread_id):
     if len(adjacent) > 0:
         location = Location[adjacent[0]]
         distance = max(_edges[current][location], 1)
-        presence = progress.get(location.name, 0) + random.uniform(1, 2) / distance
+        presence = progress.get(location.name, 0) + random.uniform(0.5, 1) / distance
         if presence >= 1:
             location_progress_set(user['_id'], location.name, 1)
             unlocked = location.name
@@ -222,21 +282,39 @@ def explore_location(client, user, thread_id):
 
 def check_travel(client, user, thread_id):
     current = Location[user['Location']]
-    if current == Location['Maple Island']:
-        reply = 'You cannot travel anywhere.'
+    features = location_features(current.name)
+    level_range = location_level(current.name)
+
+    reply = 'Welcome to ' + current.name + '! '
+    if level_range is None:
+        reply += 'There are no monsters here. '
+    elif level_range == (None, None):
+        reply += 'The monsters here scale to your level. '
     else:
-        reply = ['You are in ' + current.name + ' and can travel to the following places:']
-        for location in adjacent_locations(user):
-            level_range = location_level(location)
-            line = '-> ' + location
-            if level_range is not None:
-                line += ' (Levels ' + str('???' if level_range[0] is None else level_range[0])
-                line += ' - ' + str('???' if level_range[1] is None else level_range[1]) + ')'
-            reply.append(line + ': ' + str(_edges[current][Location[location]]) + ' minutes away')
-        if len(reply) > 1:
-            reply = '\n'.join(reply)
+        reply += 'The monsters here are levels ' + str(level_range[0])
+        reply += ' to ' + str(level_range[1]) + '. '
+    if features:
+        reply += 'The following services are available here:'
+        for feature in features:
+            reply += '\n-> ' + feature
+    else:
+        reply += 'There are no services available here.'
+
+    if current == Location['Maple Island']:
+        reply += '\n\nYou cannot travel anywhere.'
+    else:
+        adjacent = adjacent_locations(user)
+        if len(adjacent):
+            reply += '\n\nYou are in ' + current.name + ' and can travel to the following places:'
+            for location in adjacent:
+                level_range = location_level(location)
+                reply += '\n-> ' + location
+                if level_range is not None:
+                    reply += ' (Levels ' + str('???' if level_range[0] is None else level_range[0])
+                    reply += ' - ' + str('???' if level_range[1] is None else level_range[1]) + ')'
+                reply += ': ' + str(_edges[current][Location[location]]) + ' minutes away'
         else:
-            reply = 'You have not discovered any surrounding locations yet.'
+            reply += '\n\nYou have not discovered any surrounding locations yet.'
     client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
 
 

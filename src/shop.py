@@ -3,6 +3,7 @@ import random
 
 from data import random_beast
 from mongo import *
+from util import *
 
 
 def generate_shop_info(client, user, thread_id):
@@ -81,9 +82,9 @@ def _hunting_pet(client, user, amount, thread_id):
     delta_rate = beast[1] * beast[2] * amount
     gold_flow_add(user['_id'], delta_rate)
     if amount == 1:
-        reply = 'You\'ve bought a ' + str(beast[1]) + '/' + str(beast[2])
-        reply += ' ' + beast[0] + '! It grants you an additional ' + str(delta_rate) + ' gold per hour.'
+        reply = 'You\'ve bought a ' + str(beast[1]) + '/' + str(beast[2]) + ' ' + beast[0]
+        reply += '! It grants you an additional ' + format_num(delta_rate, truncate=True) + ' gold per hour.'
     else:
-        reply = 'You\'ve bought ' + str(amount) + ' ' + str(beast[1]) + '/' + str(beast[2])
-        reply += ' ' + beast[0] + 's! They grant you an additional ' + str(delta_rate) + ' gold per hour.'
+        reply = 'You\'ve bought ' + str(amount) + ' ' + str(beast[1]) + '/' + str(beast[2]) + ' ' + beast[0]
+        reply += 's! They grant you an additional ' + format_num(delta_rate, truncate=True) + ' gold per hour.'
     client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
