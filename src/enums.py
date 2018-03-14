@@ -9,10 +9,11 @@ class UserState(Enum):
 
 
 class ChatState(Enum):
-    PREPARING = 0
-    READY = 1
-    DELAY = 2
-    QUEST = 3
+    REQUEST = 0
+    PREPARING = 1
+    READY = 2
+    DELAY = 3
+    QUEST = 4
 
 
 class Region(Enum):

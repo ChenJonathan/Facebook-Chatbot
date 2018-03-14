@@ -10,29 +10,38 @@ from util import *
 
 def send_duel_request(client, user, opponent, gold, thread_id):
     user_id = user['_id']
+    user_state, user_details = client.user_states.get(user_id, (UserState.IDLE, {}))
+    user_request = user_state == UserState.DUEL and user_details['Status'] == ChatState.REQUEST
     opponent_id = opponent['_id']
-    opponent_target, opponent_amount = client.duel_requests.get(opponent_id, (None, None))
-    if user_id in client.duel_requests:
-        gold_add(user_id, client.duel_requests[user_id][1] - gold)
-        del client.duel_requests[user_id]
+    opponent_state, opponent_details = client.user_states.get(opponent_id, (UserState.IDLE, {}))
+    opponent_request = opponent_state == UserState.DUEL and opponent_details['Status'] == ChatState.REQUEST
+
+    if user_request:
+        gold_add(user_id, user_details['Gold'] - gold)
     else:
         gold_add(user_id, -gold)
-    if opponent_target != user_id or gold != opponent_amount:
-        client.duel_requests[user_id] = (opponent_id, gold)
+    if opponent_request and opponent_details['OpponentID'] == user_id and opponent_details['Gold'] == gold:
+        generate_duel(client, opponent, user, gold, thread_id)
+    else:
+        client.user_states[user_id] = (UserState.DUEL, {
+            'Status': ChatState.REQUEST,
+            'Gold': gold,
+            'OpponentID': opponent_id
+        })
         reply = user['Name'] + ' challenges ' + opponent['Name'] + ' to a duel for ' + str(gold)
         reply += ' gold! Use "!duel <amount> <name>" on the person who challenged you with the '
         reply += 'same <amount> to accept the challenge.'
         client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
-    else:
-        del client.duel_requests[opponent_id]
-        generate_duel(client, opponent, user, gold, thread_id)
 
 
 def cancel_duel_request(client, user, thread_id):
     user_id = user['_id']
-    if user_id in client.duel_requests:
-        gold_add(user_id, client.duel_requests[user_id][1])
-        del client.duel_requests[user_id]
+    state, details = client.user_states.get(user_id, (UserState.IDLE, {}))
+    request = state == UserState.DUEL and details['Status'] == ChatState.REQUEST
+
+    if request:
+        gold_add(user_id, details['Gold'])
+        del client.user_states[user_id]
         reply = 'Your duel request has been cancelled.'
     else:
         reply = 'You do not have an active duel request.'
@@ -60,11 +69,11 @@ def generate_duel(client, user_1, user_2, gold, thread_id):
     client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
     reply = 'You are in a duel with ' + user_2['Name'] + '! Use "!ready" to begin the duel. '
     reply += 'Use "!flee" at any point to forfeit the duel. Forfeiting after the duel begins will '
-    reply += 'result in a loss. You will receive a new question after the current one is answered.'
+    reply += 'result in a loss. You will receive a new question after you\'ve answered your current one.'
     client.send(Message(reply), thread_id=user_1['_id'])
     reply = 'You are in a duel with ' + user_1['Name'] + '! Use "!ready" to begin the duel. '
     reply += 'Use "!flee" at any point to forfeit the duel. Forfeiting after the duel begins will '
-    reply += 'result in a loss. You will receive a new question after the current one is answered.'
+    reply += 'result in a loss. You will receive a new question after you\'ve answered your current one.'
     client.send(Message(reply), thread_id=user_2['_id'])
 
 
@@ -156,7 +165,7 @@ def cancel_duel(client, user):
         client.send(Message(reply), thread_id=opponent_id)
         reply = user['Name'] + ' forfeits the duel! ' + opponent['Name']
         reply += ' receives ' + str(gold) + ' gold from ' + user['Name'] + '.'
-        client.send(Message(reply), thread_id=user_details['ThreadID'], thread_type=ThreadType.GROUP)
+    client.send(Message(reply), thread_id=user_details['ThreadID'], thread_type=ThreadType.GROUP)
 
 
 def begin_duel_quest(client, user):
@@ -213,7 +222,7 @@ def complete_duel_quest(client, user, text):
 
 
 def _calculate_damage(user_attack, opponent_defence):
-    damage = (user_attack - opponent_defence)
+    damage = (user_attack - opponent_defence) / 2
     if damage >= 0:
         damage = damage / 3 + 10
     else:
@@ -222,4 +231,4 @@ def _calculate_damage(user_attack, opponent_defence):
 
 
 def _calculate_timer(user_speed, opponent_speed):
-    return int(math.sqrt(max(opponent_speed - user_speed, 0) * 4 / 3 + 9))
+    return int(math.sqrt(max(opponent_speed - user_speed, 0) * 2 / 3 + 9))

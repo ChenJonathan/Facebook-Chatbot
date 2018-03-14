@@ -327,7 +327,7 @@ flag:to droop; grow weak
 fledging:beginner; novice
 flora:plants of a region or era
 florid:ruddy; reddish; flowery
-flourish:en embellishment or ornamentation
+flourish:an embellishment or ornamentation
 flout:to treat scornfully
 flux:flowing; a continuous moving
 foment:to incite; arouse

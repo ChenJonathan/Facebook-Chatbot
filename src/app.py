@@ -30,7 +30,6 @@ class ChatBot(Client):
 
         self.quest_record = {}
         self.explore_record = set()
-        self.duel_requests = {}
         self.user_health = {}
         self.user_states = {}
 

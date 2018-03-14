@@ -179,7 +179,7 @@ def complete_battle_quest(client, user, text):
 
 
 def _calculate_damage(user_attack, opponent_defence, scale=1):
-    damage = (user_attack - opponent_defence)
+    damage = user_attack - opponent_defence
     if damage >= 0:
         damage = damage / 3 + 10
     else:

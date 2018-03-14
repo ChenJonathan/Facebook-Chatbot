@@ -112,7 +112,7 @@ def generate_user_info(client, author, command):
 def generate_group_info(client, author, command, thread_id):
     command = command.lower()
 
-    if len(command) == 0 or command == 'all':
+    if len(command) == 0:
         reply = '<<Command List>>\n'
         reply += 'See how commands work with "!help <command>".\n'
         if author['_id'] == master_id:

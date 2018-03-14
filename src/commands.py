@@ -4,6 +4,7 @@ from battle import generate_battle, cancel_battle
 from craft import generate_craft_info, craft_item
 from data import random_emoji, patch_notes
 from duel import send_duel_request, cancel_duel_request, cancel_duel
+from enums import ChatState
 from info import generate_user_info, generate_group_info
 from location import *
 from mongo import *
@@ -63,7 +64,7 @@ def run_user_command(client, author, command, text):
             return
         client.send(Message(reply), thread_id=author_id)
 
-    elif command == 'equip':
+    elif command == 'equip' or command == 'e':
         try:
             level, attack, defence, speed = [int(num) for num in text.split(' ')]
             level_set(author_id, level)
@@ -273,7 +274,9 @@ def run_group_command(client, author, command, text, thread_id):
         client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
 
     elif command == 'duel' or command == 'd':
-        if _check_busy(client, author, thread_id, allow_duel_requests=True):
+        state, details = client.user_states.get(author_id, (UserState.IDLE, {}))
+        request = state == UserState.DUEL and details['Status'] == ChatState.REQUEST
+        if not request and _check_busy(client, author, thread_id):
             return
         elif text.lower() == 'cancel':
             cancel_duel_request(client, author, thread_id)
@@ -287,8 +290,8 @@ def run_group_command(client, author, command, text, thread_id):
             else:
                 user = client.match_user(thread_id, user)
                 gold = author['Gold']
-                if author_id in client.duel_requests:
-                    gold += client.duel_requests[author_id][1]
+                if request:
+                    gold += details['Gold']
                 if gold < amount:
                     reply = 'Not enough gold.'
                 elif user is None:
@@ -586,17 +589,10 @@ def run_group_command(client, author, command, text, thread_id):
         client.send(Message('Not a valid command.'), thread_id=thread_id, thread_type=ThreadType.GROUP)
 
 
-def _check_busy(client, user, thread_id, allow_duel_requests=False):
+def _check_busy(client, user, thread_id):
     user_id = user['_id']
     if user_id not in client.user_states:
-        if allow_duel_requests or user_id not in client.duel_requests:
-            return False
-
-        opponent_id, gold = client.duel_requests[user_id]
-        reply = 'You\'re busy requesting a duel with ' + user_from_id(opponent_id)['Name']
-        reply += ' for ' + str(gold) + ' gold!'
-        client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
-        return True
+        return False
 
     state, details = client.user_states[user_id]
 
@@ -611,14 +607,21 @@ def _check_busy(client, user, thread_id, allow_duel_requests=False):
         client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
 
     elif state == UserState.DUEL:
-        opponent = user_from_id(details['OpponentID'])
-        reply = 'You\'re busy dueling ' + opponent['Name'] + ' for ' + str(details['Gold']) + ' gold!'
+        if details['Status'] == ChatState.REQUEST:
+            opponent_id, gold = details['OpponentID'], details['Gold']
+            reply = 'You\'re busy requesting a duel with ' + user_from_id(opponent_id)['Name']
+            reply += ' for ' + str(gold) + ' gold!'
+        else:
+            opponent = user_from_id(details['OpponentID'])
+            reply = 'You\'re busy dueling ' + opponent['Name'] + ' for ' + str(details['Gold']) + ' gold!'
         client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
 
     return True
 
 
 def _check_to_string(client, user):
+    state, details = client.user_states.get(user['_id'], (UserState.IDLE, {}))
+
     text = '<<' + user['Name'] + '>>' + ((' (' + user['Alias'] + ')\n') if 'Alias' in user else '\n')
     text += 'Priority: ' + priority_names[user['Priority']] + '\n'
     text += 'Level: ' + str(user['Stats']['Level']) + ' (' + str(user['Stats']['Experience']) + '/100 exp)\n'
@@ -631,7 +634,6 @@ def _check_to_string(client, user):
     text += 'Gold: ' + format_num(user['Gold'], truncate=True)
     text += ' (' + format_num(user['GoldFlow'], sign=True, truncate=True) + '/hour)\n'
     text += 'Location: ' + user['Location']
-    state, details = client.user_states.get(user['_id'], (UserState.IDLE, {}))
 
     if state == UserState.TRAVEL:
         seconds = int((details['EndTime'] - datetime.now()).total_seconds())
@@ -639,7 +641,8 @@ def _check_to_string(client, user):
     elif state == UserState.BATTLE:
         text += '\n(In battle with ' + details['Monster']['Name'] + ')'
     elif state == UserState.DUEL:
-        opponent = user_from_id(details['OpponentID'])
-        text += '\n(In a duel with ' + opponent['Name'] + ')'
+        if details['Status'] != ChatState.REQUEST:
+            opponent = user_from_id(details['OpponentID'])
+            text += '\n(In a duel with ' + opponent['Name'] + ')'
 
     return text
