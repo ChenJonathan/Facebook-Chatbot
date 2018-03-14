@@ -2,7 +2,7 @@ import requests
 
 from battle import generate_battle, cancel_battle
 from craft import generate_craft_info, craft_item
-from data import random_emoji
+from data import random_emoji, patch_notes
 from duel import send_duel_request, cancel_duel_request, cancel_duel
 from info import generate_user_info, generate_group_info
 from location import *
@@ -14,8 +14,6 @@ from util import *
 
 def run_user_command(client, author, command, text):
     author_id = author['_id']
-    if author_id != master_id:
-        return
 
     if command == 'alias' or command == 'a':
         alias, user, *_ = text.split(' ', 1) + ['']
@@ -65,7 +63,7 @@ def run_user_command(client, author, command, text):
             return
         client.send(Message(reply), thread_id=author_id)
 
-    elif command == 'equip' or command == 'e':
+    elif command == 'equip':
         try:
             level, attack, defence, speed = [int(num) for num in text.split(' ')]
             level_set(author_id, level)
@@ -209,12 +207,9 @@ def run_group_command(client, author, command, text, thread_id):
         elif client.user_health.get(author_id, author['Stats']['Health']) <= 0:
             now = datetime.today()
             later = now.replace(hour=(now.hour + 1) % 24, minute=0, second=0, microsecond=0)
-            seconds = (later - now).seconds
-            minutes, seconds = seconds // 60, seconds % 60
             reply = 'You\'re on the brink of death! Buy a life elixir from the shop '
             reply += 'or wait until the next hour to restore your health. ('
-            reply += ((str(minutes) + ' min ') if minutes > 0 else '')
-            reply += str(seconds) + ' sec' + ('' if seconds == 1 else 's') + ' remaining)'
+            reply += format_time((later - now).seconds) + ' remaining)'
             client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
         else:
             generate_battle(client, author, thread_id)
@@ -339,11 +334,8 @@ def run_group_command(client, author, command, text, thread_id):
         if author_id in client.explore_record:
             now = datetime.today()
             later = now.replace(hour=(now.hour + 1) % 24, minute=0, second=0, microsecond=0)
-            seconds = (later - now).seconds
-            minutes, seconds = seconds // 60, seconds % 60
             reply = 'You can only explore once per hour. ('
-            reply += ((str(minutes) + ' min ') if minutes > 0 else '')
-            reply += str(seconds) + ' sec' + ('' if seconds == 1 else 's') + ' remaining)'
+            reply += format_time((later - now).seconds) + ' remaining)'
             client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
         elif not _check_busy(client, author, thread_id):
             if author_id != master_id:
@@ -446,6 +438,10 @@ def run_group_command(client, author, command, text, thread_id):
             message = Message('User not found.')
             client.send(message, thread_id=thread_id, thread_type=ThreadType.GROUP)
 
+    elif command == 'notes' or command == 'n':
+        reply = '<<Patch Notes>>\n\n' + patch_notes
+        client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
+
     elif command == 'perm' or command == 'p':
         if author_id == master_id:
             try:
@@ -466,8 +462,8 @@ def run_group_command(client, author, command, text, thread_id):
                 reply = user.name + '\'s priority has been set to ' + str(priority)
                 reply += ' (' + priority_names[priority] + ').'
         else:
-            user = client.fetchUserInfo(author_id)[author_id]
-            reply = user.name + '\'s priority has been set to 0'
+            user = user_from_id(author_id)
+            reply = user['Name'] + '\'s priority has been set to 0'
             reply += ' (' + priority_names[0] + ').'
         client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
 
@@ -569,6 +565,23 @@ def run_group_command(client, author, command, text, thread_id):
             else:
                 travel_to_location(client, author, text, thread_id)
 
+    elif command == 'warp' or command == 'w':
+        if author_id == master_id:
+            if len(text) == 0:
+                generate_group_info(client, author, 'warp', author_id)
+                return
+            location = query_location(text)
+            if location is None:
+                reply = 'Not a valid location.'
+            else:
+                location_set(author_id, location)
+                if client.user_states.get(author_id, (UserState.IDLE, {}))[0] == UserState.TRAVEL:
+                    del client.user_states[author_id]
+                reply = 'You have been warped to ' + location + '!'
+        else:
+            reply = 'You don\'t have permission to do this.'
+        client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
+
     else:
         client.send(Message('Not a valid command.'), thread_id=thread_id, thread_type=ThreadType.GROUP)
 
@@ -589,10 +602,7 @@ def _check_busy(client, user, thread_id, allow_duel_requests=False):
 
     if state == UserState.TRAVEL:
         seconds = int((details['EndTime'] - datetime.now()).total_seconds())
-        minutes, seconds = seconds // 60, seconds % 60
-        reply = 'You\'re busy traveling to ' + details['Destination'] + '. ('
-        reply += ((str(minutes) + ' min ') if minutes > 0 else '')
-        reply += str(seconds) + ' sec' + ('' if seconds == 1 else 's') + ' remaining)'
+        reply = 'You\'re busy traveling to ' + details['Destination'] + '. (' + format_time(seconds) + ' remaining)'
         client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
 
     elif state == UserState.BATTLE:
@@ -625,10 +635,7 @@ def _check_to_string(client, user):
 
     if state == UserState.TRAVEL:
         seconds = int((details['EndTime'] - datetime.now()).total_seconds())
-        minutes, seconds = seconds // 60, seconds % 60
-        text += ' -> ' + details['Destination'] + '\n('
-        text += ((str(minutes) + ' min ') if minutes > 0 else '')
-        text += str(seconds) + ' sec' + ('' if seconds == 1 else 's') + ' remaining)'
+        text += ' -> ' + details['Destination'] + '\n(' + format_time(seconds) + ' remaining)'
     elif state == UserState.BATTLE:
         text += '\n(In battle with ' + details['Monster']['Name'] + ')'
     elif state == UserState.DUEL:

@@ -1,7 +1,7 @@
 from fbchat.models import *
 import random
 
-from data import random_beast
+from data import beast_data
 from mongo import *
 from util import *
 
@@ -78,7 +78,7 @@ def _life_elixir(client, user, thread_id):
 
 
 def _hunting_pet(client, user, amount, thread_id):
-    beast = random_beast()
+    beast = random.choice(beast_data)
     delta_rate = beast[1] * beast[2] * amount
     gold_flow_add(user['_id'], delta_rate)
     if amount == 1:

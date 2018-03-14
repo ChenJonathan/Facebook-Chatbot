@@ -1,0 +1,3 @@
+03/11/18: Map expansion
+-> Added more map nodes to discover
+-> Lowered exploration rewards in towns

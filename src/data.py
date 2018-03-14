@@ -3,23 +3,23 @@ import json
 import random
 
 # Beasts
-
-beasts = []
-
+beast_data = []
 with open('./data/beasts.txt') as data:
     for line in data.readlines():
         line = line.split(',')
-        beasts.append((line[0].strip(), int(line[1]), int(line[2])))
+        beast_data.append((line[0].strip(), int(line[1]), int(line[2])))
+
+
+def random_beast():
+    return random.choice(beast_data)
+
 
 # Crafting
-
 craft_data = json.load(open('./data/craft.json'))
 
 # Datasets
-
 terms = []
 definitions = []
-
 with open('./data/vocab.txt') as data:
     for line in data.readlines():
         term, definition = line.split(':', 1)
@@ -29,7 +29,7 @@ with open('./data/vocab.txt') as data:
         definitions.append(definition.strip())
 
 
-def parse_mcq_dataset(file_name):
+def _parse_mcq_dataset(file_name):
     with open('./data/' + file_name, encoding='utf8') as data:
         quests = []
         quest = {'Answers': []}
@@ -50,13 +50,12 @@ def parse_mcq_dataset(file_name):
         return quests
 
 
-econ_dataset = parse_mcq_dataset('econ.txt')
-gov_dataset = parse_mcq_dataset('gov.txt')
-history_dataset = parse_mcq_dataset('history.txt')
-psych_dataset = parse_mcq_dataset('psych.txt')
+econ_dataset = _parse_mcq_dataset('econ.txt')
+gov_dataset = _parse_mcq_dataset('gov.txt')
+history_dataset = _parse_mcq_dataset('history.txt')
+psych_dataset = _parse_mcq_dataset('psych.txt')
 
 science_dataset = []
-
 with open('./data/science.json') as data:
     data = json.load(data)
     for datum in data:
@@ -75,8 +74,7 @@ with open('./data/science.json') as data:
         except:
             pass
 
-# Emojis
-
+# Emoji
 EMOJI_RANGES_UNICODE = [
         (0x0001F300, 0x0001F320),
         (0x0001F330, 0x0001F335),
@@ -99,22 +97,19 @@ emojis = []
 for r in EMOJI_RANGES_UNICODE:
     emojis += range(r[0], r[-1])
 
-# Item drops
-
-item_drop_data = json.load(open('./data/drops.json'))
-
-# Monsters
-
-monster_data = json.load(open('./data/monsters.json'))
-
-
-# Methods
-
-def random_beast():
-    return random.choice(beasts)
-
 
 def random_emoji():
     emoji_decimal = random.choice(emojis)
     emoji_escaped = b'\\U%08x' % emoji_decimal
     return emoji_escaped.decode('unicode-escape')
+
+
+# Item drops
+item_drop_data = json.load(open('./data/drops.json'))
+
+# Monsters
+monster_data = json.load(open('./data/monsters.json'))
+
+# Patch notes
+with open('./data/notes.txt') as data:
+    patch_notes = data.read()

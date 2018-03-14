@@ -1,7 +1,6 @@
 Bearshark, 4, 3
 Bittertide Hydra, 8, 8
 Captured Jormungar, 5, 9
-Cave Hydra, 2, 4
 Charged Devilsaur, 7, 7
 Core Hound, 9, 5
 Corridor Creeper, 2, 5

@@ -2,7 +2,7 @@ from fbchat.models import *
 from datetime import datetime, timedelta
 import random
 
-from data import item_drop_data, monster_data, random_beast
+from data import beast_data, item_drop_data, monster_data
 from enums import UserState, Region, Item
 from mongo import *
 from util import *
@@ -114,7 +114,7 @@ _region_map = {
     Location['Ellinia']: Region.VICTORIA_ISLAND,
     Location['Perion']: Region.VICTORIA_ISLAND,
     Location['Kerning City']: Region.VICTORIA_ISLAND,
-    Location['Sleepywood']: Region.SLEEPYWOOD,
+    Location['Sleepywood']: Region.VICTORIA_ISLAND,
     Location['Silent Swamp']: Region.SLEEPYWOOD,
     Location['Drake Cave']: Region.SLEEPYWOOD,
     Location['Temple Entrance']: Region.SLEEPYWOOD,
@@ -232,7 +232,7 @@ def explore_location(client, user, thread_id):
     beast = None
     delta_flow = 0
     if beast_multiplier > random.random() * 100:
-        beast = random_beast()
+        beast = random.choice(beast_data)
         delta_flow = beast[1] * beast[2]
         gold_flow_add(user['_id'], delta_flow)
 
@@ -285,27 +285,23 @@ def check_travel(client, user, thread_id):
     features = location_features(current.name)
     level_range = location_level(current.name)
 
-    reply = 'Welcome to ' + current.name + '! '
-    if level_range is None:
-        reply += 'There are no monsters here. '
-    elif level_range == (None, None):
-        reply += 'The monsters here scale to your level. '
-    else:
-        reply += 'The monsters here are levels ' + str(level_range[0])
-        reply += ' to ' + str(level_range[1]) + '. '
+    reply = 'You are in ' + current.name + '!'
+    if level_range:
+        if level_range == (None, None):
+            reply += ' The monsters here scale to your level.'
+        else:
+            reply += ' The monsters here are levels ' + str(level_range[0]) + ' to ' + str(level_range[1]) + '.'
     if features:
-        reply += 'The following services are available here:'
+        reply += ' The following services are available here:'
         for feature in features:
             reply += '\n-> ' + feature
-    else:
-        reply += 'There are no services available here.'
 
     if current == Location['Maple Island']:
         reply += '\n\nYou cannot travel anywhere.'
     else:
         adjacent = adjacent_locations(user)
         if len(adjacent):
-            reply += '\n\nYou are in ' + current.name + ' and can travel to the following places:'
+            reply += '\n\nYou can travel to the following places:'
             for location in adjacent:
                 level_range = location_level(location)
                 reply += '\n-> ' + location

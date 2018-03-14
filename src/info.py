@@ -6,9 +6,6 @@ from util import *
 
 def generate_user_info(client, author, command):
     command = command.lower()
-    is_master = author['_id'] == master_id
-    if not is_master:
-        return
 
     if len(command) == 0:
         reply = '<<Command List>>\n'
@@ -114,15 +111,15 @@ def generate_user_info(client, author, command):
 
 def generate_group_info(client, author, command, thread_id):
     command = command.lower()
-    is_master = author['_id'] == master_id
 
-    if len(command) == 0:
+    if len(command) == 0 or command == 'all':
         reply = '<<Command List>>\n'
         reply += 'See how commands work with "!help <command>".\n'
-        if is_master:
+        if author['_id'] == master_id:
             reply += '\n<Master Commands>\n'
             reply += '!alias: Alias assignment\n'
             reply += '!perm: Change user priority\n'
+            reply += '!warp: Change location\n'
         reply += '\n<Game Commands>\n'
         reply += '!battle: Battle monsters\n'
         reply += '!check: See user statistics\n'
@@ -143,6 +140,7 @@ def generate_group_info(client, author, command, thread_id):
         reply += '!daily: Subscribe to daily events\n'
         reply += '!help: Read documentation\n'
         reply += '!mute: Remove from group\n'
+        reply += '!notes: See recent changes\n'
         reply += '!random: Random emoji / color\n'
         reply += '!roll: Roll the dice'
 
@@ -262,6 +260,11 @@ def generate_group_info(client, author, command, thread_id):
         reply += 'Example: "!mute Justin"\n'
         reply += 'Kicks a user (found using <name>) from the group chat.'
 
+    elif command == 'notes':
+        reply = '<<Notes>>\n'
+        reply += 'Usage: "!notes"\n'
+        reply += 'Displays information regarding recent updates.'
+
     elif command == 'perm':
         reply = '<<Perm>>\n'
         reply += 'Usage: "!perm <priority> <name>"\n'
@@ -327,6 +330,13 @@ def generate_group_info(client, author, command, thread_id):
         reply += 'Usage: "!travel"\n'
         reply += 'Shows your information about your current location as well as which locations you '
         reply += 'can travel to from your current location. New locations can be found through exploration.'
+
+    elif command == 'warp':
+        reply = '<<Warp>>\n'
+        reply += 'Usage: "!warp <location>"\n'
+        reply += 'Sends you to the location designated by <location> instantly. This '
+        reply += 'cancels your current journey if you are traveling somewhere. '
+        reply += 'Only usable by ' + priority_names[master_priority] + ' priority.'
 
     else:
         reply = 'Not a valid command.'

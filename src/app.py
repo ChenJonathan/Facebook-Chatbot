@@ -10,7 +10,7 @@ import traceback
 from battle import begin_battle, cancel_battle, complete_battle_quest
 from clock import set_timer
 from commands import run_group_command, run_user_command
-from duel import begin_duel, cancel_duel, complete_duel_quest
+from duel import ready_duel, cancel_duel, complete_duel_quest
 from enums import UserState, ChatState
 from mongo import *
 from polling import loop
@@ -108,9 +108,9 @@ class ChatBot(Client):
                     author = user_from_id(author_id)
                     if command == 'flee' or command == 'f':
                         cancel_duel(self, author)
-                    elif details['Status'] == ChatState.PREPARING:
+                    elif details['Status'] == ChatState.PREPARING or details['Status'] == ChatState.READY:
                         if command == 'ready' or command == 'r':
-                            begin_duel(self, author)
+                            ready_duel(self, author)
                     elif details['Status'] == ChatState.QUEST:
                         complete_duel_quest(self, author, text)
                     return
@@ -122,7 +122,8 @@ class ChatBot(Client):
                     self.send(message_object, thread_id=master_id)
 
                 # Chat commands - User
-                run_user_command(self, user_from_id(author_id), command, text)
+                if author_id == master_id and command is not None:
+                    run_user_command(self, user_from_id(author_id), command, text)
 
             elif thread_type == ThreadType.GROUP:
 

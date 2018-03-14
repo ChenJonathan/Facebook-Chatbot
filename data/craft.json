@@ -89,9 +89,9 @@
         {
             "Name": "Earthborn Warhammer",
             "Type": "Weapon",
-            "ATK": 19,
-            "DEF": 0,
-            "SPD": -4,
+            "ATK": 12,
+            "DEF": 3,
+            "SPD": 0,
             "Level": 0,
             "Materials": {
                 "Brutal Essence": 10,

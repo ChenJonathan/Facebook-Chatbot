@@ -55,11 +55,20 @@ def format_num(num, sign=False, truncate=False):
     return num + suffixes[scale]
 
 
+def format_time(seconds, minimal=False):
+    minutes, seconds = seconds // 60, seconds % 60
+    time = (str(minutes) + ' min') if minutes > 0 else ''
+    if not minimal or seconds > 0 or minutes == 0:
+        time += ' ' if len(time) > 0 else ''
+        time += str(seconds) + ' sec' + ('' if seconds == 1 else 's')
+    return time
+
+
 def calculate_score(user):
     score = math.pow(max(user['Gold'] + user['GoldFlow'] * 50, 0), 0.25) * 50
     score += (total_atk(user) + total_def(user) + total_spd(user) - 45) * 25
     for location, progress in user['LocationProgress'].items():
         if progress == 1:
             score += 50
-    score -= 16 * 50
+    score -= 11 * 50
     return int(score)

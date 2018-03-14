@@ -68,14 +68,30 @@ def generate_duel(client, user_1, user_2, gold, thread_id):
     client.send(Message(reply), thread_id=user_2['_id'])
 
 
-def begin_duel(client, user):
+def ready_duel(client, user):
     user_id = user['_id']
     user_state, user_details = client.user_states[user_id]
     opponent_id = user_details['OpponentID']
     opponent = user_from_id(opponent_id)
     opponent_state, opponent_details = client.user_states[opponent_id]
 
-    if opponent_details['Status'] == ChatState.READY:
+    if user_details['Status'] == ChatState.READY:
+        user_details['Status'] = ChatState.PREPARING
+
+        reply = 'You are no longer ready.'
+        client.send(Message(reply), thread_id=user_id)
+        reply = user['Name'] + ' is no longer ready.'
+        client.send(Message(reply), thread_id=opponent_id)
+
+    elif opponent_details['Status'] != ChatState.READY:
+        user_details['Status'] = ChatState.READY
+
+        reply = 'Now waiting for ' + opponent['Name'] + ' to be ready.'
+        client.send(Message(reply), thread_id=user_id)
+        reply = user['Name'] + ' is ready to begin the duel.'
+        client.send(Message(reply), thread_id=opponent_id)
+
+    else:
         user_details['Status'] = ChatState.DELAY
         user_details['StartTime'] = datetime.now()
         user_details['EndTime'] = user_details['StartTime'] + timedelta(seconds=3)
@@ -86,13 +102,6 @@ def begin_duel(client, user):
         reply = 'The duel has begun!'
         client.send(Message(reply), thread_id=user_id)
         reply = user['Name'] + ' is ready. ' + reply
-        client.send(Message(reply), thread_id=opponent_id)
-    else:
-        user_details['Status'] = ChatState.READY
-
-        reply = 'Now waiting for ' + opponent['Name'] + ' to be ready.'
-        client.send(Message(reply), thread_id=user_id)
-        reply = user['Name'] + ' is ready to begin the duel.'
         client.send(Message(reply), thread_id=opponent_id)
 
 
