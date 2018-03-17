@@ -52,14 +52,14 @@ def generate_duel(client, user_1, user_2, gold, thread_id):
     duel_1 = {
         'Status': ChatState.PREPARING,
         'Gold': gold,
-        'UserHealth': user_1['Stats']['Health'],
-        'OpponentHealth': user_2['Stats']['Health'],
+        'UserHealth': base_health(user_1),
+        'OpponentHealth': base_health(user_2),
         'OpponentID': user_2['_id'],
         'ThreadID': thread_id
     }
     duel_2 = duel_1.copy()
-    duel_2['UserHealth'] = user_2['Stats']['Health']
-    duel_2['OpponentHealth'] = user_1['Stats']['Health']
+    duel_2['UserHealth'] = base_health(user_2)
+    duel_2['OpponentHealth'] = base_health(user_1)
     duel_2['OpponentID'] = user_1['_id']
 
     client.user_states[user_1['_id']] = (UserState.DUEL, duel_1)
@@ -130,7 +130,7 @@ def complete_duel(client, winner, loser):
     reply = 'You have lost the duel.'
     client.send(Message(reply), thread_id=loser_id)
     reply = winner['Name'] + ' has defeated ' + loser['Name'] + ' in a duel with '
-    reply += str(winner_details['UserHealth']) + '/' + str(winner['Stats']['Health']) + ' health remaining! '
+    reply += str(winner_details['UserHealth']) + '/' + str(base_health(winner)) + ' health remaining! '
     reply += winner['Name'] + ' receives ' + str(gold) + ' gold from ' + loser['Name'] + '.'
     client.send(Message(reply), thread_id=winner_details['ThreadID'], thread_type=ThreadType.GROUP)
 
@@ -183,9 +183,9 @@ def complete_duel_quest(client, user, text):
     opponent = user_from_id(opponent_id)
     opponent_state, opponent_details = client.user_states[opponent_id]
     if user_id not in client.user_health:
-        client.user_health[user_id] = user['Stats']['Health']
+        client.user_health[user_id] = base_health(user)
     if opponent_id not in client.user_health:
-        client.user_health[opponent_id] = opponent['Stats']['Health']
+        client.user_health[opponent_id] = base_health(opponent)
 
     # Calculate user damage
     quest = user_details['Quest']

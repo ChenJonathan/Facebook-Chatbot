@@ -15,6 +15,10 @@ def generate_battle(client, user, thread_id):
         client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
         return
 
+    user_id = user['_id']
+    if user_id not in client.user_health:
+        client.user_health[user_id] = base_health(user)
+
     battle = {
         'Status': ChatState.PREPARING,
         'Monster': random.choice(monster_data[user['Location']]).copy(),
@@ -32,14 +36,14 @@ def generate_battle(client, user, thread_id):
     monster['DEF'] = int(stat_scale + monster['DEF'])
     monster['SPD'] = int(stat_scale + monster['SPD'])
 
-    client.user_states[user['_id']] = (UserState.BATTLE, battle)
+    client.user_states[user_id] = (UserState.BATTLE, battle)
     reply = user['Name'] + ' has encountered a level ' + str(battle['Monster']['Level']) + ' '
     reply += battle['Monster']['Name'] + '! Check your private messages (or message requests) to fight it.'
     client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
-    reply = 'You are facing a level ' + str(battle['Monster']['Level']) + ' '
-    reply += battle['Monster']['Name'] + '! Use "!ready" to begin the battle. '
+    reply = 'You are facing a level ' + str(battle['Monster']['Level']) + ' ' + battle['Monster']['Name']
+    reply += '! You have ' + str(client.user_health[user_id]) + ' health. Use "!ready" to begin the battle. '
     reply += 'Use "!flee" at any point to cancel the battle (at the cost of 10 health).'
-    client.send(Message(reply), thread_id=user['_id'])
+    client.send(Message(reply), thread_id=user_id)
 
 
 def begin_battle(client, user):
@@ -69,7 +73,8 @@ def complete_battle(client, user, victory):
         delta_experience = _calculate_experience(user['Stats']['Level'], monster['Level'])
         new_experience = user['Stats']['Experience'] + delta_experience
         delta_level = new_experience // 100
-        delta_gold = _calculate_gold(user['Stats']['Level'], monster['Level'], user['GoldFlow'])
+        delta_gold = _calculate_gold(user['Stats']['Level'], monster['Level'],
+                                     user['GoldFlow'], talent_bonus(user, Talent.MERCHANT))
         experience_set(user_id, new_experience % 100)
         if delta_level:
             level_set(user_id, user['Stats']['Level'] + delta_level)
@@ -95,7 +100,7 @@ def cancel_battle(client, user):
     del client.user_states[user_id]
 
     if user_id not in client.user_health:
-        client.user_health[user_id] = user['Stats']['Health']
+        client.user_health[user_id] = base_health(user)
     flee_penalty = min(client.user_health[user_id], 10)
     client.user_health[user_id] -= flee_penalty
 
@@ -125,7 +130,7 @@ def complete_battle_quest(client, user, text):
     user_id = user['_id']
     state, details = client.user_states[user_id]
     if user_id not in client.user_health:
-        client.user_health[user_id] = user['Stats']['Health']
+        client.user_health[user_id] = base_health(user)
 
     # Calculate user damage
     monster = details['Monster']
@@ -157,7 +162,7 @@ def complete_battle_quest(client, user, text):
         details['Timer'] = _calculate_timer(total_spd(user), monster['SPD'])
 
         reply = 'You\'ve been dealt ' + str(damage) + ' damage by the enemy ' + monster['Name'] + '. You have '
-        reply += str(client.user_health[user_id]) + '/' + str(user['Stats']['Health']) + ' health left. '
+        reply += str(client.user_health[user_id]) + '/' + str(base_health(user)) + ' health left. '
         if text is None:
             reply += 'Be faster next time!'
         else:
@@ -200,6 +205,6 @@ def _calculate_experience(user_level, monster_level):
     return max(int(experience * random.uniform(0.8, 1.2)), 0)
 
 
-def _calculate_gold(user_level, monster_level, user_gold_flow):
-    percent = max(monster_level - user_level + 10, 0) * random.uniform(2, 3)
-    return int(percent * (user_gold_flow / 100 + 10))
+def _calculate_gold(user_level, monster_level, user_gold_flow, merchant_bonus):
+    percent = max(monster_level - user_level + 10, 0) * random.uniform(1, 2)
+    return int(percent * (user_gold_flow / 100 + 10) * (1 + merchant_bonus / 100))

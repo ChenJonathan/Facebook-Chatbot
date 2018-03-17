@@ -7,9 +7,9 @@ from duel import send_duel_request, cancel_duel_request, cancel_duel
 from enums import ChatState
 from info import generate_user_info, generate_group_info
 from location import *
-from mongo import *
 from quest import set_quest_type, generate_quest
 from shop import generate_shop_info, shop_purchase
+from talent import *
 from util import *
 
 
@@ -36,6 +36,7 @@ def run_user_command(client, author, command, text):
         client.send(message, thread_id=author_id)
 
     elif command == 'check' or command == 'c':
+        arg, text = _parse_args(text, ['stat', 'equip', 'talent'])
         if len(text) > 0:
             users = [user_from_alias(text.lower())]
             if not users[0]:
@@ -44,8 +45,15 @@ def run_user_command(client, author, command, text):
         else:
             users = alias_get_all()
         reply = []
-        for user in users:
-            reply.append(_check_to_string(client, user))
+        if arg == 'equip':
+            for user in users:
+                reply.append(_equip_to_string(user))
+        elif arg == 'talent':
+            for user in users:
+                reply.append(_talent_to_string(user))
+        else:
+            for user in users:
+                reply.append(_user_to_string(client, user))
         reply = '\n\n'.join(reply) if reply else 'No aliases set.'
         client.send(Message(reply), thread_id=author_id)
 
@@ -205,7 +213,7 @@ def run_group_command(client, author, command, text, thread_id):
     elif command == 'battle' or command == 'b':
         if _check_busy(client, author, thread_id):
             return
-        elif client.user_health.get(author_id, author['Stats']['Health']) <= 0:
+        elif client.user_health.get(author_id, base_health(author)) <= 0:
             now = datetime.today()
             later = now.replace(hour=(now.hour + 1) % 24, minute=0, second=0, microsecond=0)
             reply = 'You\'re on the brink of death! Buy a life elixir from the shop '
@@ -232,6 +240,7 @@ def run_group_command(client, author, command, text, thread_id):
         client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
 
     elif command == 'check' or command == 'c':
+        arg, text = _parse_args(text, ['stat', 'equip', 'talent'])
         if len(text) > 0:
             user = client.match_user(thread_id, text)
             if not user:
@@ -241,7 +250,12 @@ def run_group_command(client, author, command, text, thread_id):
             user = user_from_id(user.uid)
         else:
             user = author
-        reply = _check_to_string(client, user)
+        if arg == 'equip':
+            reply = _equip_to_string(user)
+        elif arg == 'talent':
+            reply = _talent_to_string(user)
+        else:
+            reply = _user_to_string(client, user)
         client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
 
     elif command == 'craft':
@@ -294,6 +308,8 @@ def run_group_command(client, author, command, text, thread_id):
                     gold += details['Gold']
                 if gold < amount:
                     reply = 'Not enough gold.'
+                elif amount > 10000:
+                    reply = 'Exceeds limit of 10k gold per duel.'
                 elif user is None:
                     reply = 'User not found.'
                 elif author_id == user.uid:
@@ -304,34 +320,6 @@ def run_group_command(client, author, command, text, thread_id):
             client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
         else:
             generate_group_info(client, author, 'duel', thread_id)
-
-    elif command == 'equip':
-        if len(text) > 0:
-            user = client.match_user(thread_id, text)
-            if not user:
-                message = Message('User not found.')
-                client.send(message, thread_id=thread_id, thread_type=ThreadType.GROUP)
-                return
-            user = user_from_id(user.uid)
-        else:
-            user = author
-        weapon = user['Equipment']['Weapon']
-        armor = user['Equipment']['Armor']
-        accessory = user['Equipment']['Accessory']
-        reply = '<<' + user['Name'] + '>>\n'
-        reply += 'Weapon: ' + weapon['Name'] + '\n'
-        reply += '-> ATK: ' + format_num(weapon['ATK'], sign=True) + '\n'
-        reply += '-> DEF: ' + format_num(weapon['DEF'], sign=True) + '\n'
-        reply += '-> SPD: ' + format_num(weapon['SPD'], sign=True) + '\n'
-        reply += 'Armor: ' + armor['Name'] + '\n'
-        reply += '-> ATK: ' + format_num(armor['ATK'], sign=True) + '\n'
-        reply += '-> DEF: ' + format_num(armor['DEF'], sign=True) + '\n'
-        reply += '-> SPD: ' + format_num(armor['SPD'], sign=True) + '\n'
-        reply += 'Accessory: ' + accessory['Name'] + '\n'
-        reply += '-> ATK: ' + format_num(accessory['ATK'], sign=True) + '\n'
-        reply += '-> DEF: ' + format_num(accessory['DEF'], sign=True) + '\n'
-        reply += '-> SPD: ' + format_num(accessory['SPD'], sign=True)
-        client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
 
     elif command == 'explore' or command == 'e':
         if author_id in client.explore_record:
@@ -368,6 +356,8 @@ def run_group_command(client, author, command, text, thread_id):
             user = client.match_user(thread_id, user)
             if author['Gold'] < amount:
                 reply = 'Not enough gold.'
+            elif amount > 10000:
+                reply = 'Exceeds limit of 10k gold per transaction.'
             elif user is None:
                 reply = 'User not found.'
             elif author_id == user.uid:
@@ -542,9 +532,7 @@ def run_group_command(client, author, command, text, thread_id):
         elif 'Shop' not in location_features(author['Location']):
             message = Message('There is no shop in this location.')
             client.send(message, thread_id=thread_id, thread_type=ThreadType.GROUP)
-        elif len(text) == 0:
-            generate_shop_info(client, author, thread_id)
-        else:
+        elif len(text):
             try:
                 slot, amount, *_ = text.split(' ', 1) + ['']
                 slot = int(slot)
@@ -553,6 +541,25 @@ def run_group_command(client, author, command, text, thread_id):
                 generate_group_info(client, author, 'shop', thread_id)
             else:
                 shop_purchase(client, author, slot, amount, thread_id)
+        else:
+            generate_shop_info(client, author, thread_id)
+
+    elif command == 'talent':
+        if _check_busy(client, author, thread_id):
+            return
+        elif text.lower() == 'reset':
+            reset_talent_points(client, author, thread_id)
+        elif len(text):
+            try:
+                slot, amount, *_ = text.split(' ', 1) + ['']
+                slot = int(slot)
+                amount = int(amount) if len(amount) > 0 else 1
+            except:
+                generate_group_info(client, author, 'talent', thread_id)
+            else:
+                spend_talent_points(client, author, slot, amount, thread_id)
+        else:
+            generate_talent_info(client, author, thread_id)
 
     elif command == 'travel' or command == 't':
         if text.lower() == 'cancel':
@@ -589,6 +596,12 @@ def run_group_command(client, author, command, text, thread_id):
         client.send(Message('Not a valid command.'), thread_id=thread_id, thread_type=ThreadType.GROUP)
 
 
+def _parse_args(text, args):
+    arg, remaining, *_ = text.split(' ', 1) + ['']
+    arg = arg.lower()
+    return (arg, remaining.strip()) if arg in args else (None, text)
+
+
 def _check_busy(client, user, thread_id):
     user_id = user['_id']
     if user_id not in client.user_states:
@@ -619,20 +632,22 @@ def _check_busy(client, user, thread_id):
     return True
 
 
-def _check_to_string(client, user):
+def _user_to_string(client, user):
     state, details = client.user_states.get(user['_id'], (UserState.IDLE, {}))
 
     text = '<<' + user['Name'] + '>>' + ((' (' + user['Alias'] + ')\n') if 'Alias' in user else '\n')
     text += 'Priority: ' + priority_names[user['Priority']] + '\n'
     text += 'Level: ' + str(user['Stats']['Level']) + ' (' + str(user['Stats']['Experience']) + '/100 exp)\n'
-    base_stat_val = str(base_stat(user['Stats']['Level']))
-    text += '-> ATK: ' + str(total_atk(user)) + ' (' + base_stat_val + format_num(equip_atk(user), sign=True) + ')\n'
-    text += '-> DEF: ' + str(total_def(user)) + ' (' + base_stat_val + format_num(equip_def(user), sign=True) + ')\n'
-    text += '-> SPD: ' + str(total_spd(user)) + ' (' + base_stat_val + format_num(equip_spd(user), sign=True) + ')\n'
-    text += 'Health: ' + str(client.user_health.get(user['_id'], user['Stats']['Health'])) + \
-            '/' + str(user['Stats']['Health']) + '\n'
+    text += '-> ATK: ' + str(total_atk(user))
+    text += ' (' + format_num(base_atk(user)) + format_num(equip_atk(user), sign=True) + ')\n'
+    text += '-> DEF: ' + str(total_def(user))
+    text += ' (' + format_num(base_def(user)) + format_num(equip_def(user), sign=True) + ')\n'
+    text += '-> SPD: ' + str(total_spd(user))
+    text += ' (' + format_num(base_spd(user)) + format_num(equip_spd(user), sign=True) + ')\n'
+    text += 'Health: ' + str(client.user_health.get(user['_id'], base_health(user))) + \
+            '/' + str(base_health(user)) + '\n'
     text += 'Gold: ' + format_num(user['Gold'], truncate=True)
-    text += ' (' + format_num(user['GoldFlow'], sign=True, truncate=True) + '/hour)\n'
+    text += ' (' + format_num(user['GoldFlow'], sign=True, truncate=True) + ' per hour)\n'
     text += 'Location: ' + user['Location']
 
     if state == UserState.TRAVEL:
@@ -644,5 +659,42 @@ def _check_to_string(client, user):
         if details['Status'] != ChatState.REQUEST:
             opponent = user_from_id(details['OpponentID'])
             text += '\n(In a duel with ' + opponent['Name'] + ')'
+
+    return text
+
+
+def _equip_to_string(user):
+    weapon = user['Equipment']['Weapon']
+    armor = user['Equipment']['Armor']
+    accessory = user['Equipment']['Accessory']
+
+    text = '<<' + user['Name'] + '>>\n'
+    text += 'Weapon: ' + weapon['Name'] + '\n'
+    text += '-> ATK: ' + format_num(weapon['ATK'], sign=True) + '\n'
+    text += '-> DEF: ' + format_num(weapon['DEF'], sign=True) + '\n'
+    text += '-> SPD: ' + format_num(weapon['SPD'], sign=True) + '\n'
+    text += 'Armor: ' + armor['Name'] + '\n'
+    text += '-> ATK: ' + format_num(armor['ATK'], sign=True) + '\n'
+    text += '-> DEF: ' + format_num(armor['DEF'], sign=True) + '\n'
+    text += '-> SPD: ' + format_num(armor['SPD'], sign=True) + '\n'
+    text += 'Accessory: ' + accessory['Name'] + '\n'
+    text += '-> ATK: ' + format_num(accessory['ATK'], sign=True) + '\n'
+    text += '-> DEF: ' + format_num(accessory['DEF'], sign=True) + '\n'
+    text += '-> SPD: ' + format_num(accessory['SPD'], sign=True)
+
+    return text
+
+
+def _talent_to_string(user):
+    talents = user['Talents']
+
+    text = ''
+    for talent in list(Talent):
+        points = talents[talent.value]
+        if points == 0 or talent == Talent.UNSPENT:
+            continue
+        text += '\n' + talent.value + ': ' + str(points)
+        text += ' (' + talent_summaries[talent](user) + ')'
+    text = '<<' + user['Name'] + '>>' + (text if len(text) else '\nNo talents yet.')
 
     return text

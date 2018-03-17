@@ -1,3 +1,11 @@
+03/17/18: Talent system
+-> Purchase talent points through !shop
+-> Spend talent points through !talent
+---> Talent points provide a wide variety of bonuses
+-> !check can now be used to check equips and talents
+---> !equip has been removed
+-> Temporarily limited gold exchange to 10k per command
+
 03/11/18: Map expansion
 -> Added more map nodes to discover
 -> Lowered exploration rewards in towns

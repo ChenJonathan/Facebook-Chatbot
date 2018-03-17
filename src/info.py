@@ -31,10 +31,15 @@ def generate_user_info(client, author, command):
 
     elif command == 'check':
         reply = '<<Check>>\n'
-        reply += 'Usage: "!check <alias>"\n'
-        reply += 'Lists some information on the user designated by <alias>.\n\n'
-        reply += 'Usage: "!check"\n'
-        reply += 'Lists some information on all users with aliases.'
+        reply += 'Usage: "!check <type> <name>"\n'
+        reply += 'Example: "!check Justin"\n'
+        reply += 'Example: "!check equip Justin"\n'
+        reply += 'Lists some information on the user designated by <alias> (or all users with aliases, '
+        reply += 'if left blank). The type of information is specified by <type> (or "stat", if left blank). '
+        reply += 'Current information types include the following:\n'
+        reply += '-> "Stat" - Statistics\n'
+        reply += '-> "Equip" - Equipment\n'
+        reply += '-> "Talent" - Talents\n'
 
     elif command == 'define':
         reply = '<<Define>>\n'
@@ -126,7 +131,6 @@ def generate_group_info(client, author, command, thread_id):
         reply += '!craft: Craft items with materials\n'
         reply += '!duel: Duel another player\n'
         reply += '!explore: Gather materials\n'
-        reply += '!equip: See user equipment\n'
         reply += '!give: Give someone gold\n'
         reply += '!inventory: Check your inventory\n'
         reply += '!jail: Send someone to jail\n'
@@ -134,6 +138,7 @@ def generate_group_info(client, author, command, thread_id):
         reply += '!quest: Solve quizzes for gold\n'
         reply += '!score: Show group rankings\n'
         reply += '!shop: Spend gold to buy things\n'
+        reply += '!talent: Allocate talent points\n'
         reply += '!travel: Travel around the world\n'
         reply += '\n<Miscellaneous Commands>\n'
         reply += '!bully: Harass someone\n'
@@ -169,11 +174,15 @@ def generate_group_info(client, author, command, thread_id):
 
     elif command == 'check':
         reply = '<<Check>>\n'
-        reply += 'Usage: "!check"\n'
-        reply += 'Lists some information on yourself.\n\n'
-        reply += 'Usage: "!check <name>"\n'
+        reply += 'Usage: "!check <type> <name>"\n'
         reply += 'Example: "!check Justin"\n'
-        reply += 'Lists some information on the user designated by <name>.'
+        reply += 'Example: "!check equip Justin"\n'
+        reply += 'Lists some information on the user designated by <name> (or yourself, if left blank). '
+        reply += 'The type of information is specified by <type> (or "stat", if left blank). '
+        reply += 'Current information types include the following:\n'
+        reply += '-> "Stat" - Statistics\n'
+        reply += '-> "Equip" - Equipment\n'
+        reply += '-> "Talent" - Talents\n'
 
     elif command == 'craft':
         reply = '<<Craft>>\n'
@@ -211,14 +220,6 @@ def generate_group_info(client, author, command, thread_id):
         reply += 'Explores the current location. Exploration will grant various rewards '
         reply += 'and gradually discover surrounding locations. Can be done once per hour; '
         reply += 'the explore timer resets on the hour.'
-
-    elif command == 'equip':
-        reply = '<<Equip>>\n'
-        reply += 'Usage: "!equip"\n'
-        reply += 'Lists your current equipment information.'
-        reply += 'Usage: "!equip <name>"\n'
-        reply += 'Example: "!equip Justin"\n'
-        reply += 'Lists equipment information on the user designated by <name>.'
 
     elif command == 'give':
         reply = '<<Give>>\n'
@@ -288,7 +289,7 @@ def generate_group_info(client, author, command, thread_id):
         reply += '-> "History" - World history\n'
         reply += '-> "Psych" - Psychology\n'
         reply += '-> "Science" - Physics / chemistry / biology\n'
-        reply += '-> "Trivia" - Trivia (many topics)\n'
+        reply += '-> "Trivia" - Trivia (many topics)'
 
     elif command == 'random':
         reply = '<<Random>>\n'
@@ -316,8 +317,20 @@ def generate_group_info(client, author, command, thread_id):
         reply += 'Usage: "!shop <slot> <amount>"\n'
         reply += 'Example: "!shop 1 10"\n'
         reply += 'Purchases <amount> copies of the shop item designated by <slot>. '
-        reply += '<amount> defaults to 1 if left blank. Make sure to check the shop '
+        reply += '<amount> defaults to 1 if left blank. Make sure to check "!shop" '
         reply += 'first to see which item is in each slot.'
+
+    elif command == 'talent':
+        reply = '<<Talent>>\n'
+        reply += 'Usage: "!talent"\n'
+        reply += 'Lists information on all available talents.\n\n'
+        reply += 'Usage: "!talent <slot> <amount>"\n'
+        reply += 'Example: "!talent 2 3"\n'
+        reply += 'Allocates <amount> points to the talent designated by <slot>. '
+        reply += '<amount> defaults to 1 if left blank. Make sure to check "!talent" '
+        reply += 'first to see which talent is in each slot.\n\n'
+        reply += 'Usage: "!talent reset"\n'
+        reply += 'Resets all talents allocated. This costs 10% of your current gold per hour.'
 
     elif command == 'travel':
         reply = '<<Travel>>\n'

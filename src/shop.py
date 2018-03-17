@@ -8,55 +8,66 @@ from util import *
 
 def generate_shop_info(client, user, thread_id):
     gold = user['Gold']
-    healthy = client.user_health.get(user['_id'], user['Stats']['Health']) == user['Stats']['Health']
+    damaged = client.user_health.get(user['_id'], base_health(user)) < base_health(user)
+    talent_cost = 10000 * 10 ** user['Flags'].get('PurchasedTalents', 0)
+
     reply = 'Shop information has been sent to you. Check your private messages (or message requests).'
     client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
-    reply = ['<<The Wong Shoppe>>']
-    reply.append('Buy things with "!shop <slot> <amount>" in a group chat. <amount> defaults to 1 if left blank.\n')
-    reply.append('1. Charity donation: 100 gold (' + str(max(gold // 100, 0)) + ' max)')
-    reply.append('-> Donates some gold to your local charity.\n')
-    reply.append('2. Life Elixir: 1000 gold (' + ('1' if gold >= 1000 and not healthy else '0') + ' max)')
-    reply.append('-> Restores your life to its maximum.\n')
-    reply.append('3. Hunting pet: 2500 gold (' + str(max(gold // 2500, 0)) + ' max)')
-    reply.append('-> Hunts monsters for you, granting some gold every hour.')
-    reply = '\n'.join(reply)
+    reply = '<<The Wong Shoppe>>\n'
+    reply += 'Buy things with "!shop <slot> <amount>" in a group chat. <amount> defaults to 1 if left blank.\n\n'
+    reply += '1. Charity donation: 100 gold (' + str(max(gold // 100, 0)) + ' max)\n'
+    reply += '-> Donates a small amount of gold to your local charity.\n\n'
+    reply += '2. Night of rest: 1000 gold (' + str(int(gold >= 1000 and damaged)) + ' max)\n'
+    reply += '-> Restores your life to its maximum.\n\n'
+    reply += '3. Hunting beast: 2500 gold (' + str(max(gold // 2500, 0)) + ' max)\n'
+    reply += '-> Hunts monsters for you, granting some gold every hour.\n\n'
+    reply += '4. Self awakening: ' + format_num(talent_cost, truncate=True)
+    reply += ' gold (' + str(int(gold >= talent_cost)) + ' max)\n'
+    reply += '-> Grants you a talent point, which can be spent with "!talent".'
     client.send(Message(reply), thread_id=user['_id'])
 
 
 def shop_purchase(client, user, slot, amount, thread_id):
-    if slot <= 0 or slot > 3:
-        reply = 'Invalid slot number.'
-    elif amount < 1:
+    gold = user['Gold']
+    if amount < 1:
         reply = 'Invalid purchase amount.'
-    else:
-        gold = user['Gold']
-        if slot == 1:
-            if gold < amount * 100:
-                reply = 'You can\'t afford that.'
-            else:
-                gold_add(user['_id'], amount * -100)
-                _charity_donation(client, thread_id)
-                return
-        elif slot == 2:
-            if amount > 1:
-                reply = 'You can\'t buy multiple life elixirs at once.'
-            elif gold < 1000:
-                reply = 'You can\'t afford that.'
-            elif client.user_health.get(user['_id'], user['Stats']['Health']) == user['Stats']['Health']:
-                reply = 'You already have full health.'
-            else:
-                gold_add(user['_id'], -1000)
-                _life_elixir(client, user, thread_id)
-                return
-        elif slot == 3:
-            if gold < amount * 2500:
-                reply = 'You can\'t afford that.'
-            else:
-                gold_add(user['_id'], amount * -2500)
-                _hunting_pet(client, user, amount, thread_id)
-                return
+    elif slot == 1:
+        if gold < amount * 100:
+            reply = 'You can\'t afford that.'
         else:
-            reply = 'Invalid slot number.'
+            gold_add(user['_id'], amount * -100)
+            _charity_donation(client, thread_id)
+            return
+    elif slot == 2:
+        if amount > 1:
+            reply = 'You can\'t rest for multiple nights at once.'
+        elif gold < 1000:
+            reply = 'You can\'t afford that.'
+        elif client.user_health.get(user['_id'], base_health(user)) == base_health(user):
+            reply = 'You already have full health.'
+        else:
+            gold_add(user['_id'], -1000)
+            _life_elixir(client, user, thread_id)
+            return
+    elif slot == 3:
+        if gold < amount * 2500:
+            reply = 'You can\'t afford that.'
+        else:
+            gold_add(user['_id'], amount * -2500)
+            _hunting_pet(client, user, amount, thread_id)
+            return
+    elif slot == 4:
+        talent_cost = 10000 * 10 ** user['Flags'].get('PurchasedTalents', 0)
+        if amount > 1:
+            reply = 'You can\'t awaken multiple times at once.'
+        elif gold < talent_cost:
+            reply = 'You can\'t afford that.'
+        else:
+            gold_add(user['_id'], -talent_cost)
+            _self_awakening(client, user, thread_id)
+            return
+    else:
+        reply = 'Invalid slot number.'
     client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
 
 
@@ -72,7 +83,7 @@ def _charity_donation(client, thread_id):
 
 def _life_elixir(client, user, thread_id):
     user_id = user['_id']
-    client.user_health[user_id] = user['Stats']['Health']
+    client.user_health[user_id] = base_health(user)
     reply = 'Your health has been restored to its maximum!'
     client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
 
@@ -87,4 +98,10 @@ def _hunting_pet(client, user, amount, thread_id):
     else:
         reply = 'You\'ve bought ' + str(amount) + ' ' + str(beast[1]) + '/' + str(beast[2]) + ' ' + beast[0]
         reply += 's! They grant you an additional ' + format_num(delta_rate, truncate=True) + ' gold per hour.'
+    client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
+
+
+def _self_awakening(client, user, thread_id):
+    talent_purchase(user['_id'], 1)
+    reply = 'You\'ve been awakened, granting you a talent point! Spend it with "!talent".'
     client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)

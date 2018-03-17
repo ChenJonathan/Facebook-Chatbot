@@ -33,6 +33,18 @@ class Region(Enum):
     TEMPLE_OF_TIME = 'temple_of_time'
 
 
+class Talent(Enum):
+    UNSPENT = 'Unspent'
+    TITAN = 'Titan'
+    BERSERKER = 'Berserker'
+    VANGUARD = 'Vanguard'
+    SURVIVOR = 'Survivor'
+    MISTWEAVER = 'Mistweaver'
+    MERCHANT = 'Merchant'
+    EXPLORER = 'Explorer'
+    WANDERER = 'Wanderer'
+
+
 _location_names = ['Maple Island']
 _location_names += ['Lith Harbor', 'Henesys', 'Ellinia', 'Perion', 'Kerning City']
 _location_names += ['Sleepywood', 'Silent Swamp', 'Drake Cave', 'Temple Entrance', 'Cursed Sanctuary']

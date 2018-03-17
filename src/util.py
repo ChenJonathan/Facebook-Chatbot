@@ -1,9 +1,28 @@
 import math
 
+from enums import Talent
+
 priority_names = ['Peasant', 'User', 'Mod', 'Admin', 'Master']
 
 master_priority = len(priority_names) - 1
 master_id = '1564703352'
+
+default_health = 100
+
+talent_constants = {
+    Talent.TITAN: 2,
+    Talent.BERSERKER: 2,
+    Talent.VANGUARD: 2,
+    Talent.SURVIVOR: 10,
+    Talent.MISTWEAVER: 10,
+    Talent.MERCHANT: 10,
+    Talent.EXPLORER: 20,
+    Talent.WANDERER: 20
+}
+
+
+def talent_bonus(user, talent):
+    return user['Talents'][talent.value] * talent_constants[talent]
 
 
 def base_stat_float(level):
@@ -12,6 +31,28 @@ def base_stat_float(level):
 
 def base_stat(level):
     return int(base_stat_float(level))
+
+
+def base_atk(user):
+    return base_stat(user['Stats']['Level']) + \
+           talent_bonus(user, Talent.TITAN) + \
+           talent_bonus(user, Talent.BERSERKER)
+
+
+def base_def(user):
+    return base_stat(user['Stats']['Level']) + \
+           talent_bonus(user, Talent.TITAN) + \
+           talent_bonus(user, Talent.VANGUARD)
+
+
+def base_spd(user):
+    return base_stat(user['Stats']['Level']) + \
+           talent_bonus(user, Talent.BERSERKER) + \
+           talent_bonus(user, Talent.VANGUARD)
+
+
+def base_health(user):
+    return default_health + talent_bonus(user, Talent.SURVIVOR)
 
 
 def equip_atk(user):
@@ -33,15 +74,15 @@ def equip_spd(user):
 
 
 def total_atk(user):
-    return base_stat(user['Stats']['Level']) + equip_atk(user)
+    return base_atk(user) + equip_atk(user)
 
 
 def total_def(user):
-    return base_stat(user['Stats']['Level']) + equip_def(user)
+    return base_def(user) + equip_def(user)
 
 
 def total_spd(user):
-    return base_stat(user['Stats']['Level']) + equip_spd(user)
+    return base_spd(user) + equip_spd(user)
 
 
 def format_num(num, sign=False, truncate=False):

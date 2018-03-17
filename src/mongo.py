@@ -1,7 +1,7 @@
 import os
 import pymongo
 
-from enums import Location
+from enums import Location, Talent
 
 db_groups = None
 db_users = None
@@ -69,56 +69,58 @@ def user_get_all():
 
 # - Must be used to add users so that attribute constraints are enforced
 def user_try_add(user_id):
-    if not db_users.find_one({'_id': user_id}):
-        name = chatbot.fetchThreadInfo(user_id)[user_id].name
-        db_users.insert_one({
-            '_id': user_id, 
-            'Name': name,
-            'Priority': 1,
-            'Gold': 0,
-            'GoldFlow': 0,
-            'Location': Location['Lith Harbor'].name,
-            'LocationProgress': {
-                Location['Maple Island'].name: 1,
-                Location['Lith Harbor'].name: 1,
-                Location['Henesys'].name: 1,
-                Location['Ellinia'].name: 1,
-                Location['Perion'].name: 1,
-                Location['Kerning City'].name: 1,
-                Location['New Leaf City'].name: 1,
-                Location['Orbis'].name: 1,
-                Location['Ludibrium'].name: 1,
-                Location['Leafre'].name: 1,
-                Location['Ariant'].name: 1
+    if db_users.find_one({'_id': user_id}):
+        return
+    name = chatbot.fetchThreadInfo(user_id)[user_id].name
+    db_users.insert_one({
+        '_id': user_id,
+        'Name': name,
+        'Priority': 1,
+        'Gold': 0,
+        'GoldFlow': 0,
+        'Location': Location['Lith Harbor'].name,
+        'LocationProgress': {
+            Location['Maple Island'].name: 1,
+            Location['Lith Harbor'].name: 1,
+            Location['Henesys'].name: 1,
+            Location['Ellinia'].name: 1,
+            Location['Perion'].name: 1,
+            Location['Kerning City'].name: 1,
+            Location['New Leaf City'].name: 1,
+            Location['Orbis'].name: 1,
+            Location['Ludibrium'].name: 1,
+            Location['Leafre'].name: 1,
+            Location['Ariant'].name: 1
+        },
+        'Stats': {
+            'Level': 1,
+            'Experience': 0
+        },
+        'Equipment': {
+            'Weapon': {
+                'Name': 'Iron Longsword',
+                'ATK': 5,
+                'DEF': 0,
+                'SPD': 0
             },
-            'Stats': {
-                'Level': 1,
-                'Experience': 0,
-                'Health': 100
+            'Armor': {
+                'Name': 'Leather Armor',
+                'ATK': 0,
+                'DEF': 5,
+                'SPD': 0
             },
-            'Equipment': {
-                'Weapon': {
-                    'Name': 'Iron Longsword',
-                    'ATK': 5,
-                    'DEF': 0,
-                    'SPD': 0
-                },
-                'Armor': {
-                    'Name': 'Leather Armor',
-                    'ATK': 0,
-                    'DEF': 5,
-                    'SPD': 0
-                },
-                'Accessory': {
-                    'Name': 'Sapphire Amulet',
-                    'ATK': 0,
-                    'DEF': 0,
-                    'SPD': 5
-                }
-            },
-            'Inventory': {},
-            'Quest': {'Type': 'Vocab'}
-        })
+            'Accessory': {
+                'Name': 'Sapphire Amulet',
+                'ATK': 0,
+                'DEF': 0,
+                'SPD': 5
+            }
+        },
+        'Talents': {talent.value: 0 for talent in list(Talent)},
+        'Inventory': {},
+        'Quest': {'Type': 'Vocab'},
+        'Flags': {}
+    })
 
 
 # Alias methods
@@ -180,17 +182,15 @@ def location_set(user_id, location):
 
 def location_progress_set(user_id, location, progress):
     user_try_add(user_id)
-    update = {'$set': {('LocationProgress.' + str(location)): progress}}
+    update = {'$set': {('LocationProgress.' + location): progress}}
     db_users.update_one({'_id': user_id}, update)
 
 
-# Level methods
+# Stats methods
 
 def level_set(user_id, level):
     user_try_add(user_id)
-    update = {'$set': {
-        'Stats.Level': level
-    }}
+    update = {'$set': {'Stats.Level': level}}
     db_users.update_one({'_id': user_id}, update)
 
 
@@ -205,6 +205,34 @@ def experience_set(user_id, experience):
 def equip_item(user_id, slot, item):
     user_try_add(user_id)
     update = {'$set': {('Equipment.' + slot): item}}
+    db_users.update_one({'_id': user_id}, update)
+
+
+# Talent methods
+
+def talent_purchase(user_id, amount):
+    user_try_add(user_id)
+    update = {'$inc': {
+        ('Talents.' + Talent.UNSPENT.value): amount,
+        'Flags.PurchasedTalents': amount
+    }}
+    db_users.update_one({'_id': user_id}, update)
+
+
+def talent_spend(user_id, talent, amount):
+    user_try_add(user_id)
+    update = {'$inc': {
+        ('Talents.' + Talent.UNSPENT.value): -amount,
+        ('Talents.' + talent): amount
+    }}
+    db_users.update_one({'_id': user_id}, update)
+
+
+def talent_reset(user_id, amount):
+    user_try_add(user_id)
+    update = {'$set': {
+        'Talents': {talent.value: (amount if talent is Talent.UNSPENT else 0) for talent in list(Talent)}
+    }}
     db_users.update_one({'_id': user_id}, update)
 
 

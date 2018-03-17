@@ -18,8 +18,17 @@ def apply_gold_rates():
 def restore_health(client):
     for user_id, health in list(client.user_health.items()):
         state, details = client.user_states.get(user_id, (UserState.IDLE, {}))
-        if state != UserState.BATTLE:
+        user = user_from_id(user_id)
+        max_health = base_health(user)
+        if health >= max_health:
             del client.user_health[user_id]
+            continue
+        delta_health = min(talent_bonus(user, Talent.MISTWEAVER), max_health - health)
+        client.user_health[user_id] = new_health = health + delta_health
+        if state == UserState.BATTLE:
+            reply = 'Your ' + Talent.MISTWEAVER.value + ' talent has healed you for ' + str(delta_health)
+            reply += ' health, bringing you to ' + str(new_health) + '/' + str(max_health) + ' health total!'
+            client.send(Message(reply), thread_id=user_id)
 
 
 def manage_subscriptions(client):

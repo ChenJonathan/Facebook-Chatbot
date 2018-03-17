@@ -193,6 +193,7 @@ def location_level(location):
 
 def explore_location(client, user, thread_id):
     location = Location[user['Location']]
+    explore_boost = 1 + talent_bonus(user, Talent.EXPLORER) / 100
 
     # Apply location specific modifiers
     gold_multiplier = 1
@@ -214,7 +215,7 @@ def explore_location(client, user, thread_id):
     item_drops = {}
     for item, rate in item_drop_data.get(location.name, {}).items():
         amount = 0
-        for _ in range(int(rate * 10)):
+        for _ in range(int(rate * 10 * explore_boost)):
             while random.random() < 0.1:
                 amount += 1
         if amount > 0:
@@ -224,14 +225,15 @@ def explore_location(client, user, thread_id):
         del item_drops[random.choice(list(item_drops.keys()))]
 
     # Calculate gold gain
-    delta_gold = 50 * (user['GoldFlow'] / 100 + 10)
-    delta_gold = int(delta_gold * gold_multiplier * random.uniform(0.8, 1.2))
+    delta_gold = random.uniform(20, 30) * (user['GoldFlow'] / 100 + 10)
+    delta_gold *= 1 + talent_bonus(user, Talent.MERCHANT) / 100
+    delta_gold = int(delta_gold * gold_multiplier * explore_boost)
     gold_add(user['_id'], delta_gold)
 
     # Check for discovered hunting pet
     beast = None
     delta_flow = 0
-    if beast_multiplier > random.random() * 100:
+    if beast_multiplier * explore_boost > random.random() * 100:
         beast = random.choice(beast_data)
         delta_flow = beast[1] * beast[2]
         gold_flow_add(user['_id'], delta_flow)
@@ -244,7 +246,7 @@ def explore_location(client, user, thread_id):
     if len(adjacent) > 0:
         location = Location[adjacent[0]]
         distance = max(_edges[current][location], 1)
-        presence = progress.get(location.name, 0) + random.uniform(0.5, 1) / distance
+        presence = progress.get(location.name, 0) + random.uniform(0.5, 1) * explore_boost / distance
         if presence >= 1:
             location_progress_set(user['_id'], location.name, 1)
             unlocked = location.name
@@ -304,11 +306,13 @@ def check_travel(client, user, thread_id):
             reply += '\n\nYou can travel to the following places:'
             for location in adjacent:
                 level_range = location_level(location)
+                seconds = _edges[current][Location[location]] * 60
+                seconds = int(seconds / (1 + talent_bonus(user, Talent.WANDERER) / 100))
                 reply += '\n-> ' + location
                 if level_range is not None:
                     reply += ' (Levels ' + str('???' if level_range[0] is None else level_range[0])
                     reply += ' - ' + str('???' if level_range[1] is None else level_range[1]) + ')'
-                reply += ': ' + str(_edges[current][Location[location]]) + ' minutes away'
+                reply += ': ' + format_time(seconds, minimal=True) + ' away'
         else:
             reply += '\n\nYou have not discovered any surrounding locations yet.'
     client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
@@ -321,9 +325,12 @@ def travel_to_location(client, user, text, thread_id):
         reply = 'Invalid location.'
     else:
         user_id = user['_id']
+        seconds = _edges[current][Location[location]] * 60
+        seconds = int(seconds / (1 + talent_bonus(user, Talent.WANDERER) / 100))
+        minutes, seconds = seconds // 60, seconds % 60
         client.user_states[user_id] = (UserState.TRAVEL, {
             'Destination': location,
-            'EndTime': datetime.now() + timedelta(minutes=_edges[current][Location[location]])
+            'EndTime': datetime.now() + timedelta(minutes=minutes, seconds=seconds)
         })
         reply = user['Name'] + ' is now traveling to ' + location + '.'
     client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)

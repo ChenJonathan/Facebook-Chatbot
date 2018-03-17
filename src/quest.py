@@ -101,7 +101,7 @@ def complete_quest(client, user, text, thread_id):
             delta *= random.uniform(4, 20)
         else:
             delta *= random.uniform(6, 30)
-        delta = int(delta)
+        delta = int(delta * (1 + talent_bonus(user, Talent.MERCHANT) / 100))
         gold_add(user_id, delta)
         quest_stat_track(user_id, quest_type, True)
         reply = user['Name'] + ' has gained ' + format_num(delta, truncate=True) + ' gold and is now at '
