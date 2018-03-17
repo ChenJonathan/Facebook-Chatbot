@@ -644,8 +644,8 @@ def _user_to_string(client, user):
     text += ' (' + format_num(base_def(user)) + format_num(equip_def(user), sign=True) + ')\n'
     text += '-> SPD: ' + str(total_spd(user))
     text += ' (' + format_num(base_spd(user)) + format_num(equip_spd(user), sign=True) + ')\n'
-    text += 'Health: ' + str(client.user_health.get(user['_id'], base_health(user))) + \
-            '/' + str(base_health(user)) + '\n'
+    text += 'Health: ' + str(client.user_health.get(user['_id'], base_health(user))) + '/' + str(base_health(user))
+    text += ' (' + format_num(default_health_regen + talent_bonus(user, Talent.MISTWEAVER), sign=True) + ' per hour)\n'
     text += 'Gold: ' + format_num(user['Gold'], truncate=True)
     text += ' (' + format_num(user['GoldFlow'], sign=True, truncate=True) + ' per hour)\n'
     text += 'Location: ' + user['Location']
