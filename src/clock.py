@@ -23,11 +23,11 @@ def restore_health(client):
         if health >= max_health:
             del client.user_health[user_id]
             continue
-        delta_health = min(talent_bonus(user, Talent.MISTWEAVER), max_health - health)
+        delta_health = min(default_health_regen + talent_bonus(user, Talent.MISTWEAVER), max_health - health)
         client.user_health[user_id] = new_health = health + delta_health
         if state == UserState.BATTLE:
-            reply = 'Your ' + Talent.MISTWEAVER.value + ' talent has healed you for ' + str(delta_health)
-            reply += ' health, bringing you to ' + str(new_health) + '/' + str(max_health) + ' health total!'
+            reply = 'You\'ve naturally regenerated ' + str(delta_health) + ' health, bringing you to '
+            reply += str(new_health) + '/' + str(max_health) + ' health total!'
             client.send(Message(reply), thread_id=user_id)
 
 

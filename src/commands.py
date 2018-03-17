@@ -216,7 +216,7 @@ def run_group_command(client, author, command, text, thread_id):
         elif client.user_health.get(author_id, base_health(author)) <= 0:
             now = datetime.today()
             later = now.replace(hour=(now.hour + 1) % 24, minute=0, second=0, microsecond=0)
-            reply = 'You\'re on the brink of death! Buy a life elixir from the shop '
+            reply = 'You\'re on the brink of death! Buy a night of rest from the shop '
             reply += 'or wait until the next hour to restore your health. ('
             reply += format_time((later - now).seconds) + ' remaining)'
             client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)

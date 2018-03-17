@@ -4,9 +4,9 @@ from mongo import *
 from util import *
 
 talent_descriptions = {
-    Talent.TITAN: 'Increases your ATK and DEF by ' + str(talent_constants[Talent.TITAN]) + ' per point.',
-    Talent.BERSERKER: 'Increases your ATK and SPD by ' + str(talent_constants[Talent.BERSERKER]) + ' per point.',
-    Talent.VANGUARD: 'Increases your DEF and SPD by ' + str(talent_constants[Talent.VANGUARD]) + ' per point.',
+    Talent.TITAN: 'Increases your ATK and DEF by ' + str(talent_constants[Talent.TITAN]) + ' each per point.',
+    Talent.BERSERKER: 'Increases your ATK and SPD by ' + str(talent_constants[Talent.BERSERKER]) + ' each per point.',
+    Talent.VANGUARD: 'Increases your DEF and SPD by ' + str(talent_constants[Talent.VANGUARD]) + ' each per point.',
     Talent.SURVIVOR: 'Increases your maximum health by ' + str(talent_constants[Talent.SURVIVOR]) + ' per point.',
     Talent.MISTWEAVER: 'Regenerates ' + str(talent_constants[Talent.MISTWEAVER]) + ' health per hour per point.',
     Talent.MERCHANT: 'Increases gold gained through battle, explore, and quest by ' +

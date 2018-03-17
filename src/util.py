@@ -8,6 +8,7 @@ master_priority = len(priority_names) - 1
 master_id = '1564703352'
 
 default_health = 100
+default_health_regen = 10
 
 talent_constants = {
     Talent.TITAN: 2,
