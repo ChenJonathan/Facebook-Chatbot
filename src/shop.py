@@ -23,7 +23,7 @@ def generate_shop_info(client, user, thread_id):
     reply += '-> Hunts monsters for you, granting some gold every hour.\n\n'
     reply += '4. Self awakening: ' + format_num(talent_cost, truncate=True)
     reply += ' gold (' + str(int(gold >= talent_cost)) + ' max)\n'
-    reply += '-> Grants you a talent point, which can be spent with "!talent".'
+    reply += '-> Grants you a talent point, which can be spent with "!talent". Cost multiplies by 10 each purchase.'
     client.send(Message(reply), thread_id=user['_id'])
 
 
@@ -102,6 +102,8 @@ def _hunting_pet(client, user, amount, thread_id):
 
 
 def _self_awakening(client, user, thread_id):
+    talent_cost = 100000 * 10 ** user['Flags'].get('PurchasedTalents', 0)
     talent_purchase(user['_id'], 1)
-    reply = 'You\'ve been awakened, granting you a talent point! Spend it with "!talent".'
+    reply = 'You\'ve been awakened, granting you a talent point! Spend it with "!talent". '
+    reply += 'Your next talent will cost you ' + format_num(talent_cost, truncate=True) + ' gold.'
     client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)

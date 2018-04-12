@@ -73,5 +73,5 @@ def reset_talent_points(client, user, thread_id):
         client.user_health[user['_id']] = min(client.user_health[user['_id']], default_health)
     gold_flow_add(user['_id'], -cost)
     talent_reset(user['_id'], total)
-    reply = 'Your talents have been reset at the cost of ' + str(cost) + ' gold per hour.'
+    reply = 'Your talents have been reset at the cost of ' + format_num(cost, truncate=True) + ' gold per hour.'
     client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)

@@ -28,14 +28,13 @@ class ChatBot(Client):
         init_db(self)
         priority_set(self.uid, master_priority - 1)
 
-        self.quest_record = {}
-        self.explore_record = set()
-        self.user_health = {}
-        self.user_states = {}
-
-        self.message_record = {}
-        self.defines = {}
-        self.responses = []
+        self.quest_record = {}       # Quest tracking
+        self.explore_record = set()  # Explore tracking
+        self.user_health = {}        # Current health
+        self.user_states = {}        # Current user activity
+        self.last_messages = {}      # For repetition
+        self.defines = {}            # Remapped commands
+        self.responses = []          # Primed responses
 
         set_timer(self, lock)
 
@@ -44,9 +43,9 @@ class ChatBot(Client):
         
         # Avoid repeating own messages
         if thread_type == ThreadType.GROUP and message.text:
-            if thread_id not in self.message_record:
-                self.message_record[thread_id] = [None, set()]
-            group_record = self.message_record[thread_id]
+            if thread_id not in self.last_messages:
+                self.last_messages[thread_id] = [None, set()]
+            group_record = self.last_messages[thread_id]
             message_lower = message.text.lower()
             if group_record[0] != message_lower:
                 group_record[0] = message_lower
@@ -128,11 +127,11 @@ class ChatBot(Client):
 
                 # Track last messages
                 if command:
-                    self.message_record[thread_id] = [None, set()]
+                    self.last_messages[thread_id] = [None, set()]
                 else:
-                    if thread_id not in self.message_record:
-                        self.message_record[thread_id] = [None, set()]
-                    group_record = self.message_record[thread_id]
+                    if thread_id not in self.last_messages:
+                        self.last_messages[thread_id] = [None, set()]
+                    group_record = self.last_messages[thread_id]
                     text_lower = (message_object.text or '').lower()
                     if text_lower != group_record[0]:
                         group_record[0] = text_lower
@@ -199,7 +198,7 @@ def index():
 
 
 if os.environ.get('ON_HEROKU'):
-    client = ChatBot('wongliu612@gmail.com', b64decode(os.environ.get('PASSWORD')))
+    client = ChatBot('wongliu1025@gmail.com', b64decode(os.environ.get('PASSWORD')))
 else:
     client = ChatBot('wongliu413@gmail.com', b64decode(os.environ.get('PASSWORD')))
 
