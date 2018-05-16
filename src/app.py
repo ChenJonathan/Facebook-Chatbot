@@ -198,7 +198,7 @@ def index():
 
 
 if os.environ.get('ON_HEROKU'):
-    client = ChatBot('wongliu1025@gmail.com', b64decode(os.environ.get('PASSWORD')))
+    client = ChatBot('wongliu413@gmail.com', b64decode(os.environ.get('PASSWORD')))
 else:
     client = ChatBot('wongliu413@gmail.com', b64decode(os.environ.get('PASSWORD')))
 
