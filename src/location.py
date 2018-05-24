@@ -83,6 +83,7 @@ _connect(Location['Helios Tower'], Location['Omega Sector'], 12)
 _connect(Location['Omega Sector'], Location['Boswell Field'], 6)
 _connect(Location['Boswell Field'], Location['Mothership Interior'], 4)
 # Leafre
+_connect(Location['Orbis'], Location['Leafre'], 24)
 _connect(Location['Leafre'], Location['Forest Valley'], 6)
 _connect(Location['Forest Valley'], Location['Dragon Forest'], 3)
 _connect(Location['Dragon Forest'], Location['Dragon Canyon'], 5)
