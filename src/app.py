@@ -40,7 +40,7 @@ class ChatBot(Client):
 
     def send(self, message, thread_id=None, thread_type=ThreadType.USER):
         super().send(message, thread_id=thread_id, thread_type=thread_type)
-        
+
         # Avoid repeating own messages
         if thread_type == ThreadType.GROUP and message.text:
             if thread_id not in self.last_messages:
@@ -198,9 +198,9 @@ def index():
 
 
 if os.environ.get('ON_HEROKU'):
-    client = ChatBot('wongliu413@gmail.com', b64decode(os.environ.get('PASSWORD')))
+    client = ChatBot(os.environ.get('USERNAME_PROD'), b64decode(os.environ.get('PASSWORD')))
 else:
-    client = ChatBot('wongliu413@gmail.com', b64decode(os.environ.get('PASSWORD')))
+    client = ChatBot(os.environ.get('USERNAME_TEST'), b64decode(os.environ.get('PASSWORD')))
 
 
 class ServerThread(threading.Thread):
