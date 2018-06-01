@@ -198,9 +198,9 @@ def index():
 
 
 if os.environ.get('ON_HEROKU'):
-    client = ChatBot(os.environ.get('USERNAME_PROD'), b64decode(os.environ.get('PASSWORD')))
+    client = ChatBot(os.environ.get('USERNAME_PROD'), b64decode(os.environ.get('PASSWORD')), max_tries=1)
 else:
-    client = ChatBot(os.environ.get('USERNAME_TEST'), b64decode(os.environ.get('PASSWORD')))
+    client = ChatBot(os.environ.get('USERNAME_TEST'), b64decode(os.environ.get('PASSWORD')), max_tries=1)
 
 
 class ServerThread(threading.Thread):
