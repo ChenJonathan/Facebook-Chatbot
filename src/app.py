@@ -24,7 +24,7 @@ lock = threading.Lock()
 class ChatBot(Client):
 
     def __init__(self, email, password):
-        super().__init__(email, password)
+        super().__init__(email, password, max_tries=1)
         init_db(self)
         priority_set(self.uid, master_priority - 1)
 
@@ -198,9 +198,9 @@ def index():
 
 
 if os.environ.get('ON_HEROKU'):
-    client = ChatBot(os.environ.get('USERNAME_PROD'), b64decode(os.environ.get('PASSWORD')), max_tries=1)
+    client = ChatBot(os.environ.get('USERNAME_PROD'), b64decode(os.environ.get('PASSWORD')))
 else:
-    client = ChatBot(os.environ.get('USERNAME_TEST'), b64decode(os.environ.get('PASSWORD')), max_tries=1)
+    client = ChatBot(os.environ.get('USERNAME_TEST'), b64decode(os.environ.get('PASSWORD')))
 
 
 class ServerThread(threading.Thread):
