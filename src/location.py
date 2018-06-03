@@ -88,6 +88,8 @@ _connect(Location['Leafre'], Location['Forest Valley'], 6)
 _connect(Location['Forest Valley'], Location['Dragon Forest'], 3)
 _connect(Location['Dragon Forest'], Location['Dragon Canyon'], 5)
 _connect(Location['Dragon Canyon'], Location['Cave of Life'], 2)
+# Temple of Time
+_connect(Location['Leafre'], Location['Temple of Time'], 60)
 
 _feature_map = {
     Location['Lith Harbor']: ['Shop'],
