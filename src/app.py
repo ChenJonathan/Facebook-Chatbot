@@ -237,3 +237,5 @@ class ActiveThread(threading.Thread):
 ServerThread().start()
 ReactiveThread().start()
 ActiveThread().start()
+
+client.send(Message('I am now running!'), thread_id=master_id)
