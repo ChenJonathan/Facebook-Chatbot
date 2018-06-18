@@ -81,7 +81,7 @@ class ChatBot(Client):
 
             # Check for chat commands
             if message_object.text and message_object.text[0] == '!':
-                command, text, *_ = message_object.text.split(None, 1) + ['']
+                command, text, *_ = message_object.text.split(None, 1) + ['', '']
                 command = command[1:].lower()
             else:
                 command, text = None, (message_object.text or '')

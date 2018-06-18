@@ -18,11 +18,11 @@ def run_user_command(client, author, command, text):
 
     if command == 'alias' or command == 'a':
         if author['Priority'] >= master_priority:
-            alias, user, *_ = text.split(None, 1) + ['']
+            alias, user, *_ = text.split(None, 1) + ['', '']
             alias = alias.lower()
             if len(alias) == 0:
                 generate_user_info(client, author, 'alias')
-                return
+                return True
             elif len(user) > 0:
                 user = client.searchForUsers(user)[0]
                 alias_add(user.uid, alias)
@@ -43,7 +43,7 @@ def run_user_command(client, author, command, text):
                 users = [user_from_alias(text.lower())]
                 if not users[0]:
                     client.send(Message('Alias not found.'), thread_id=author_id)
-                    return
+                    return True
             else:
                 users = alias_get_all()
             reply = []
@@ -61,7 +61,7 @@ def run_user_command(client, author, command, text):
 
     elif command == 'define' or command == 'd':
         if author['Priority'] >= master_priority - 2:
-            command, text, *_ = text.split(None, 1) + ['']
+            command, text, *_ = text.split(None, 1) + ['', '']
             command = command.lower()
             text = text.strip()
             if len(text) > 0:
@@ -72,14 +72,14 @@ def run_user_command(client, author, command, text):
                 reply = '!' + command + ' has been cleared.'
             else:
                 generate_user_info(client, author, 'define')
-                return
+                return True
             self_define(command, text)
             client.send(Message(reply), thread_id=author_id)
 
     elif command == 'equip' or command == 'e':
         if author['Priority'] >= master_priority:
             try:
-                level, attack, defence, speed = [int(num) for num in text.split(None)]
+                level, attack, defence, speed = [int(num) for num in text.split()]
                 level_set(author_id, level)
                 equip_item(author_id, 'Weapon', {
                     'Name': 'Oversized Banhammer',
@@ -119,10 +119,10 @@ def run_user_command(client, author, command, text):
 
     elif command == 'message' or command == 'm':
         if author['Priority'] >= master_priority:
-            alias, reply, *_ = text.split(None, 1) + ['']
+            alias, reply, *_ = text.split(None, 1) + ['', '']
             if len(alias) == 0:
                 generate_user_info(client, author, 'message')
-                return
+                return True
             user = user_from_alias(alias.lower())
             if not user:
                 client.send(Message('Alias not found.'), thread_id=author_id)
@@ -133,7 +133,7 @@ def run_user_command(client, author, command, text):
 
     elif command == 'override' or command == 'o':
         if author['Priority'] >= master_priority:
-            command, text, *_ = text.split(None, 1) + ['']
+            command, text, *_ = text.split(None, 1) + ['', '']
             command = command.lower()
             text = text.strip()
             if len(text) > 0:
@@ -144,7 +144,7 @@ def run_user_command(client, author, command, text):
                 reply = '!' + command + ' has been cleared to default.'
             else:
                 generate_user_info(client, author, 'override')
-                return
+                return True
             self_override(command, text)
             client.send(Message(reply), thread_id=author_id)
 
@@ -155,7 +155,7 @@ def run_user_command(client, author, command, text):
                 priority = int(priority)
             except:
                 generate_user_info(client, author, 'perm')
-                return
+                return True
             user = user_from_alias(alias.lower())
             if not user:
                 message = Message('Alias not found.')
@@ -205,7 +205,7 @@ def run_user_command(client, author, command, text):
         if author['Priority'] >= master_priority:
             if len(text) == 0:
                 generate_group_info(client, author, 'warp', author_id)
-                return
+                return True
             location = query_location(text)
             if location is None:
                 reply = 'Not a valid location.'
@@ -227,7 +227,7 @@ def run_group_command(client, author, command, text, thread_id):
     if command in client.overrides:
         mapping = client.overrides[command]
         if mapping[0] == '!':
-            command, text, *_ = mapping.split(None, 1) + ['']
+            command, text, *_ = mapping.split(None, 1) + ['', '']
             command = command[1:].lower()
             text = text.strip()
             run_group_command_raw(client, author, command, text, thread_id)
@@ -243,7 +243,7 @@ def run_group_command(client, author, command, text, thread_id):
     elif command in client.defines:
         mapping = client.defines[command]
         if mapping[0] == '!':
-            command, text, *_ = mapping.split(None, 1) + ['']
+            command, text, *_ = mapping.split(None, 1) + ['', '']
             command = command[1:].lower()
             text = text.strip()
             run_group_command_raw(client, author, command, text, thread_id)
@@ -260,11 +260,11 @@ def run_group_command_raw(client, author, command, text, thread_id):
 
     if command == 'alias' or command == 'a':
         if author_id == master_id:
-            alias, user, *_ = text.split(None, 1) + ['']
+            alias, user, *_ = text.split(None, 1) + ['', '']
             alias = alias.lower()
             if len(alias) == 0:
                 generate_group_info(client, author, 'alias', thread_id)
-                return
+                return True
             elif len(user) > 0:
                 user = client.match_user(thread_id, user)
                 if user:
@@ -285,7 +285,7 @@ def run_group_command_raw(client, author, command, text, thread_id):
 
     elif command == 'battle' or command == 'b':
         if _check_busy(client, author, thread_id):
-            return
+            return True
         elif client.user_health.get(author_id, base_health(author)) <= 0:
             now = datetime.today()
             later = now.replace(hour=(now.hour + 1) % 24, minute=0, second=0, microsecond=0)
@@ -299,7 +299,7 @@ def run_group_command_raw(client, author, command, text, thread_id):
     elif command == 'bully':
         if len(text) == 0:
             generate_group_info(client, author, 'bully', thread_id)
-            return
+            return True
         user = client.match_user(thread_id, text)
         if user:
             if exceeds_priority(user.uid, author_id):
@@ -319,7 +319,7 @@ def run_group_command_raw(client, author, command, text, thread_id):
             if not user:
                 message = Message('User not found.')
                 client.send(message, thread_id=thread_id, thread_type=ThreadType.GROUP)
-                return
+                return True
             user = user_from_id(user.uid)
         else:
             user = author
@@ -333,7 +333,7 @@ def run_group_command_raw(client, author, command, text, thread_id):
 
     elif command == 'craft':
         if _check_busy(client, author, thread_id):
-            return
+            return True
         elif 'Crafting' not in location_features(author['Location']):
             reply = 'There is no crafting station in this location. Try looking elsewhere.'
             client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
@@ -350,7 +350,7 @@ def run_group_command_raw(client, author, command, text, thread_id):
     elif command == 'daily':
         if text not in ['color', 'emoji']:
             generate_group_info(client, author, 'daily', thread_id)
-            return
+            return True
         subscriptions = subscription_get(thread_id)
         if text in subscriptions:
             subscription_remove(thread_id, text)
@@ -364,7 +364,7 @@ def run_group_command_raw(client, author, command, text, thread_id):
         state, details = client.user_states.get(author_id, (UserState.IDLE, {}))
         request = state == UserState.DUEL and details['Status'] == ChatState.REQUEST
         if not request and _check_busy(client, author, thread_id):
-            return
+            return True
         elif text.lower() == 'cancel':
             cancel_duel_request(client, author, thread_id)
         elif len(text) > 0:
@@ -389,7 +389,7 @@ def run_group_command_raw(client, author, command, text, thread_id):
                     reply = 'You can\'t duel yourself.'
                 else:
                     send_duel_request(client, author, user_from_id(user.uid), amount, thread_id)
-                    return
+                    return True
             client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
         else:
             generate_group_info(client, author, 'duel', thread_id)
@@ -419,7 +419,7 @@ def run_group_command_raw(client, author, command, text, thread_id):
             assert len(amount) > 0
         except:
             generate_group_info(client, author, 'give', thread_id)
-            return
+            return True
         try:
             amount = int(amount)
             assert amount > 0 or author_id == master_id
@@ -458,12 +458,12 @@ def run_group_command_raw(client, author, command, text, thread_id):
         if author['Priority'] >= master_priority - 1:
             if len(text) == 0:
                 generate_group_info(client, author, 'jail', thread_id)
-                return
+                return True
             user = client.match_user(thread_id, text)
             if not user:
                 message = Message('User not found.')
                 client.send(message, thread_id=thread_id, thread_type=ThreadType.GROUP)
-                return
+                return True
             user = user_from_id(user.uid)
             if user['_id'] == master_id and author_id != master_id:
                 user = author
@@ -493,7 +493,7 @@ def run_group_command_raw(client, author, command, text, thread_id):
     elif command == 'mute':
         if len(text) == 0:
             generate_group_info(client, author, 'mute', thread_id)
-            return
+            return True
         user = client.match_user(thread_id, text)
         if user:
             if exceeds_priority(user.uid, author_id):
@@ -515,7 +515,7 @@ def run_group_command_raw(client, author, command, text, thread_id):
                 priority = int(priority)
             except:
                 generate_group_info(client, author, 'perm', thread_id)
-                return
+                return True
             user = client.match_user(thread_id, user)
             if not user:
                 reply = 'User not found.'
@@ -566,7 +566,7 @@ def run_group_command_raw(client, author, command, text, thread_id):
                 assert text > 0
             except:
                 generate_group_info(client, author, 'roll', thread_id)
-                return
+                return True
             roll = str(random.randint(1, text))
             if roll[0] == '8' or (roll[0:2] == '18' and len(roll) % 3 == 2):
                 roll = 'an ' + roll
@@ -601,13 +601,13 @@ def run_group_command_raw(client, author, command, text, thread_id):
 
     elif command == 'shop' or command == 's':
         if _check_busy(client, author, thread_id):
-            return
+            return True
         elif 'Shop' not in location_features(author['Location']):
             message = Message('There is no shop in this location.')
             client.send(message, thread_id=thread_id, thread_type=ThreadType.GROUP)
         elif len(text):
             try:
-                slot, amount, *_ = text.split(None, 1) + ['']
+                slot, amount, *_ = text.split(None, 1) + ['', '']
                 slot = int(slot)
                 amount = int(amount) if len(amount) > 0 else 1
             except:
@@ -619,12 +619,12 @@ def run_group_command_raw(client, author, command, text, thread_id):
 
     elif command == 'talent':
         if _check_busy(client, author, thread_id):
-            return
+            return True
         elif text.lower() == 'reset':
             reset_talent_points(client, author, thread_id)
         elif len(text):
             try:
-                slot, amount, *_ = text.split(None, 1) + ['']
+                slot, amount, *_ = text.split(None, 1) + ['', '']
                 slot = int(slot)
                 amount = int(amount) if len(amount) > 0 else 1
             except:
@@ -652,7 +652,7 @@ def run_group_command_raw(client, author, command, text, thread_id):
         if author_id == master_id:
             if len(text) == 0:
                 generate_group_info(client, author, 'warp', author_id)
-                return
+                return True
             location = query_location(text)
             if location is None:
                 reply = 'Not a valid location.'
@@ -671,7 +671,7 @@ def run_group_command_raw(client, author, command, text, thread_id):
 
 
 def _parse_args(text, args):
-    arg, remaining, *_ = text.split(None, 1) + ['']
+    arg, remaining, *_ = text.split(None, 1) + ['', '']
     arg = arg.lower()
     return (arg, remaining.strip()) if arg in args else (None, text)
 
