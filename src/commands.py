@@ -17,177 +17,250 @@ def run_user_command(client, author, command, text):
     author_id = author['_id']
 
     if command == 'alias' or command == 'a':
-        alias, user, *_ = text.split(' ', 1) + ['']
-        alias = alias.lower()
-        if len(alias) == 0:
-            generate_user_info(client, author, 'alias')
-            return
-        elif len(user) > 0:
-            user = client.searchForUsers(user)[0]
-            alias_add(user.uid, alias)
-            message = Message(user.name + '\'s alias has been set to ' + alias + '.')
-        else:
-            user = user_from_alias(alias)
-            if user:
-                alias_remove(alias)
-                message = Message(user['Name'] + '\'s alias has been unset.')
+        if author['Priority'] >= master_priority:
+            alias, user, *_ = text.split(None, 1) + ['']
+            alias = alias.lower()
+            if len(alias) == 0:
+                generate_user_info(client, author, 'alias')
+                return
+            elif len(user) > 0:
+                user = client.searchForUsers(user)[0]
+                alias_add(user.uid, alias)
+                reply = user.name + '\'s alias has been set to ' + alias + '.'
             else:
-                message = Message('Alias not found.')
-        client.send(message, thread_id=author_id)
+                user = user_from_alias(alias)
+                if user:
+                    alias_remove(alias)
+                    reply = user['Name'] + '\'s alias has been unset.'
+                else:
+                    reply = 'Alias not found.'
+            client.send(Message(reply), thread_id=author_id)
 
     elif command == 'check' or command == 'c':
-        arg, text = _parse_args(text, ['stat', 'equip', 'talent'])
-        if len(text) > 0:
-            users = [user_from_alias(text.lower())]
-            if not users[0]:
-                client.send(Message('Alias not found.'), thread_id=author_id)
-                return
-        else:
-            users = alias_get_all()
-        reply = []
-        if arg == 'equip':
-            for user in users:
-                reply.append(_equip_to_string(user))
-        elif arg == 'talent':
-            for user in users:
-                reply.append(_talent_to_string(user))
-        else:
-            for user in users:
-                reply.append(_user_to_string(client, user))
-        reply = '\n\n'.join(reply) if reply else 'No aliases set.'
-        client.send(Message(reply), thread_id=author_id)
+        if author['Priority'] >= master_priority - 2:
+            arg, text = _parse_args(text, ['stat', 'equip', 'talent'])
+            if len(text) > 0:
+                users = [user_from_alias(text.lower())]
+                if not users[0]:
+                    client.send(Message('Alias not found.'), thread_id=author_id)
+                    return
+            else:
+                users = alias_get_all()
+            reply = []
+            if arg == 'equip':
+                for user in users:
+                    reply.append(_equip_to_string(user))
+            elif arg == 'talent':
+                for user in users:
+                    reply.append(_talent_to_string(user))
+            else:
+                for user in users:
+                    reply.append(_user_to_string(client, user))
+            reply = '\n\n'.join(reply) if reply else 'No aliases set.'
+            client.send(Message(reply), thread_id=author_id)
 
     elif command == 'define' or command == 'd':
-        command, text, *_ = text.split(' ', 1) + ['']
-        command = command.lower()
-        text = text.strip()
-        if len(text) > 0:
-            client.defines[command] = text
-            reply = '!' + command + ' has been redefined!'
-        elif len(command) > 0:
-            del client.defines[command]
-            reply = '!' + command + ' has been cleared to default.'
-        else:
-            generate_user_info(client, author, 'define')
-            return
-        client.send(Message(reply), thread_id=author_id)
+        if author['Priority'] >= master_priority - 2:
+            command, text, *_ = text.split(None, 1) + ['']
+            command = command.lower()
+            text = text.strip()
+            if len(text) > 0:
+                client.defines[command] = text
+                reply = '!' + command + ' has been defined!'
+            elif len(command) > 0:
+                del client.defines[command]
+                reply = '!' + command + ' has been cleared.'
+            else:
+                generate_user_info(client, author, 'define')
+                return
+            self_define(command, text)
+            client.send(Message(reply), thread_id=author_id)
 
     elif command == 'equip' or command == 'e':
-        try:
-            level, attack, defence, speed = [int(num) for num in text.split(' ')]
-            level_set(author_id, level)
-            equip_item(author_id, 'Weapon', {
-                'Name': 'Oversized Banhammer',
-                'ATK': attack,
-                'DEF': 0,
-                'SPD': 0
-            })
-            equip_item(author_id, 'Armor', {
-                'Name': 'Master Priority',
-                'ATK': 0,
-                'DEF': defence,
-                'SPD': 0
-            })
-            equip_item(author_id, 'Accessory', {
-                'Name': 'CTCI, 7th Edition',
-                'ATK': 0,
-                'DEF': 0,
-                'SPD': speed
-            })
-        except:
-            generate_user_info(client, author, 'equip')
-        else:
-            client.send(Message('Level and stats changed!'), thread_id=author_id)
+        if author['Priority'] >= master_priority:
+            try:
+                level, attack, defence, speed = [int(num) for num in text.split(None)]
+                level_set(author_id, level)
+                equip_item(author_id, 'Weapon', {
+                    'Name': 'Oversized Banhammer',
+                    'ATK': attack,
+                    'DEF': 0,
+                    'SPD': 0
+                })
+                equip_item(author_id, 'Armor', {
+                    'Name': 'Master Priority',
+                    'ATK': 0,
+                    'DEF': defence,
+                    'SPD': 0
+                })
+                equip_item(author_id, 'Accessory', {
+                    'Name': 'CTCI, 7th Edition',
+                    'ATK': 0,
+                    'DEF': 0,
+                    'SPD': speed
+                })
+            except:
+                generate_user_info(client, author, 'equip')
+            else:
+                client.send(Message('Level and stats changed!'), thread_id=author_id)
 
     elif command == 'explore':
-        reply = str(len(client.explore_record))
-        reply += (' person has' if len(client.explore_record) == 1 else ' people have')
-        reply += ' explored this hour.'
+        if author['Priority'] >= master_priority:
+            reply = str(len(client.explore_record))
+            reply += (' person has' if len(client.explore_record) == 1 else ' people have')
+            reply += ' explored this hour.'
+        else:
+            reply = 'You don\'t have permission to do this.'
         client.send(Message(reply), thread_id=author_id)
 
     elif command == 'help' or command == 'h':
-        generate_user_info(client, author, text)
+        if author['Priority'] >= master_priority - 2:
+            generate_user_info(client, author, text)
 
     elif command == 'message' or command == 'm':
-        alias, reply, *_ = text.split(' ', 1) + ['']
-        if len(alias) == 0:
-            generate_user_info(client, author, 'message')
-            return
-        user = user_from_alias(alias.lower())
-        if not user:
-            client.send(Message('Alias not found.'), thread_id=author_id)
-        elif len(reply) > 0:
-            client.send(Message(reply), thread_id=user['_id'])
-        else:
-            client.send(Message(emoji_size=EmojiSize.SMALL), thread_id=user['_id'])
+        if author['Priority'] >= master_priority:
+            alias, reply, *_ = text.split(None, 1) + ['']
+            if len(alias) == 0:
+                generate_user_info(client, author, 'message')
+                return
+            user = user_from_alias(alias.lower())
+            if not user:
+                client.send(Message('Alias not found.'), thread_id=author_id)
+            elif len(reply) > 0:
+                client.send(Message(reply), thread_id=user['_id'])
+            else:
+                client.send(Message(emoji_size=EmojiSize.SMALL), thread_id=user['_id'])
+
+    elif command == 'override' or command == 'o':
+        if author['Priority'] >= master_priority:
+            command, text, *_ = text.split(None, 1) + ['']
+            command = command.lower()
+            text = text.strip()
+            if len(text) > 0:
+                client.overrides[command] = text
+                reply = '!' + command + ' has been overridden!'
+            elif len(command) > 0:
+                del client.overrides[command]
+                reply = '!' + command + ' has been cleared to default.'
+            else:
+                generate_user_info(client, author, 'override')
+                return
+            self_override(command, text)
+            client.send(Message(reply), thread_id=author_id)
 
     elif command == 'perm' or command == 'p':
-        try:
-            priority, alias = text.split(' ', 1)
-            priority = int(priority)
-        except:
-            generate_user_info(client, author, 'perm')
-            return
-        user = user_from_alias(alias.lower())
-        if not user:
-            message = Message('Alias not found.')
-        elif user['_id'] == master_id:
-            message = Message('Cannot modify master priority.')
-        elif priority < 0 or priority >= master_priority:
-            message = Message('Invalid priority value.')
-        else:
-            priority_set(user['_id'], priority)
-            reply = user['Name'] + '\'s priority has been set to ' + str(priority)
-            reply += ' (' + priority_names[priority] + ').'
-            message = Message(reply)
-        client.send(message, thread_id=author_id)
+        if author['Priority'] >= master_priority:
+            try:
+                priority, alias = text.split(None, 1)
+                priority = int(priority)
+            except:
+                generate_user_info(client, author, 'perm')
+                return
+            user = user_from_alias(alias.lower())
+            if not user:
+                message = Message('Alias not found.')
+            elif user['_id'] == master_id:
+                message = Message('Cannot modify master priority.')
+            elif priority < 0 or priority >= master_priority:
+                message = Message('Invalid priority value.')
+            else:
+                priority_set(user['_id'], priority)
+                reply = user['Name'] + '\'s priority has been set to ' + str(priority)
+                reply += ' (' + priority_names[priority] + ').'
+                message = Message(reply)
+            client.send(message, thread_id=author_id)
 
     elif command == 'response' or command == 'r':
-        if len(text) > 0:
-            client.responses.append(text)
-            reply = 'Response added!'
-        else:
-            client.responses.clear()
-            reply = 'All responses cleared.'
-        client.send(Message(reply), thread_id=author_id)
+        if author['Priority'] >= master_priority - 2:
+            if len(text) > 0:
+                if author_id not in client.responses:
+                    client.responses[author_id] = []
+                client.responses[author_id].append(text)
+                reply = 'Response added!'
+            else:
+                if author_id in client.responses:
+                    client.responses[author_id].clear()
+                reply = 'All responses cleared.'
+            client.send(Message(reply), thread_id=author_id)
 
     elif command == 'secret' or command == 's':
-        reply = []
-        if client.defines:
-            section = '<<Defines>>\n'
-            section += '\n'.join(['"' + i + '": ' + j for i, j in client.defines.items()])
-            reply.append(section)
-        if client.responses:
-            section = '<<Responses>>\n'
-            section += '\n'.join(['"' + response + '"' for response in client.responses])
-            reply.append(section)
-        reply = '\n\n'.join(reply) if reply else 'No secrets active.'
-        client.send(Message(reply), thread_id=author_id)
+        if author['Priority'] >= master_priority - 2:
+            reply = []
+            if client.overrides:
+                section = '<<Overrides>>\n'
+                section += '\n'.join(['*' + i + '*: ' + ' '.join(j.splitlines()) for i, j in client.overrides.items()])
+                reply.append(section)
+            if client.defines:
+                section = '<<Defines>>\n'
+                section += '\n'.join(['*' + i + '*: ' + ' '.join(j.splitlines()) for i, j in client.defines.items()])
+                reply.append(section)
+            if client.responses.get(author_id, []):
+                section = '<<Responses>>\n'
+                section += '\n'.join(['"' + ' '.join(response.splitlines()) + '"' for response in client.responses[author_id]])
+                reply.append(section)
+            reply = '\n\n'.join(reply) if reply else 'No secrets active.'
+            client.send(Message(reply), thread_id=author_id)
 
     elif command == 'warp' or command == 'w':
-        if len(text) == 0:
-            generate_group_info(client, author, 'warp', author_id)
-            return
-        location = query_location(text)
-        if location is None:
-            reply = 'Not a valid location.'
-        else:
-            location_set(author_id, location)
-            if client.user_states.get(author_id, (UserState.IDLE, {}))[0] == UserState.TRAVEL:
-                del client.user_states[author_id]
-            reply = 'You have been warped to ' + location + '!'
-        client.send(Message(reply), thread_id=author_id)
+        if author['Priority'] >= master_priority:
+            if len(text) == 0:
+                generate_group_info(client, author, 'warp', author_id)
+                return
+            location = query_location(text)
+            if location is None:
+                reply = 'Not a valid location.'
+            else:
+                location_set(author_id, location)
+                if client.user_states.get(author_id, (UserState.IDLE, {}))[0] == UserState.TRAVEL:
+                    del client.user_states[author_id]
+                reply = 'You have been warped to ' + location + '!'
+            client.send(Message(reply), thread_id=author_id)
 
     else:
-        client.send(Message('Not a valid command.'), thread_id=author_id)
+        return False
+    return True
 
 
 def run_group_command(client, author, command, text, thread_id):
+
+    # Check for overridden command
+    if command in client.overrides:
+        mapping = client.overrides[command]
+        if mapping[0] == '!':
+            command, text, *_ = mapping.split(None, 1) + ['']
+            command = command[1:].lower()
+            text = text.strip()
+            run_group_command_raw(client, author, command, text, thread_id)
+        else:
+            message = Message(mapping)
+            client.send(message, thread_id=thread_id, thread_type=ThreadType.GROUP)
+
+    # Run command normally
+    elif run_group_command_raw(client, author, command, text, thread_id):
+        pass
+
+    # Check for defined command
+    elif command in client.defines:
+        mapping = client.defines[command]
+        if mapping[0] == '!':
+            command, text, *_ = mapping.split(None, 1) + ['']
+            command = command[1:].lower()
+            text = text.strip()
+            run_group_command_raw(client, author, command, text, thread_id)
+        else:
+            message = Message(mapping)
+            client.send(message, thread_id=thread_id, thread_type=ThreadType.GROUP)
+
+    else:
+        client.send(Message('Not a valid command.'), thread_id=thread_id, thread_type=ThreadType.GROUP)
+
+
+def run_group_command_raw(client, author, command, text, thread_id):
     author_id = author['_id']
 
     if command == 'alias' or command == 'a':
         if author_id == master_id:
-            alias, user, *_ = text.split(' ', 1) + ['']
+            alias, user, *_ = text.split(None, 1) + ['']
             alias = alias.lower()
             if len(alias) == 0:
                 generate_group_info(client, author, 'alias', thread_id)
@@ -296,7 +369,7 @@ def run_group_command(client, author, command, text, thread_id):
             cancel_duel_request(client, author, thread_id)
         elif len(text) > 0:
             try:
-                amount, user = text.split(' ', 1)
+                amount, user = text.split(None, 1)
                 amount = int(amount)
                 assert amount >= 0
             except:
@@ -342,7 +415,7 @@ def run_group_command(client, author, command, text, thread_id):
 
     elif command == 'give' or command == 'g':
         try:
-            amount, user = text.split(' ', 1)
+            amount, user = text.split(None, 1)
             assert len(amount) > 0
         except:
             generate_group_info(client, author, 'give', thread_id)
@@ -438,7 +511,7 @@ def run_group_command(client, author, command, text, thread_id):
     elif command == 'perm' or command == 'p':
         if author_id == master_id:
             try:
-                priority, user = text.split(' ', 1)
+                priority, user = text.split(None, 1)
                 priority = int(priority)
             except:
                 generate_group_info(client, author, 'perm', thread_id)
@@ -534,7 +607,7 @@ def run_group_command(client, author, command, text, thread_id):
             client.send(message, thread_id=thread_id, thread_type=ThreadType.GROUP)
         elif len(text):
             try:
-                slot, amount, *_ = text.split(' ', 1) + ['']
+                slot, amount, *_ = text.split(None, 1) + ['']
                 slot = int(slot)
                 amount = int(amount) if len(amount) > 0 else 1
             except:
@@ -551,7 +624,7 @@ def run_group_command(client, author, command, text, thread_id):
             reset_talent_points(client, author, thread_id)
         elif len(text):
             try:
-                slot, amount, *_ = text.split(' ', 1) + ['']
+                slot, amount, *_ = text.split(None, 1) + ['']
                 slot = int(slot)
                 amount = int(amount) if len(amount) > 0 else 1
             except:
@@ -593,11 +666,12 @@ def run_group_command(client, author, command, text, thread_id):
         client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
 
     else:
-        client.send(Message('Not a valid command.'), thread_id=thread_id, thread_type=ThreadType.GROUP)
+        return False
+    return True
 
 
 def _parse_args(text, args):
-    arg, remaining, *_ = text.split(' ', 1) + ['']
+    arg, remaining, *_ = text.split(None, 1) + ['']
     arg = arg.lower()
     return (arg, remaining.strip()) if arg in args else (None, text)
 

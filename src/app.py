@@ -1,7 +1,6 @@
 from fbchat import Client
 from fbchat.models import *
 from flask import Flask
-from base64 import b64decode
 import cleverbot
 import threading
 import time
@@ -28,13 +27,15 @@ class ChatBot(Client):
         init_db(self)
         priority_set(self.uid, master_priority - 1)
 
-        self.quest_record = {}       # Quest tracking
-        self.explore_record = set()  # Explore tracking
-        self.user_health = {}        # Current health
-        self.user_states = {}        # Current user activity
-        self.last_messages = {}      # For repetition
-        self.defines = {}            # Remapped commands
-        self.responses = []          # Primed responses
+        saved = self_get()
+        self.quest_record = {}               # Quest tracking
+        self.explore_record = set()          # Explore tracking
+        self.user_health = {}                # Current health
+        self.user_states = {}                # Current user activity
+        self.last_messages = {}              # For message repetition
+        self.defines = saved['Defines']      # Defined commands
+        self.overrides = saved['Overrides']  # Overridden commands
+        self.responses = {}                  # Primed responses
 
         set_timer(self, lock)
 
@@ -62,7 +63,7 @@ class ChatBot(Client):
         for user_id, user in users.items():
             if query == user.name.lower():
                 return user
-        query = query.split(' ', 1)[0]
+        query = query.split(None, 1)[0]
         for user_id, user in users.items():
             if query in user.name.lower().split():
                 return user
@@ -80,7 +81,7 @@ class ChatBot(Client):
 
             # Check for chat commands
             if message_object.text and message_object.text[0] == '!':
-                command, text, *_ = message_object.text.split(' ', 1) + ['']
+                command, text, *_ = message_object.text.split(None, 1) + ['']
                 command = command[1:].lower()
             else:
                 command, text = None, (message_object.text or '')
@@ -120,7 +121,7 @@ class ChatBot(Client):
                     self.send(message_object, thread_id=master_id)
 
                 # Chat commands - User
-                if author_id == master_id and command is not None:
+                if command is not None:
                     run_user_command(self, user_from_id(author_id), command, text)
 
             elif thread_type == ThreadType.GROUP:
@@ -150,10 +151,10 @@ class ChatBot(Client):
                     text = text.split()
                     if text and text[0].lower() == 'wong,':
                         try:
-                            if author_id == master_id and self.responses:
-                                reply = self.responses.pop(0)
-                            elif priority_get(author_id) == 0:
+                            if priority_get(author_id) == 0:
                                 reply = 'Sorry, I don\'t respond to peasants.'
+                            elif author_id in self.responses and len(self.responses[author_id]):
+                                reply = self.responses[author_id].pop(0)
                             else:
                                 reply = cb.say(' '.join(text[1:]))
                         except cleverbot.CleverbotError as error:
@@ -161,17 +162,6 @@ class ChatBot(Client):
                         else:
                             self.send(Message(reply), thread_id=thread_id, thread_type=ThreadType.GROUP)
                     return
-
-                # Check for defined override
-                if command in self.defines:
-                    if self.defines[command][0] == '!':
-                        command, text, *_ = self.defines[command].split(' ', 1) + ['']
-                        command = command[1:].lower()
-                        text = text.strip()
-                    else:
-                        message = Message(self.defines[command])
-                        self.send(message, thread_id=thread_id, thread_type=ThreadType.GROUP)
-                        return
 
                 # Chat commands - Group
                 run_group_command(self, user_from_id(author_id), command, text, thread_id)
@@ -197,10 +187,7 @@ def index():
     return 'Welcome!'
 
 
-if os.environ.get('ON_HEROKU'):
-    client = ChatBot(os.environ.get('USERNAME_PROD'), b64decode(os.environ.get('PASSWORD')))
-else:
-    client = ChatBot(os.environ.get('USERNAME_TEST'), b64decode(os.environ.get('PASSWORD')))
+client = ChatBot(os.environ.get('WONG_USERNAME'), os.environ.get('WONG_PASSWORD'))
 
 
 class ServerThread(threading.Thread):

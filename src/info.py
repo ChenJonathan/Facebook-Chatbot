@@ -8,26 +8,32 @@ def generate_user_info(client, author, command):
     command = command.lower()
 
     if len(command) == 0:
-        reply = '<<Command List>>\n'
-        reply += '!alias: Alias assignment\n'
-        reply += '!check: See user statistics\n'
-        reply += '!define: Command remapping\n'
-        reply += '!equip: Change level / stats\n'
-        reply += '!explore: Check activity\n'
-        reply += '!help: Read documentation\n'
-        reply += '!message: Gateway messaging\n'
-        reply += '!perm: Change user priority\n'
-        reply += '!response: Response priming\n'
-        reply += '!secret: List active secrets\n'
-        reply += '!warp: Change location\n'
-        reply += '(See how commands work with "!help <command>")'
+        reply = '<<Command List>>'
+        reply += '\n(See how commands work with "!help <command>")\n'
+        if author['_id'] == master_id:
+            reply += '\n!alias: Alias assignment'
+        reply += '\n!check: See user statistics'
+        reply += '\n!define: Command mapping'
+        if author['_id'] == master_id:
+            reply += '\n!equip: Change level / stats'
+            reply += '\n!explore: Check activity'
+        reply += '\n!help: Read documentation'
+        if author['_id'] == master_id:
+            reply += '\n!message: Gateway messaging'
+            reply += '\n!override: Command overriding'
+            reply += '\n!perm: Change user priority'
+        reply += '\n!response: Response priming'
+        reply += '\n!secret: List active secrets'
+        if author['_id'] == master_id:
+            reply += '\n!warp: Change location'
     
     elif command == 'alias':
         reply = '<<Alias>>\n'
         reply += 'Usage: "!alias <alias> <name>"\n'
         reply += 'Example: "!alias wong Wong Liu"\n'
         reply += 'Assigns an alias to a user (found using <name>) for '
-        reply += 'use in other private chat commands. Aliases must be a single word.'
+        reply += 'use in other private chat commands. Aliases must be a single word. '
+        reply += 'Only usable by ' + priority_names[master_priority] + ' priority.'
 
     elif command == 'check':
         reply = '<<Check>>\n'
@@ -36,6 +42,7 @@ def generate_user_info(client, author, command):
         reply += 'Example: "!check equip Justin"\n'
         reply += 'Lists some information on the user designated by <alias> (or all users with aliases, '
         reply += 'if left blank). The type of information is specified by <type> (or "stat", if left blank). '
+        reply += 'Only usable by ' + priority_names[master_priority - 2] + ' priority and above. '
         reply += 'Current information types include the following:\n'
         reply += '-> "Stat" - Statistics\n'
         reply += '-> "Equip" - Equipment\n'
@@ -46,25 +53,29 @@ def generate_user_info(client, author, command):
         reply += 'Usage: "!define <command> <mapping>"\n'
         reply += 'Example: "!define quit !mute"\n'
         reply += 'Example: "!define roll Jonathan Chen rolls a 6."\n'
-        reply += 'Remaps <command> so that using it has the effect of the command '
+        reply += 'Maps <command> so that using it has the effect of the command '
         reply += 'specified in <mapping>. If <mapping> is not a command, Wong will '
-        reply += 'instead send <mapping> as a message. Note that these mappings only '
-        reply += 'apply to you.\n\n'
+        reply += 'instead send <mapping> as a message. Note that this will not '
+        reply += 'override existing commands. '
+        reply += 'Only usable by ' + priority_names[master_priority - 2] + ' priority and above.\n\n'
         reply += 'Usage: "!define <command>"\n'
-        reply += 'Clears the mapping for <command> to its default.'
+        reply += 'Clears the mapping for <command>. '
+        reply += 'Only usable by ' + priority_names[master_priority - 2] + ' priority and above.'
 
     elif command == 'equip':
         reply = '<<Equip>>\n'
         reply += 'Usage: "!equip <level> <attack> <defence> <speed>"\n'
         reply += 'Example: "!equip 1 2 2 2"\n'
         reply += 'Sets your level to <level> and equips items with a stat total of '
-        reply += '<attack> attack, <defence> defence, and <speed> speed.'
+        reply += '<attack> attack, <defence> defence, and <speed> speed. '
+        reply += 'Only usable by ' + priority_names[master_priority] + ' priority.'
 
     elif command == 'explore':
         reply = '<<Explore>>\n'
         reply += 'Usage: "!explore"\n'
         reply += 'Shows the number of people that have explored this hour. '
-        reply += 'Used as a measure of activity.'
+        reply += 'Used as a measure of activity. '
+        reply += 'Only usable by ' + priority_names[master_priority] + ' priority.'
 
     elif command == 'help':
         reply = '<<Help>>\n'
@@ -72,7 +83,8 @@ def generate_user_info(client, author, command):
         reply += 'Lists all the user commands that you can use. Differs per person.\n\n'
         reply += 'Usage: "!help <command>"\n'
         reply += 'Example: "!help secret"\n'
-        reply += 'Explains the syntax and effects of the provided user <command>.'
+        reply += 'Explains the syntax and effects of the provided user <command>. '
+        reply += 'Only usable by ' + priority_names[master_priority - 2] + ' priority and above.'
 
     elif command == 'message':
         reply = '<<Message>>\n'
@@ -81,33 +93,52 @@ def generate_user_info(client, author, command):
         reply += 'Sends a message from Wong to the user designated by <alias>.\n\n'
         reply += 'Usage: "!message <alias>"\n'
         reply += 'Example: "!message raph"\n'
-        reply += 'Sends the default chat emoji from Wong to the user designated by <alias>.'
+        reply += 'Sends the default chat emoji from Wong to the user designated by <alias>. '
+        reply += 'Only usable by ' + priority_names[master_priority] + ' priority.'
+
+    elif command == 'override':
+        reply = '<<Override>>\n'
+        reply += 'Usage: "!override <command> <mapping>"\n'
+        reply += 'Example: "!override quit !mute"\n'
+        reply += 'Example: "!override roll Jonathan Chen rolls a 6."\n'
+        reply += 'Maps <command> so that using it has the effect of the command '
+        reply += 'specified in <mapping>. If <mapping> is not a command, Wong will '
+        reply += 'instead send <mapping> as a message. Unlike defines, overrides '
+        reply += 'always take priority. '
+        reply += 'Only usable by ' + priority_names[master_priority] + ' priority.\n\n'
+        reply += 'Usage: "!override <command>"\n'
+        reply += 'Clears the mapping for <command> to its default. '
+        reply += 'Only usable by ' + priority_names[master_priority] + ' priority.'
 
     elif command == 'perm':
         reply = '<<Perm>>\n'
         reply += 'Usage: "!perm <priority> <alias>"\n'
         reply += 'Example: "!perm 0 raph"\n'
-        reply += 'Sets the priority of the user designated by <alias> to <priority>.'
+        reply += 'Sets the priority of the user designated by <alias> to <priority>. '
+        reply += 'Only usable by ' + priority_names[master_priority] + ' priority.'
 
     elif command == 'response':
         reply = '<<Response>>\n'
         reply += 'Usage: "!response <response>"\n'
         reply += 'Example: "!response Anime belongs in the trash."\n'
-        reply += 'Primes a response for Wong. The next time you talk to Wong, his '
+        reply += 'Primes a response for Wong. The next time Wong responds, his '
         reply += 'normal response will be replaced by <response>. Multiple responses '
-        reply += 'can be primed at once - older responses will be used first.'
+        reply += 'can be primed at once - older responses will be used first. '
+        reply += 'Only usable by ' + priority_names[master_priority - 2] + ' priority and above.'
 
     elif command == 'secret':
         reply = '<<Secret>>\n'
         reply += 'Usage: "!secret"\n'
         reply += 'Lists all of your active secrets. This includes command mappings '
-        reply += '(!define) and primed responses (!response).'
+        reply += '(!define) and primed responses (!response). '
+        reply += 'Only usable by ' + priority_names[master_priority - 2] + ' priority and above.'
 
     elif command == 'warp':
         reply = '<<Warp>>\n'
         reply += 'Usage: "!warp <location>"\n'
         reply += 'Sends you to the location designated by <location> instantly. This '
-        reply += 'cancels your current journey if you are traveling somewhere.'
+        reply += 'cancels your current journey if you are traveling somewhere. '
+        reply += 'Only usable by ' + priority_names[master_priority] + ' priority.'
 
     else:
         reply = 'Not a valid command.'
@@ -118,14 +149,14 @@ def generate_group_info(client, author, command, thread_id):
     command = command.lower()
 
     if len(command) == 0:
-        reply = '<<Command List>>\n'
-        reply += 'See how commands work with "!help <command>".\n'
+        reply = '<<Command List>>'
+        reply += '\nSee how commands work with "!help <command>".'
         if author['_id'] == master_id:
-            reply += '\n<Master Commands>\n'
-            reply += '!alias: Alias assignment\n'
-            reply += '!perm: Change user priority\n'
-            reply += '!warp: Change location\n'
-        reply += '\n<Game Commands>\n'
+            reply += '\n\n<Master Commands>'
+            reply += '\n!alias: Alias assignment'
+            reply += '\n!perm: Change user priority'
+            reply += '\n!warp: Change location'
+        reply += '\n\n<Game Commands>'
         reply += '!battle: Battle monsters\n'
         reply += '!check: See user statistics\n'
         reply += '!craft: Craft items with materials\n'
@@ -140,7 +171,7 @@ def generate_group_info(client, author, command, thread_id):
         reply += '!shop: Spend gold to buy things\n'
         reply += '!talent: Allocate talent points\n'
         reply += '!travel: Travel around the world\n'
-        reply += '\n<Miscellaneous Commands>\n'
+        reply += '\n\n<Miscellaneous Commands>'
         reply += '!bully: Harass someone\n'
         reply += '!daily: Subscribe to daily events\n'
         reply += '!help: Read documentation\n'

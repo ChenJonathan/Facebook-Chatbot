@@ -42,7 +42,7 @@ def _parse_mcq_dataset(file_name):
             elif 'Question' not in quest:
                 quest['Question'] = line
             else:
-                correct, answer = line.split(' ', 1)
+                correct, answer = line.split(None, 1)
                 correct = int(correct)
                 if correct:
                     quest['Correct'] = len(quest['Answers'])

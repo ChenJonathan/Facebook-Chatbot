@@ -4,6 +4,7 @@ import pymongo
 from enums import Location, Talent
 
 db_groups = None
+db_self = None
 db_users = None
 
 chatbot = None
@@ -14,12 +15,36 @@ def init_db(client):
     db = db.get_database()
 
     global db_groups
+    global db_self
     global db_users
     db_groups = db['Groups']
+    db_self = db['Self']
     db_users = db['Users']
 
     global chatbot
     chatbot = client
+
+
+# Self methods
+
+def self_get():
+    return db_self.find_one()
+
+
+def self_define(command, mapping):
+    if not mapping:
+        update = {'$unset': {('Defines.' + command): None}}
+    else:
+        update = {'$set': {('Defines.' + command): mapping}}
+    db_self.update_one({}, update)
+
+
+def self_override(command, mapping):
+    if not mapping:
+        update = {'$unset': {('Overrides.' + command): None}}
+    else:
+        update = {'$set': {('Overrides.' + command): mapping}}
+    db_self.update_one({}, update)
 
 
 # Subscription methods

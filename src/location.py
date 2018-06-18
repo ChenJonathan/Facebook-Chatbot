@@ -105,9 +105,10 @@ _feature_map = {
     Location['Ludibrium']: ['Crafting', 'Shop'],
     Location['Korean Folk Town']: ['Crafting', 'Shop'],
     Location['Omega Sector']: ['Crafting', 'Shop'],
-    Location['Leafre']: ['Crafting', 'Shop'],
+    Location['Leafre']: ['Shop'],
     Location['Ariant']: ['Crafting', 'Shop'],
-    Location['Magatia']: ['Crafting', 'Shop']
+    Location['Magatia']: ['Crafting', 'Shop'],
+    Location['Temple of Time']: ['Shop']
 }
 
 _region_map = {
