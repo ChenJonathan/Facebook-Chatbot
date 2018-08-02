@@ -12,7 +12,10 @@ from util import *
 
 def apply_gold_rates():
     for user in user_get_all():
-        gold_add(user['_id'], user['GoldFlow'])
+        try:
+            gold_add(user['_id'], user['GoldFlow'])
+        except:
+            pass
 
 
 def restore_health(client):
