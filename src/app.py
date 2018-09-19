@@ -1,7 +1,7 @@
 from fbchat import Client
 from fbchat.models import *
 from flask import Flask
-import cleverbot
+import cleverwrap
 import threading
 import time
 import traceback
@@ -16,7 +16,7 @@ from polling import loop
 from quest import complete_quest
 from util import *
 
-cb = cleverbot.Cleverbot(os.environ.get('CLEVERBOT_KEY'))
+cb = cleverwrap.CleverWrap(os.environ.get('CLEVERBOT_KEY'))
 lock = threading.Lock()
 
 
