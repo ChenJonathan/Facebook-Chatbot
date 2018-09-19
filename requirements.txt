@@ -1,4 +1,4 @@
-cleverbot.py==2.0.1
+cleverwrap==0.2.3.6
 fbchat==1.4.0
 Flask==0.11.1
 pymongo==3.6.0
