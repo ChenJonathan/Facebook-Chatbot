@@ -37,9 +37,9 @@ def _check_handler(client, author, args, thread_id, thread_type):
 
 
 _check_info = """<<Check>>
-Usage: "!check <type> <{}>"
-Example: "!check {}"
-Example: "!check equip {}"
+*Usage*: "!check <type> <{}>"
+*Example*: "!check {}"
+*Example*: "!check equip {}"
 Lists some information on the user designated by <{}> (or yourself, if left blank)."""
 
 map_user_command(["check", "c"], _check_handler, 0, _check_info.format("alias", "justin", "justin", "alias"))

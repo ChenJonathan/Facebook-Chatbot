@@ -1,6 +1,9 @@
 __pycache__/
 .idea/
-/database.py
-/src/app.py
+
 data/
 images/
+
+/src/app.py
+/src/commands/wong.py
+/database.py

@@ -83,10 +83,10 @@ _define_info = """<<Define>>
 Usage: "!define <command> <mapping>"
 Example: "!define quit !mute"
 Maps <command> so that using it has the effect of the command specified in <mapping>. If <mapping> is not a command, \
-Wong will instead send <mapping> as a message. Only usable by {} priority and above.
+Wong will instead send <mapping> as a message.
 
 Usage: "!define <command>"
-Clears the mapping for <command>. Only usable by {} priority and above.""".format(priority_names[2], priority_names[2])
+Clears the mapping for <command>.""".format(priority_names[2], priority_names[2])
 
 map_user_command(["define", "d"], _define_handler, 2, _define_info)
 map_group_command(["define"], _define_handler, 2, _define_info)
@@ -98,31 +98,20 @@ _user_strings = [
     (3, "!alias: Alias assignment"),
     (0, "!check: See user statistics"),
     (2, "!define: Command mapping"),
-    (3, "!equip: Change level / stats"),
     (0, "!help: Read documentation"),
     (4, "!message: Gateway messaging"),
     (4, "!perm: Change user priority"),
     (2, "!response: Response priming"),
-    (2, "!secret: List active secrets"),
-    (3, "!warp: Change location")
+    (2, "!secret: List active secrets")
 ]
 
 _group_strings = [
     (0, "<Game Commands>"),
-    (0, "!battle: Battle monsters"),
     (0, "!check: See user statistics"),
-    (0, "!craft: Craft items with materials"),
     (0, "!duel: Duel another player"),
-    (0, "!explore: Gather materials"),
-    (0, "!give: Give someone gold"),
-    (0, "!inventory: Check your inventory"),
-    (0, "!jail: Send someone to jail"),
-    (0, "!map: See your location"),
     (0, "!quest: Solve quizzes for gold"),
     (0, "!score: Show group rankings"),
     (0, "!shop: Spend gold to buy things"),
-    (0, "!talent: Allocate talent points"),
-    (0, "!travel: Travel around the world"),
     (0, ""),
     (0, "<Miscellaneous Commands>"),
     (0, "!bully: Harass someone"),
@@ -131,7 +120,8 @@ _group_strings = [
     (0, "!mute: Remove from group"),
     (0, "!notes: See recent changes"),
     (0, "!random: Random emoji / color"),
-    (0, "!roll: Roll the dice")
+    (0, "!roll: Roll the dice"),
+    (0, "!wong: Talk to Wong")
 ]
 
 
@@ -140,7 +130,10 @@ def _help_handler(client, author, args, thread_id, thread_type):
         args = args.lower()
         current_map = _user_map if thread_type == ThreadType.USER else _group_map
         if args in current_map:
-            reply = current_map[args][2]
+            if author["Priority"] >= current_map[args][1]:
+                reply = current_map[args][2]
+            else:
+                reply = "You don't have permission to do this."
         elif thread_type == ThreadType.GROUP and args in _define_map:
             reply = "This is a redefined command."
         else:
@@ -157,11 +150,11 @@ def _help_handler(client, author, args, thread_id, thread_type):
 
 
 _help_info = """<<Help>>
-Usage: "!help"
+*Usage*: "!help"
 Lists all the group commands that you can use.
 
-Usage: "!help <command>"
-Example: "!help quest"
+*Usage*: "!help <command>"
+*Example*: "!help quest"
 Explains the syntax and effects of the provided group <command>."""
 
 map_user_command(["help", "h"], _help_handler, 0, _help_info)

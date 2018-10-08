@@ -32,13 +32,12 @@ def _alias_handler(client, author, args, thread_id, thread_type):
 
 
 _alias_info = """<<Alias>>
-Usage: "!alias <alias> <name>"
-Example: "!alias wong Wong Liu"
-Assigns an alias to a user (found using <name>) for use in other private chat commands. Aliases must be a single word. \
-Only usable by {} priority and above.
+*Usage*: "!alias <alias> <name>"
+*Example*: "!alias wong Wong Liu"
+Assigns an alias to a user (found using <name>) for use in other private chat commands. Aliases must be a single word.
 
-Usage: "!alias <alias>"
-Removes an existing alias. Only usable by {} priority and above.""".format(priority_names[3], priority_names[3])
+*Usage*: "!alias <alias>"
+Removes an existing alias.""".format(priority_names[3], priority_names[3])
 
 map_user_command(["alias", "a"], _alias_handler, 3, _alias_info)
 map_group_command(["alias", "a"], _alias_handler, 3, _alias_info)

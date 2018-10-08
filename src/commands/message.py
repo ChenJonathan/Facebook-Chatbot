@@ -17,13 +17,13 @@ def _message_handler(client, author, args, thread_id, thread_type):
 
 
 _message_info = """<<Message>>
-Usage: "!message <alias> <message>"
-Example: "!message raph Hi! This is Wong."
-Sends a message from Wong to the user designated by <alias>. Only usable by {} priority.
+*Usage*: "!message <alias> <message>"
+*Example*: "!message raph Hi! This is Wong."
+Sends a message from Wong to the user designated by <alias>.
 
-Usage: "!message <alias>"
-Example: "!message raph"
-Sends the default chat emoji from Wong to the user designated by <alias>. Only usable by {} priority.""".format(
+*Usage*: "!message <alias>"
+*Example*: "!message raph"
+Sends the default chat emoji from Wong to the user designated by <alias>.""".format(
     priority_names[4], priority_names[4])
 
 map_user_command(["message", "m"], _message_handler, 4, _message_info)
