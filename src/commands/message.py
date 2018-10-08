@@ -8,7 +8,7 @@ def _message_handler(client, author, args, thread_id, thread_type):
         return False
     user = match_user_by_alias(alias)
     if not user:
-        client.send(Message("User not found."), thread_id=thread_id)
+        client.send(Message("User not found."), thread_id=thread_id, thread_type=thread_type)
     elif len(reply):
         client.send(Message(reply), thread_id=user["_id"])
     else:

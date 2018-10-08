@@ -9,6 +9,11 @@ master_priority = len(priority_names) - 1
 master_id = "1564703352"
 
 
+def bot_is_admin(client, group_id):
+    group = client.fetchGroupInfo(group_id)[group_id]
+    return client.uid in group.admins
+
+
 def match_user_by_alias(query):
     query = query.strip().lower()
     return user_query_one({"Alias": query})
