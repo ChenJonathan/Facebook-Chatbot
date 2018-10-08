@@ -43,10 +43,11 @@ def user_query_all(query):
 
 
 def group_get(group_id):
-    return _db_groups.find_one(group_id)
+    return _group_try_get(group_id)
 
 
 def group_update(group_id, update):
+    _group_try_get(group_id)
     _db_groups.update_one({"_id": group_id}, update)
 
 
@@ -114,3 +115,14 @@ def _user_try_get(user_id):
         "Flags": {}
     })
     return _db_users.find_one({"_id": user_id})
+
+
+# - Must be used to add groups so that document constraints are enforced
+def _group_try_get(group_id):
+    group = _db_groups.find_one({"_id": group_id})
+    if group:
+        return group
+    _db_groups.insert_one({
+        "_id": group_id
+    })
+    return _db_groups.find_one({"_id": group_id})

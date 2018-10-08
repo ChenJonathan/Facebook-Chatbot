@@ -1,29 +1,82 @@
 import math
 
-from enums import Talent
+from enums import *
+from mongo import *
 
 priority_names = ["Peasant", "User", "Mod", "Admin", "Master"]
 
 master_priority = len(priority_names) - 1
 master_id = "1564703352"
 
-default_health = 100
-default_health_regen = 10
 
-talent_constants = {
-    Talent.TITAN: 2,
-    Talent.BERSERKER: 2,
-    Talent.VANGUARD: 2,
-    Talent.SURVIVOR: 10,
-    Talent.MISTWEAVER: 10,
-    Talent.MERCHANT: 10,
-    Talent.EXPLORER: 20,
-    Talent.WANDERER: 20
-}
+def match_user_by_alias(query):
+    query = query.strip().lower()
+    return user_query_one({"Alias": query})
 
 
-def talent_bonus(user, talent):
-    return user["Talents"][talent.value] * talent_constants[talent]
+def match_user_by_search(client, query):
+    user = client.searchForUsers(query)[0]
+    return user_get(user.uid)
+
+
+def match_user_in_group(client, group_id, query):
+    group = client.fetchGroupInfo(group_id)[group_id]
+    query = query.strip().lower()
+    # - Alias match
+    user = client.match_user_by_alias(query)
+    if user and user["_id"] in group.participants:
+        return user
+    # - Full name match
+    users = client.fetchUserInfo(*group.participants)
+    for user_id, user in users.items():
+        if query == user.name.lower():
+            return user_get(user_id)
+    # - Full word match
+    query = query.split(None, 1)[0]
+    for user_id, user in users.items():
+        if query in user.name.lower().split():
+            return user_get(user_id)
+    # - String search
+    for user_id, user in users.items():
+        if user.name.lower().startswith(query):
+            return user_get(user_id)
+    return None
+
+
+def user_state(client, user_id):
+    state, details, handler = client.user_states.get(user_id, (UserState.IDLE, {}, None))
+    return state, details
+
+
+def format_num(num, sign=False, truncate=False):
+    suffixes = ["", "k", "m", "b", "t", "q"]
+    scale = 0
+    if truncate:
+        while abs(num) >= 100000 and scale < len(suffixes) - 1:
+            num = num // 1000
+            scale += 1
+    num = ("+" + str(num)) if sign and num >= 0 else str(num)
+    return num + suffixes[scale]
+
+
+def format_time(seconds, minimal=False):
+    minutes, seconds = seconds // 60, seconds % 60
+    time = (str(minutes) + " min") if minutes > 0 else ""
+    if not minimal or seconds > 0 or minutes == 0:
+        time += " " if len(time) > 0 else ""
+        time += str(seconds) + " sec" + ("" if seconds == 1 else "s")
+    return time
+
+
+def split(text):
+    a, b, *_ = text.split(None, 1) + ["", ""]
+    return a, b
+
+
+def partition(text, args):
+    arg, remaining = split(text)
+    arg = arg.lower()
+    return (arg, remaining.strip()) if arg in args else (None, text)
 
 
 def base_stat_float(level):
@@ -35,25 +88,15 @@ def base_stat(level):
 
 
 def base_atk(user):
-    return base_stat(user["Stats"]["Level"]) + \
-           talent_bonus(user, Talent.TITAN) + \
-           talent_bonus(user, Talent.BERSERKER)
+    return base_stat(user["Stats"]["Level"])
 
 
 def base_def(user):
-    return base_stat(user["Stats"]["Level"]) + \
-           talent_bonus(user, Talent.TITAN) + \
-           talent_bonus(user, Talent.VANGUARD)
+    return base_stat(user["Stats"]["Level"])
 
 
 def base_spd(user):
-    return base_stat(user["Stats"]["Level"]) + \
-           talent_bonus(user, Talent.BERSERKER) + \
-           talent_bonus(user, Talent.VANGUARD)
-
-
-def base_health(user):
-    return default_health + talent_bonus(user, Talent.SURVIVOR)
+    return base_stat(user["Stats"]["Level"])
 
 
 def equip_atk(user):
@@ -86,26 +129,6 @@ def total_spd(user):
     return base_spd(user) + equip_spd(user)
 
 
-def format_num(num, sign=False, truncate=False):
-    suffixes = ["", "k", "m", "b", "t", "q"]
-    scale = 0
-    if truncate:
-        while abs(num) >= 100000 and scale < len(suffixes) - 1:
-            num = num // 1000
-            scale += 1
-    num = ("+" + str(num)) if sign and num >= 0 else str(num)
-    return num + suffixes[scale]
-
-
-def format_time(seconds, minimal=False):
-    minutes, seconds = seconds // 60, seconds % 60
-    time = (str(minutes) + " min") if minutes > 0 else ""
-    if not minimal or seconds > 0 or minutes == 0:
-        time += " " if len(time) > 0 else ""
-        time += str(seconds) + " sec" + ("" if seconds == 1 else "s")
-    return time
-
-
 def calculate_score(user):
     score = math.pow(max(user["Gold"] + user["GoldFlow"] * 50, 0), 0.25) * 50
     score += (total_atk(user) + total_def(user) + total_spd(user) - 45) * 25
@@ -114,8 +137,3 @@ def calculate_score(user):
             score += 50
     score -= 11 * 50
     return int(score)
-
-
-def split(text):
-    a, b, *_ = text.split(None, 1) + ["", ""]
-    return a, b

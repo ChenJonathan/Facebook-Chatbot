@@ -5,7 +5,6 @@ import threading
 import traceback
 
 from data import random_emoji
-from mongo import *
 from util import *
 
 

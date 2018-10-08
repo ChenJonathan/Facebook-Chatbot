@@ -1,8 +1,6 @@
 from fbchat.models import *
 
-from mongo import *
 from util import *
-import commands
 
 _user_map = {}
 _group_map = {}
@@ -49,7 +47,7 @@ def run_group_command(client, author, command, args, thread_id):
     if author["Priority"] < mapping[1]:
         client.send(Message("You don't have permission to do this."), thread_id=thread_id, thread_type=ThreadType.GROUP)
     elif not mapping[0](client, author, args, thread_id, ThreadType.GROUP):
-        run_group_command(client, author, "help", command)
+        run_group_command(client, author, "help", command, thread_id)
     else:
         return True
     return False
@@ -84,15 +82,11 @@ def _define_handler(client, author, args, thread_id, thread_type):
 _define_info = """<<Define>>
 Usage: "!define <command> <mapping>"
 Example: "!define quit !mute"
-Example: "!define roll Jonathan Chen rolls a 6."
-Maps <command> so that using it has the effect of the command \
-specified in <mapping>. If <mapping> is not a command, Wong will \
-instead send <mapping> as a message. Note that this will not \
-override existing commands. Only usable by {} priority and above.
+Maps <command> so that using it has the effect of the command specified in <mapping>. If <mapping> is not a command, \
+Wong will instead send <mapping> as a message. Only usable by {} priority and above.
 
 Usage: "!define <command>"
-Clears the mapping for <command>. Only usable by {} priority and \
-above.""".format(priority_names[2], priority_names[2])
+Clears the mapping for <command>. Only usable by {} priority and above.""".format(priority_names[2], priority_names[2])
 
 map_user_command(["define", "d"], _define_handler, 2, _define_info)
 map_group_command(["define"], _define_handler, 2, _define_info)
@@ -114,11 +108,6 @@ _user_strings = [
 ]
 
 _group_strings = [
-    (3, "<Admin Commands>"),
-    (3, "!alias: Alias assignment"),
-    (3, "!perm: Change user priority"),
-    (3, "!warp: Change location"),
-    (3, ""),
     (0, "<Game Commands>"),
     (0, "!battle: Battle monsters"),
     (0, "!check: See user statistics"),
@@ -177,3 +166,5 @@ Explains the syntax and effects of the provided group <command>."""
 
 map_user_command(["help", "h"], _help_handler, 0, _help_info)
 map_group_command(["help", "h"], _help_handler, 0, _help_info)
+
+from commands import *
