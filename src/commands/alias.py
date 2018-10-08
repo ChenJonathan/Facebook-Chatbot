@@ -19,6 +19,11 @@ def _alias_handler(client, author, args, thread_id, thread_type):
         user_update(user["_id"], {"$set": {"Alias": alias}})
         reply = "{}'s alias has been set to {}.".format(user["Name"], alias)
 
+    elif alias == "list":
+        users = user_query_all({"Alias": {"$exists": True}})
+        users = sorted(users, key=lambda x: x["Alias"])
+        reply = "<<Aliases>>\n" + "\n".join(["*{}*: {}".format(i["Alias"], i["Name"]) for i in users])
+
     else:
         existing = user_query_one({"Alias": alias})
         if existing:
@@ -37,7 +42,10 @@ _alias_info = """<<Alias>>
 Assigns an alias to a user (found using <name>) for use in other private chat commands. Aliases must be a single word.
 
 *Usage*: "!alias <alias>"
-Removes an existing alias.""".format(priority_names[3], priority_names[3])
+Removes an existing alias.
+
+*Usage*: "!alias list"
+Lists all active aliases."""
 
 map_user_command(["alias", "a"], _alias_handler, 3, _alias_info)
 map_group_command(["alias", "a"], _alias_handler, 3, _alias_info)

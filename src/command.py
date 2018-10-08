@@ -86,7 +86,7 @@ Maps <command> so that using it has the effect of the command specified in <mapp
 Wong will instead send <mapping> as a message.
 
 Usage: "!define <command>"
-Clears the mapping for <command>.""".format(priority_names[2], priority_names[2])
+Clears the mapping for <command>."""
 
 map_user_command(["define", "d"], _define_handler, 2, _define_info)
 map_group_command(["define"], _define_handler, 2, _define_info)

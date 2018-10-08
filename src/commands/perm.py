@@ -31,5 +31,5 @@ _perm_info = """<<Perm>>
 *Example*: "!perm 0 {}"
 Sets the priority of the user designated by <{}> to <priority>."""
 
-map_user_command(["perm", "p"], _perm_handler, 4, _perm_info.format("alias", "raph", "alias", priority_names[4]))
-map_group_command(["perm", "p"], _perm_handler, 4, _perm_info.format("name", "Raphael", "name", priority_names[4]))
+map_user_command(["perm", "p"], _perm_handler, 4, _perm_info.format("alias", "raph", "alias"))
+map_group_command(["perm", "p"], _perm_handler, 4, _perm_info.format("name", "Raphael", "name"))
