@@ -11,7 +11,6 @@ def _user_to_string(client, user):
     text.append("-> ATK: {} ({}{})".format(total_atk(user), base_atk(user), format_num(equip_atk(user), sign=True)))
     text.append("-> DEF: {} ({}{})".format(total_def(user), base_def(user), format_num(equip_def(user), sign=True)))
     text.append("-> SPD: {} ({}{})".format(total_spd(user), base_spd(user), format_num(equip_spd(user), sign=True)))
-    text.append("Health: 100/100 (+10 per hour)")
     text.append("Gold: {} ({} per hour)".format(format_num(user["Gold"], truncate=True),
                                                 format_num(user["GoldFlow"], sign=True, truncate=True)))
     text.append("Location: {}".format(user["Location"]))
@@ -19,13 +18,12 @@ def _user_to_string(client, user):
     return "\n".join(text)
 
 
-def _check_handler(client, author, text, thread_id, thread_type):
-    arg, text = partition(text, ["stat", "equip", "talent"])
-    if len(text) > 0:
+def _check_handler(client, author, args, thread_id, thread_type):
+    if len(args):
         if thread_type == ThreadType.USER:
-            user = client.match_user_by_alias(text)
+            user = match_user_by_alias(args)
         else:
-            user = client.match_user_in_group(thread_id, text)
+            user = match_user_in_group(client, thread_id, args)
         if not user:
             reply = "User not found."
             client.send(Message(reply), thread_id=thread_id, thread_type=thread_type)
@@ -39,10 +37,10 @@ def _check_handler(client, author, text, thread_id, thread_type):
 
 
 _check_info = """<<Check>>
-Usage: "!check <type> {}"
+Usage: "!check <type> <{}>"
 Example: "!check {}"
 Example: "!check equip {}"
-Lists some information on the user designated by {} (or yourself, if left blank)."""
+Lists some information on the user designated by <{}> (or yourself, if left blank)."""
 
-map_user_command(["check", "c"], _check_handler, 0, _check_info.format("<alias>", "justin", "justin", "<alias>"))
-map_group_command(["check", "c"], _check_handler, 0, _check_info.format("<name>", "Justin", "Justin", "<name>"))
+map_user_command(["check", "c"], _check_handler, 0, _check_info.format("alias", "justin", "justin", "alias"))
+map_group_command(["check", "c"], _check_handler, 0, _check_info.format("name", "Justin", "Justin", "name"))

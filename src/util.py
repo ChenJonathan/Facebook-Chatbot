@@ -23,7 +23,7 @@ def match_user_in_group(client, group_id, query):
     group = client.fetchGroupInfo(group_id)[group_id]
     query = query.strip().lower()
     # - Alias match
-    user = client.match_user_by_alias(query)
+    user = match_user_by_alias(query)
     if user and user["_id"] in group.participants:
         return user
     # - Full name match

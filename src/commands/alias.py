@@ -2,8 +2,8 @@ from command import *
 from util import *
 
 
-def _alias_handler(client, author, text, thread_id, thread_type):
-    alias, user = split(text)
+def _alias_handler(client, author, args, thread_id, thread_type):
+    alias, user = split(args)
     alias = alias.lower()
     if not len(alias):
         return False
