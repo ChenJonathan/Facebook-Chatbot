@@ -7,16 +7,16 @@ _group_map = {}
 _define_map = load_state("Defines")
 
 
-def run_user_command(client, author, command, args):
+def run_user_command(client, author, command, args, thread_id):
     if command not in _user_map:
-        client.send(Message("Not a valid command."), thread_id=author["_id"])
+        client.send(Message("Not a valid command."), thread_id=thread_id)
         return False
     mapping = _user_map[command]
 
     if author["Priority"] < mapping[1]:
-        client.send(Message("You don't have permission to do this."), thread_id=author["_id"])
-    elif not mapping[0](client, author, args, author["_id"], ThreadType.USER):
-        run_user_command(client, author, "help", command)
+        client.send(Message("You don't have permission to do this."), thread_id=thread_id)
+    elif not mapping[0](client, author, args, thread_id, ThreadType.USER):
+        run_user_command(client, author, "help", command, thread_id)
     else:
         return True
     return False
@@ -118,7 +118,7 @@ _group_strings = [
     (0, "!daily: Subscribe to daily events"),
     (0, "!help: Read documentation"),
     (0, "!mute: Remove from group"),
-    (0, "!notes: See recent changes"),
+    (0, "!note: Save and view notes"),
     (0, "!random: Random emoji / color"),
     (0, "!roll: Roll the dice"),
     (0, "!wong: Talk to Wong")

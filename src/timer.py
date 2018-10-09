@@ -10,17 +10,17 @@ from util import *
 
 def manage_subscriptions(client):
     colors = list(ThreadColor)
-    groups = group_query_all({'Subscriptions': {'$exists': True}})
+    groups = group_query_all({"Subscriptions": {"$exists": True}})
     for group in groups:
         group_id = group["_id"]
         subscriptions = group["Subscriptions"]
         group = client.fetchGroupInfo(group_id)[group_id]
-        if 'color' in subscriptions:
+        if "color" in subscriptions:
             color = group.color
             while color == group.color:
                 color = random.choice(colors)
             client.changeThreadColor(color, thread_id=group_id)
-        if 'emoji' in subscriptions:
+        if "emoji" in subscriptions:
             emoji = group.emoji
             while emoji == group.emoji:
                 emoji = random_emoji()
@@ -33,7 +33,7 @@ def reset_timer(client, lock):
         if datetime.today().hour == 0:
             manage_subscriptions(client)
     except:
-        stack = 'Timer: ' + traceback.format_exc()
+        stack = "Timer: " + traceback.format_exc()
         print(stack)
         client.send(Message(stack), thread_id=master_id)
     finally:

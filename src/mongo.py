@@ -5,24 +5,23 @@ from enums import Location, Talent
 
 _chatbot = None
 
-_db = pymongo.MongoClient(os.environ.get("MONGODB_URI"))
-_db = _db.get_database()
-
-_db_self = _db["Self"]
-_db_users = _db["Users"]
-_db_groups = _db["Groups"]
-
 
 def init_mongo(client):
     _chatbot = client
 
 
+_db = pymongo.MongoClient(os.environ.get("MONGODB_URI")).get_database()
+_db_self = _db["Self"]
+_db_users = _db["Users"]
+_db_groups = _db["Groups"]
+
+
 def load_state(command):
-    return _db_self.find_one()[command]
+    return _db_self.find_one({"_id": command})[command]
 
 
 def save_state(command, state):
-    _db_self.update_one({}, {"$set": {command: state}})
+    _db_self.update_one({"_id": command}, {"$set": {command: state}})
 
 
 def user_get(user_id):
