@@ -115,12 +115,12 @@ _group_strings = [
     (0, ""),
     (0, "<Miscellaneous Commands>"),
     (0, "!bully: Harass someone"),
-    (0, "!daily: Subscribe to daily events"),
     (0, "!help: Read documentation"),
     (0, "!mute: Remove from group"),
     (0, "!note: Save and view notes"),
     (0, "!random: Random emoji / color"),
     (0, "!roll: Roll the dice"),
+    (0, "!subscribe: Subscribe to events"),
     (0, "!wong: Talk to Wong")
 ]
 
