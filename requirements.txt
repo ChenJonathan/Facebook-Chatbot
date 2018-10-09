@@ -1,4 +1,5 @@
 cleverwrap==0.2.3.6
+dateparser==0.7.0
 fbchat==1.4.1
 Flask==0.11.1
 pymongo==3.6.0

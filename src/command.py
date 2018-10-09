@@ -89,7 +89,7 @@ Usage: "!define <command>"
 Clears the mapping for <command>."""
 
 map_user_command(["define", "d"], _define_handler, 2, _define_info)
-map_group_command(["define"], _define_handler, 2, _define_info)
+map_group_command(["define", "d"], _define_handler, 2, _define_info)
 
 
 # Help command
@@ -114,6 +114,7 @@ _group_strings = [
     (0, "!shop: Spend gold to buy things"),
     (0, ""),
     (0, "<Miscellaneous Commands>"),
+    (0, "!alarm: Set an alarm"),
     (0, "!bully: Harass someone"),
     (0, "!help: Read documentation"),
     (0, "!mute: Remove from group"),

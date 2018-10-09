@@ -17,7 +17,11 @@ _db_groups = _db["Groups"]
 
 
 def load_state(command):
-    return _db_self.find_one({"_id": command})[command]
+    document = _db_self.find_one({"_id": command})
+    if not document:
+        _db_self.insert_one({"_id": command, command: {}})
+        document = _db_self.find_one({"_id": command})
+    return document[command]
 
 
 def save_state(command, state):

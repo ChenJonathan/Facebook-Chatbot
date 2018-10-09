@@ -47,5 +47,5 @@ Removes an existing alias.
 *Usage*: "!alias list"
 Lists all active aliases."""
 
-map_user_command(["alias", "a"], _alias_handler, 3, _alias_info)
-map_group_command(["alias", "a"], _alias_handler, 3, _alias_info)
+map_user_command(["alias"], _alias_handler, 3, _alias_info)
+map_group_command(["alias"], _alias_handler, 3, _alias_info)
