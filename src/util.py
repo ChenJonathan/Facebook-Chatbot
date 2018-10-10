@@ -60,16 +60,16 @@ def format_num(num, sign=False, truncate=False):
         while abs(num) >= 100000 and scale < len(suffixes) - 1:
             num = num // 1000
             scale += 1
-    num = ("+" + str(num)) if sign and num >= 0 else str(num)
+    num = "+{}".format(num) if sign and num >= 0 else str(num)
     return num + suffixes[scale]
 
 
 def format_time(seconds, minimal=False):
     minutes, seconds = seconds // 60, seconds % 60
-    time = (str(minutes) + " min") if minutes > 0 else ""
+    time = "{} min".format(minutes) if minutes > 0 else ""
     if not minimal or seconds > 0 or minutes == 0:
-        time += " " if len(time) > 0 else ""
-        time += str(seconds) + " sec" + ("" if seconds == 1 else "s")
+        time += " " if len(time) else ""
+        time += "{} {}".format(seconds, "sec" if seconds == 1 else "secs")
     return time
 
 

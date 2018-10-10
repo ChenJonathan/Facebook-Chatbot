@@ -28,7 +28,9 @@ add_thread(_alarm_thread)
 
 
 def _prompt_handler(client, author, text, thread_id, thread_type):
-    timestamp = _prompts.pop((author["_id"], thread_id))
+    timestamp = _prompts.pop((author["_id"], thread_id), None)
+    if timestamp is None:
+        return True
     if thread_id not in _alarms:
         _alarms[thread_id] = []
     index = 0

@@ -19,9 +19,14 @@ def _quest_timer(client, time, args):
 
 def _prompt_handler(client, author, text, thread_id, thread_type):
     quest = _quests[thread_id]
+    try:
+        text = int(text)
+        assert 0 < text <= len(quest["Answers"])
+    except (AssertionError, ValueError):
+        return False
     if author["_id"] not in quest["Attempted"]:
         quest["Attempted"].add(author["_id"])
-        if text == str(quest["Correct"] + 1) or text == quest["Answers"][quest["Correct"]]:
+        if text == quest["Correct"] + 1:
             del _quests[thread_id]
             reward = int(len(quest["Answers"]) * random.uniform(2, 10))
             author["Gold"] += reward
@@ -75,7 +80,7 @@ Generates a multiple choice question. The first correct response will reward gol
 
 *Usage*: "!quest <choices>"
 *Example*: "!quest 8"
-Generates a multiple choice question with <choices> choices.
+Generates a multiple choice question with <choices> choices. Can be between 2 and 20.
 """
 
 map_user_command(["quest", "q"], _quest_handler, 2, _quest_info)

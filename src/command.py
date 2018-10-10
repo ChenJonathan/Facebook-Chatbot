@@ -103,7 +103,8 @@ _user_strings = [
     (4, "!perm: Change user priority"),
     (2, "!quest: Solve quizzes for gold"),
     (2, "!response: Response priming"),
-    (2, "!secret: List active secrets")
+    (2, "!secret: List active secrets"),
+    (3, "!wong: Talk to Wong")
 ]
 
 _group_strings = [
