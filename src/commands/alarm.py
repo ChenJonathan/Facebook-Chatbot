@@ -15,7 +15,8 @@ def _alarm_thread(client, time):
         while len(alarm_list) and time.timestamp() > alarm_list[0]["Time"]:
             alarm = alarm_list.pop(0)
             reply = "An alarm has gone off!\n\n{}".format(alarm["Note"])
-            client.send(Message(reply), thread_id=thread_id, thread_type=ThreadType[alarm["ThreadType"]])
+            thread_type = client.fetchThreadInfo(thread_id)[thread_id].type
+            client.send(Message(reply), thread_id=thread_id, thread_type=thread_type)
             modified = True
         if not len(alarm_list):
             del _alarms[thread_id]
@@ -27,15 +28,13 @@ add_thread(_alarm_thread)
 
 
 def _prompt_handler(client, author, text, thread_id, thread_type):
-    timestamp = _prompts.pop((author["_id"], thread_id), None)
-    if timestamp is None:
-        return True
+    timestamp = _prompts.pop((author["_id"], thread_id))
     if thread_id not in _alarms:
         _alarms[thread_id] = []
     index = 0
     while index < len(_alarms[thread_id]) and _alarms[thread_id][index]["Time"] < timestamp:
         index += 1
-    _alarms[thread_id].insert(index, {"Time": timestamp, "Note": text, "ThreadType": thread_type.name})
+    _alarms[thread_id].insert(index, {"Time": timestamp, "Note": text})
     client.send(Message("The alarm has been set!"), thread_id=thread_id, thread_type=thread_type)
     save_state("Alarms", _alarms)
     return True

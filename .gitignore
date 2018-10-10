@@ -4,7 +4,9 @@ __pycache__/
 data/
 images/
 
+/database.py
 /src/app.py
+/src/data.py
+/src/commands/quest.py
 /src/commands/secret.py
 /src/commands/wong.py
-/database.py

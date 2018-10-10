@@ -25,7 +25,7 @@ def load_state(command):
 
 
 def save_state(command, state):
-    _db_self.update_one({"_id": command}, {"$set": {command: state}})
+    _db_self.update_one({"_id": command}, {"$set": {command: state}}, upsert=True)
 
 
 def user_get(user_id):

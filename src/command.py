@@ -80,12 +80,12 @@ def _define_handler(client, author, args, thread_id, thread_type):
 
 
 _define_info = """<<Define>>
-Usage: "!define <command> <mapping>"
-Example: "!define quit !mute"
+*Usage*: "!define <command> <mapping>"
+*Example*: "!define quit !mute"
 Maps <command> so that using it has the effect of the command specified in <mapping>. If <mapping> is not a command, \
 Wong will instead send <mapping> as a message.
 
-Usage: "!define <command>"
+*Usage*: "!define <command>"
 Clears the mapping for <command>."""
 
 map_user_command(["define", "d"], _define_handler, 2, _define_info)
@@ -101,6 +101,7 @@ _user_strings = [
     (0, "!help: Read documentation"),
     (4, "!message: Gateway messaging"),
     (4, "!perm: Change user priority"),
+    (2, "!quest: Solve quizzes for gold"),
     (2, "!response: Response priming"),
     (2, "!secret: List active secrets")
 ]
@@ -111,7 +112,6 @@ _group_strings = [
     (0, "!duel: Duel another player"),
     (0, "!quest: Solve quizzes for gold"),
     (0, "!score: Show group rankings"),
-    (0, "!shop: Spend gold to buy things"),
     (0, ""),
     (0, "<Miscellaneous Commands>"),
     (0, "!alarm: Set an alarm"),

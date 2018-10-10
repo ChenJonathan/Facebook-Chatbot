@@ -60,17 +60,17 @@ with open("./data/science.json") as data:
     data = json.load(data)
     for datum in data:
         try:
-            quest = {
+            _quest = {
                 "Question": datum["question"],
                 "Answers": []
             }
             for i in range(1, 4):
                 answer = datum["distractor" + str(i)]
-                quest["Answers"].append(answer[0].upper() + answer[1:])
-            quest["Correct"] = random.randint(0, len(quest["Answers"]))
+                _quest["Answers"].append(answer[0].upper() + answer[1:])
+            _quest["Correct"] = random.randint(0, len(_quest["Answers"]))
             correct_answer = datum["correct_answer"][0].upper() + datum["correct_answer"][1:]
-            quest["Answers"].insert(quest["Correct"], correct_answer)
-            science_dataset.append(quest)
+            _quest["Answers"].insert(_quest["Correct"], correct_answer)
+            science_dataset.append(_quest)
         except:
             pass
 

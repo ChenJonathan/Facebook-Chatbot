@@ -30,17 +30,18 @@ def add_consumption(handler, user_id, thread_id, thread_type):
 
 
 def try_user_consumption(client, author, text, thread_id):
-    author_id = author["_id"]
-    if author_id not in _user_map:
+    if thread_id not in _user_map:
         return False
+    consumed = False
 
-    result = _user_map[author_id][0](client, author, text, thread_id, ThreadType.USER)
-    if result:
-        _user_map[author_id].pop(0)
-        if not len(_user_map[author_id]):
-            del _user_map[author_id]
-        return True
-    return False
+    for consumer in list(_user_map[thread_id]):
+        result = consumer(client, author, text, thread_id, ThreadType.USER)
+        if result:
+            _user_map[thread_id].remove(consumer)
+            consumed = True
+    if not len(_user_map[thread_id]):
+        del _user_map[thread_id]
+    return consumed
 
 
 def try_group_consumption(client, author, text, thread_id):
@@ -48,20 +49,26 @@ def try_group_consumption(client, author, text, thread_id):
     if thread_id not in _group_map:
         return False
     current_map = _group_map[thread_id]
+    consumed = False
 
     if author_id in current_map:
-        current_key = author_id
-    elif None in current_map:
-        current_key = None
-    else:
-        return False
+        for consumer in list(current_map[author_id]):
+            result = consumer(client, author, text, thread_id, ThreadType.GROUP)
+            if result:
+                current_map[author_id].remove(consumer)
+                consumed = True
+        if not len(current_map[author_id]):
+            del current_map[author_id]
 
-    result = current_map[current_key][0](client, author, text, thread_id, ThreadType.GROUP)
-    if result:
-        current_map[current_key].pop(0)
-        if not len(current_map[current_key]):
-            del current_map[current_key]
-            if not len(current_map):
-                del _group_map[thread_id]
-        return True
-    return False
+    if None in current_map:
+        for consumer in list(current_map[None]):
+            result = consumer(client, author, text, thread_id, ThreadType.GROUP)
+            if result:
+                current_map[None].remove(consumer)
+                consumed = True
+        if not len(current_map[None]):
+            del current_map[None]
+
+    if not len(current_map):
+        del _group_map[thread_id]
+    return consumed
