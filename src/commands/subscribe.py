@@ -11,27 +11,17 @@ from util import *
 
 def _event_handler(time, args):
     if datetime.today().hour == 0:
-        colors = list(ThreadColor)
         groups = group_query_all({"Subscriptions": {"$exists": True}})
         for group in groups:
             group_id = group["_id"]
             subscriptions = group["Subscriptions"]
             try:
-                group = client.fetchGroupInfo(group_id)[group_id]
-
                 if "color" in subscriptions:
-                    color = group.color
-                    while color == group.color:
-                        color = random.choice(colors)
-                    client.changeThreadColor(color, thread_id=group_id)
+                    run_group_command(user_get(client.uid), "roll", "color", group_id)
                 if "emoji" in subscriptions:
-                    emoji = group.emoji
-                    while emoji == group.emoji:
-                        emoji = random_emoji()
-                    client.changeThreadEmoji(emoji, thread_id=group_id)
+                    run_group_command(user_get(client.uid), "roll", "emoji", group_id)
                 if "note" in subscriptions:
                     run_group_command(user_get(client.uid), "note", "", group_id)
-
             except FBchatException:
                 pass
     # - Reset timer

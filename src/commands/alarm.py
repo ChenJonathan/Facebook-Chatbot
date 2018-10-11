@@ -16,7 +16,7 @@ def _alarm_thread(time):
             alarm = alarm_list.pop(0)
             reply = "An alarm has gone off!\n\n{}".format(alarm["Note"])
             thread_type = client.fetchThreadInfo(thread_id)[thread_id].type
-            client.send(Message(reply), thread_id=thread_id, thread_type=thread_type)
+            client.send(Message(reply), thread_id, thread_type)
             modified = True
         if not len(alarm_list):
             del _alarms[thread_id]
@@ -53,7 +53,7 @@ def _alarm_handler(author, text, thread_id, thread_type):
             save_state("Alarms", _alarms)
 
     elif len(text):
-        date = dateparser.parse(text)
+        date = dateparser.parse(text, languages=["en"])
         if date:
             if (author["_id"], thread_id) not in _prompts:
                 add_consumption(_prompt_handler, author["_id"], thread_id, thread_type)
@@ -71,7 +71,6 @@ def _alarm_handler(author, text, thread_id, thread_type):
 
     else:
         reply = "There are no alarms set for this chat."
-
     client.send(Message(reply), thread_id=thread_id, thread_type=thread_type)
     return True
 
