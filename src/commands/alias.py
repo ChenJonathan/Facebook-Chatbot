@@ -2,17 +2,17 @@ from command import *
 from util import *
 
 
-def _alias_handler(client, author, args, thread_id, thread_type):
-    alias, user = split(args)
+def _alias_handler(author, text, thread_id, thread_type):
+    alias, user = split(text)
     alias = alias.lower()
     if not len(alias):
         return False
 
     elif len(user):
         if thread_type == ThreadType.USER:
-            user = match_user_by_search(client, user)
+            user = match_user_by_search(user)
         else:
-            user = match_user_in_group(client, thread_id, user)
+            user = match_user_in_group(thread_id, user)
         existing = user_query_one({"Alias": alias})
         if existing:
             user_update(existing["_id"], {"$unset": {"Alias": None}})

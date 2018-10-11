@@ -2,13 +2,7 @@ import os
 import pymongo
 
 from enums import Location, Talent
-
-_chatbot = None
-
-
-def init_mongo(client):
-    _chatbot = client
-
+import util
 
 _db = pymongo.MongoClient(os.environ.get("MONGODB_URI")).get_database()
 _db_self = _db["Self"]
@@ -67,7 +61,7 @@ def _user_try_get(user_id):
     user = _db_users.find_one({"_id": user_id})
     if user:
         return user
-    name = _chatbot.fetchThreadInfo(user_id)[user_id].name
+    name = util.client.fetchThreadInfo(user_id)[user_id].name
     _db_users.insert_one({
         "_id": user_id,
         "Name": name,

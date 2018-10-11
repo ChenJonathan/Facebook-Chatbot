@@ -2,8 +2,8 @@ from command import *
 from util import *
 
 
-def _user_to_string(client, user):
-    state, details = user_state(client, user["_id"])
+def _user_to_string(user):
+    state, details = user_state(user["_id"])
 
     text = ["<<{}>>{}".format(user["Name"], (" (" + user["Alias"] + ")") if "Alias" in user else "")]
     text.append("Priority: {}".format(priority_names[user["Priority"]]))
@@ -18,20 +18,19 @@ def _user_to_string(client, user):
     return "\n".join(text)
 
 
-def _check_handler(client, author, args, thread_id, thread_type):
-    if len(args):
+def _check_handler(author, text, thread_id, thread_type):
+    if len(text):
         if thread_type == ThreadType.USER:
-            user = match_user_by_alias(args)
+            user = match_user_by_alias(text)
         else:
-            user = match_user_in_group(client, thread_id, args)
+            user = match_user_in_group(thread_id, text)
         if not user:
             reply = "User not found."
             client.send(Message(reply), thread_id=thread_id, thread_type=thread_type)
-            return False
     else:
         user = author
 
-    reply = _user_to_string(client, user)
+    reply = _user_to_string(user)
     client.send(Message(reply), thread_id=thread_id, thread_type=thread_type)
     return True
 

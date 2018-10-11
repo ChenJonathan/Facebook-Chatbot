@@ -3,13 +3,15 @@ import math
 from enums import *
 from mongo import *
 
+client = None
+
 priority_names = ["Peasant", "User", "Mod", "Admin", "Master"]
 
 master_priority = len(priority_names) - 1
 master_id = "1564703352"
 
 
-def bot_is_admin(client, group_id):
+def bot_is_admin(group_id):
     group = client.fetchGroupInfo(group_id)[group_id]
     return client.uid in group.admins
 
@@ -19,12 +21,12 @@ def match_user_by_alias(query):
     return user_query_one({"Alias": query})
 
 
-def match_user_by_search(client, query):
+def match_user_by_search(query):
     user = client.searchForUsers(query)[0]
     return user_get(user.uid)
 
 
-def match_user_in_group(client, group_id, query):
+def match_user_in_group(group_id, query):
     group = client.fetchGroupInfo(group_id)[group_id]
     query = query.strip().lower()
     # - Alias match
@@ -48,7 +50,7 @@ def match_user_in_group(client, group_id, query):
     return None
 
 
-def user_state(client, user_id):
+def user_state(user_id):
     state, details, handler = client.user_states.get(user_id, (UserState.IDLE, {}, None))
     return state, details
 

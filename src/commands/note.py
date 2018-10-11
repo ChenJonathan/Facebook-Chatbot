@@ -4,13 +4,13 @@ from util import *
 _notes = load_state("Notes")
 
 
-def _note_handler(client, author, args, thread_id, thread_type):
-    if args.lower() == "clear":
+def _note_handler(author, text, thread_id, thread_type):
+    if text.lower() == "clear":
         if thread_id in _notes:
             del _notes[thread_id]
         reply = "Notes have been cleared for this chat."
-    elif len(args):
-        _notes[thread_id] = args
+    elif len(text):
+        _notes[thread_id] = text
         reply = "Notes have been updated for this chat!"
     elif thread_id in _notes:
         reply = "<<Note>>\n{}".format(_notes[thread_id])

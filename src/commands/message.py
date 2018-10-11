@@ -2,8 +2,8 @@ from command import *
 from util import *
 
 
-def _message_handler(client, author, args, thread_id, thread_type):
-    alias, reply = split(args)
+def _message_handler(author, text, thread_id, thread_type):
+    alias, reply = split(text)
     if not len(alias):
         return False
     user = match_user_by_alias(alias)

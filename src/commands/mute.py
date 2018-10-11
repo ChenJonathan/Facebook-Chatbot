@@ -2,15 +2,15 @@ from command import *
 from util import *
 
 
-def _mute_handler(client, author, args, thread_id, thread_type):
-    if not len(args):
+def _mute_handler(author, text, thread_id, thread_type):
+    if not len(text):
         return False
-    elif not bot_is_admin(client, thread_id):
+    elif not bot_is_admin(thread_id):
         reply = "I don't have permission to do this."
         client.send(Message(reply), thread_id=thread_id, thread_type=thread_type)
         return True
 
-    user = match_user_in_group(client, thread_id, args)
+    user = match_user_in_group(thread_id, text)
     if user:
         if user["Priority"] > author["Priority"]:
             client.removeUserFromGroup(author["_id"], thread_id)

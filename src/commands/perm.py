@@ -2,17 +2,17 @@ from command import *
 from util import *
 
 
-def _perm_handler(client, author, args, thread_id, thread_type):
+def _perm_handler(author, text, thread_id, thread_type):
     try:
-        priority, args = split(args)
+        priority, text = split(text)
         priority = int(priority)
-        assert len(args)
+        assert len(text)
     except:
         return False
     if thread_type == ThreadType.USER:
-        user = match_user_by_alias(args)
+        user = match_user_by_alias(text)
     else:
-        user = match_user_in_group(client, thread_id, args)
+        user = match_user_in_group(thread_id, text)
     if not user:
         reply = "User not found."
     elif user['_id'] == master_id:

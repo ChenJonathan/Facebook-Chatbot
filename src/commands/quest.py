@@ -5,11 +5,12 @@ from command import *
 from consume import *
 from data import terms, definitions
 from polling import *
+from util import *
 
 _quests = {}
 
 
-def _quest_timer(client, time, args):
+def _quest_timer(time, args):
     quest, thread_id = args["Quest"], args["ThreadID"]
     if thread_id not in _quests:
         add_group_consumption(_prompt_handler, None, thread_id)
@@ -17,7 +18,7 @@ def _quest_timer(client, time, args):
     client.send(Message(quest["Question"]), thread_id=thread_id, thread_type=ThreadType.GROUP)
 
 
-def _prompt_handler(client, author, text, thread_id, thread_type):
+def _prompt_handler(author, text, thread_id, thread_type):
     quest = _quests[thread_id]
     try:
         text = int(text)
@@ -41,9 +42,9 @@ def _prompt_handler(client, author, text, thread_id, thread_type):
     return False
 
 
-def _quest_handler(client, author, args, thread_id, thread_type):
+def _quest_handler(author, text, thread_id, thread_type):
     try:
-        choices = int(args) if len(args) else 5
+        choices = int(text) if len(text) else 5
         choices = min(max(choices, 2), 20)
     except ValueError:
         return False
@@ -68,8 +69,8 @@ def _quest_handler(client, author, args, thread_id, thread_type):
         _quests[thread_id] = quest
         reply = quest["Question"]
     else:
-        add_timer(datetime.now() + timedelta(seconds=5), _quest_timer, {"Quest": quest, "ThreadID": thread_id})
-        reply = "A quest will be sent out in 5 seconds."
+        add_timer(datetime.now() + timedelta(seconds=3), _quest_timer, {"Quest": quest, "ThreadID": thread_id})
+        reply = "A quest will be sent out in 3 seconds."
     client.send(Message(reply), thread_id=thread_id, thread_type=thread_type)
     return True
 

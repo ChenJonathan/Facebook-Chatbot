@@ -9,7 +9,7 @@ _alarms = load_state("Alarms")
 _prompts = {}
 
 
-def _alarm_thread(client, time):
+def _alarm_thread(time):
     modified = False
     for thread_id, alarm_list in list(_alarms.items()):
         while len(alarm_list) and time.timestamp() > alarm_list[0]["Time"]:
@@ -27,7 +27,7 @@ def _alarm_thread(client, time):
 add_thread(_alarm_thread)
 
 
-def _prompt_handler(client, author, text, thread_id, thread_type):
+def _prompt_handler(author, text, thread_id, thread_type):
     timestamp = _prompts.pop((author["_id"], thread_id), None)
     if timestamp is None:
         return True
@@ -42,8 +42,8 @@ def _prompt_handler(client, author, text, thread_id, thread_type):
     return True
 
 
-def _alarm_handler(client, author, args, thread_id, thread_type):
-    if args.lower() == "cancel":
+def _alarm_handler(author, text, thread_id, thread_type):
+    if text.lower() == "cancel":
         reply = "All alarms have been cancelled for this chat."
         if (author["_id"], thread_id) in _prompts:
             del _prompts[(author["_id"], thread_id)]
@@ -52,14 +52,13 @@ def _alarm_handler(client, author, args, thread_id, thread_type):
             del _alarms[thread_id]
             save_state("Alarms", _alarms)
 
-    elif len(args):
-        date = dateparser.parse(args)
+    elif len(text):
+        date = dateparser.parse(text)
         if date:
             if (author["_id"], thread_id) not in _prompts:
                 add_consumption(_prompt_handler, author["_id"], thread_id, thread_type)
             _prompts[(author["_id"], thread_id)] = date.timestamp()
-            time_string = date.strftime("%b %d %Y, %I:%M %p")
-            reply = "Alarm set at {}. ".format(time_string)
+            reply = "Alarm set at {}. ".format(date.strftime("%b %d %Y, %I:%M %p"))
             reply += "Please enter a note for this alarm or use \"!alarm cancel\" to cancel:"
         else:
             reply = "Not a valid time format."

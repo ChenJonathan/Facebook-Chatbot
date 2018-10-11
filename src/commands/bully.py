@@ -4,10 +4,10 @@ from command import *
 from util import *
 
 
-def _bully_handler(client, author, args, thread_id, thread_type):
-    if not len(args):
+def _bully_handler(author, text, thread_id, thread_type):
+    if not len(text):
         return False
-    user = match_user_in_group(client, thread_id, args)
+    user = match_user_in_group(thread_id, text)
     if user:
         reply = ""
         if user["Priority"] > author["Priority"]:

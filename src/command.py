@@ -7,7 +7,7 @@ _group_map = {}
 _define_map = load_state("Defines")
 
 
-def run_user_command(client, author, command, args, thread_id):
+def run_user_command(author, command, text, thread_id):
     if command not in _user_map:
         client.send(Message("Not a valid command."), thread_id=thread_id)
         return False
@@ -15,8 +15,8 @@ def run_user_command(client, author, command, args, thread_id):
 
     if author["Priority"] < mapping[1]:
         client.send(Message("You don't have permission to do this."), thread_id=thread_id)
-    elif not mapping[0](client, author, args, thread_id, ThreadType.USER):
-        run_user_command(client, author, "help", command, thread_id)
+    elif not mapping[0](author, text, thread_id, ThreadType.USER):
+        run_user_command(author, "help", command, thread_id)
     else:
         return True
     return False
@@ -27,14 +27,14 @@ def map_user_command(mappings, handler, priority, info):
         _user_map[mapping] = (handler, priority, info)
 
 
-def run_group_command(client, author, command, args, thread_id):
+def run_group_command(author, command, text, thread_id):
     if command in _define_map:
         mapping = _define_map[command]
         if mapping[0] == '!':
-            command, args = split(mapping)
+            command, text = split(mapping)
             command = command[1:].lower()
-            args = args.strip()
-            return run_group_command(client, author, command, args, thread_id)
+            text = text.strip()
+            return run_group_command(author, command, text, thread_id)
         else:
             client.send(Message(mapping), thread_id=thread_id, thread_type=ThreadType.GROUP)
             return True
@@ -46,8 +46,8 @@ def run_group_command(client, author, command, args, thread_id):
 
     if author["Priority"] < mapping[1]:
         client.send(Message("You don't have permission to do this."), thread_id=thread_id, thread_type=ThreadType.GROUP)
-    elif not mapping[0](client, author, args, thread_id, ThreadType.GROUP):
-        run_group_command(client, author, "help", command, thread_id)
+    elif not mapping[0](author, text, thread_id, ThreadType.GROUP):
+        run_group_command(author, "help", command, thread_id)
     else:
         return True
     return False
@@ -60,14 +60,14 @@ def map_group_command(mappings, handler, priority, info):
 
 # Define command
 
-def _define_handler(client, author, args, thread_id, thread_type):
-    command, args = split(args)
+def _define_handler(author, text, thread_id, thread_type):
+    command, text = split(text)
     if not len(command):
         return False
     elif command in _group_map and author["Priority"] < 3:
         reply = "You don't have permission to do this."
-    elif len(args):
-        _define_map[command] = args
+    elif len(text):
+        _define_map[command] = text
         reply = "!{} has been defined!".format(command)
     elif command in _define_map:
         del _define_map[command]
@@ -95,11 +95,13 @@ map_group_command(["define", "d"], _define_handler, 2, _define_info)
 # Help command
 
 _user_strings = [
+    (0, "!alarm: Set an alarm"),
     (3, "!alias: Alias assignment"),
     (0, "!check: See user statistics"),
     (2, "!define: Command mapping"),
     (0, "!help: Read documentation"),
     (4, "!message: Gateway messaging"),
+    (0, "!note: Save and view notes"),
     (4, "!perm: Change user priority"),
     (2, "!quest: Solve quizzes for gold"),
     (2, "!response: Response priming"),
@@ -127,16 +129,16 @@ _group_strings = [
 ]
 
 
-def _help_handler(client, author, args, thread_id, thread_type):
-    if len(args):
-        args = args.lower()
+def _help_handler(author, text, thread_id, thread_type):
+    if len(text):
+        text = text.lower()
         current_map = _user_map if thread_type == ThreadType.USER else _group_map
-        if args in current_map:
-            if author["Priority"] >= current_map[args][1]:
-                reply = current_map[args][2]
+        if text in current_map:
+            if author["Priority"] >= current_map[text][1]:
+                reply = current_map[text][2]
             else:
                 reply = "You don't have permission to do this."
-        elif thread_type == ThreadType.GROUP and args in _define_map:
+        elif thread_type == ThreadType.GROUP and text in _define_map:
             reply = "This is a redefined command."
         else:
             reply = "Not a valid command."
