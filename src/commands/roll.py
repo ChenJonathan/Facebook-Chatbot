@@ -41,7 +41,13 @@ def _roll_handler(author, text, thread_id, thread_type):
 _roll_info = """<<Roll>>
 *Usage*: "!roll <sides>"
 *Example*: "!roll 10"
-Rolls a <sides> sided die. <sides> defaults to 6 if left blank."""
+Rolls a <sides> sided die. <sides> defaults to 6 if left blank.
+
+*Usage*: "!roll color"
+Randomly changes the chat color.
+
+*Usage*: "!roll emoji"
+Randomly changes the chat emoji."""
 
 map_user_command(["roll"], _roll_handler, 0, _roll_info)
 map_group_command(["roll", "r"], _roll_handler, 0, _roll_info)
