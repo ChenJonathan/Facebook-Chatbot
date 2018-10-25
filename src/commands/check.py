@@ -26,12 +26,13 @@ def _check_handler(author, text, thread_id, thread_type):
             user = match_user_in_group(thread_id, text)
         if not user:
             reply = "User not found."
-            client.send(Message(reply), thread_id=thread_id, thread_type=thread_type)
+            client.send(Message(reply), thread_id, thread_type)
+            return True
     else:
         user = author
 
     reply = _user_to_string(user)
-    client.send(Message(reply), thread_id=thread_id, thread_type=thread_type)
+    client.send(Message(reply), thread_id, thread_type)
     return True
 
 

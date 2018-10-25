@@ -16,7 +16,7 @@ def _note_handler(author, text, thread_id, thread_type):
         reply = "<<Note>>\n{}".format(_notes[thread_id])
     else:
         reply = "Notes have not been set for this chat."
-    client.send(Message(reply), thread_id=thread_id, thread_type=thread_type)
+    client.send(Message(reply), thread_id, thread_type)
     save_state("Notes", _notes)
     return True
 

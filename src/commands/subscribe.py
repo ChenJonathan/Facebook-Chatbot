@@ -50,7 +50,7 @@ def _subscribe_handler(author, text, thread_id, thread_type):
     else:
         group["Subscriptions"].append(text)
         reply = "This conversation has been subscribed to {} events.".format(text)
-    client.send(Message(reply), thread_id=thread_id, thread_type=thread_type)
+    client.send(Message(reply), thread_id, thread_type)
 
     if len(group["Subscriptions"]):
         group_update(thread_id, {"$set": {"Subscriptions": group["Subscriptions"]}})

@@ -7,7 +7,7 @@ def _mute_handler(author, text, thread_id, thread_type):
         return False
     elif not bot_is_admin(thread_id):
         reply = "I don't have permission to do this."
-        client.send(Message(reply), thread_id=thread_id, thread_type=thread_type)
+        client.send(Message(reply), thread_id, thread_type)
         return True
 
     user = match_user_in_group(thread_id, text)
@@ -18,7 +18,7 @@ def _mute_handler(author, text, thread_id, thread_type):
             client.removeUserFromGroup(user["_id"], thread_id)
     else:
         reply = "User not found."
-        client.send(Message(reply), thread_id=thread_id, thread_type=thread_type)
+        client.send(Message(reply), thread_id, thread_type)
     return True
 
 

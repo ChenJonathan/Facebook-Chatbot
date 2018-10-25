@@ -24,7 +24,7 @@ def add_group_consumption(handler, user_id, thread_id):
 # - Handler should take in author, text, thread_id, and thread_type
 def add_consumption(handler, user_id, thread_id, thread_type):
     if thread_type == ThreadType.USER:
-        add_user_consumption(handler, user_id)
+        add_user_consumption(handler, thread_id)
     else:
         add_group_consumption(handler, user_id, thread_id)
 

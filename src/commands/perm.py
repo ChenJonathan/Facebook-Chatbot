@@ -22,7 +22,7 @@ def _perm_handler(author, text, thread_id, thread_type):
     else:
         user_update(user["_id"], {"$set": {"Priority": priority}})
         reply = "{}'s priority has been set to {} ({}).".format(user['Name'], priority, priority_names[priority])
-    client.send(Message(reply), thread_id=thread_id, thread_type=thread_type)
+    client.send(Message(reply), thread_id, thread_type)
     return True
 
 

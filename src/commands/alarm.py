@@ -37,7 +37,7 @@ def _prompt_handler(author, text, thread_id, thread_type):
     while index < len(_alarms[thread_id]) and _alarms[thread_id][index]["Time"] < timestamp:
         index += 1
     _alarms[thread_id].insert(index, {"Time": timestamp, "Note": text})
-    client.send(Message("The alarm has been set!"), thread_id=thread_id, thread_type=thread_type)
+    client.send(Message("The alarm has been set!"), thread_id, thread_type)
     save_state("Alarms", _alarms)
     return True
 
@@ -71,7 +71,7 @@ def _alarm_handler(author, text, thread_id, thread_type):
 
     else:
         reply = "There are no alarms set for this chat."
-    client.send(Message(reply), thread_id=thread_id, thread_type=thread_type)
+    client.send(Message(reply), thread_id, thread_type)
     return True
 
 

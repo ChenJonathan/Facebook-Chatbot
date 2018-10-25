@@ -32,7 +32,7 @@ def _alias_handler(author, text, thread_id, thread_type):
         else:
             reply = "Alias not found."
 
-    client.send(Message(reply), thread_id=thread_id, thread_type=thread_type)
+    client.send(Message(reply), thread_id, thread_type)
     return True
 
 

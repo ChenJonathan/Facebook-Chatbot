@@ -8,11 +8,11 @@ def _message_handler(author, text, thread_id, thread_type):
         return False
     user = match_user_by_alias(alias)
     if not user:
-        client.send(Message("User not found."), thread_id=thread_id, thread_type=thread_type)
+        client.send(Message("User not found."), thread_id, thread_type)
     elif len(reply):
-        client.send(Message(reply), thread_id=user["_id"])
+        client.send(Message(reply), user["_id"])
     else:
-        client.send(Message(emoji_size=EmojiSize.SMALL), thread_id=user["_id"])
+        client.send(Message(emoji_size=EmojiSize.SMALL), user["_id"])
     return True
 
 

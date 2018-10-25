@@ -17,7 +17,7 @@ def _bully_handler(author, text, thread_id, thread_type):
         reply += "{}.".format(requests.get(url).text)
     else:
         reply = "User not found."
-    client.send(Message(reply), thread_id=thread_id, thread_type=thread_type)
+    client.send(Message(reply), thread_id, thread_type)
     return True
 
 

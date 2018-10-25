@@ -15,7 +15,7 @@ def _quest_timer(time, args):
     if thread_id not in _quests:
         add_group_consumption(_prompt_handler, None, thread_id)
     _quests[thread_id] = quest
-    client.send(Message(quest["Question"]), thread_id=thread_id, thread_type=ThreadType.GROUP)
+    client.send(Message(quest["Question"]), thread_id, ThreadType.GROUP)
 
 
 def _prompt_handler(author, text, thread_id, thread_type):
@@ -35,7 +35,7 @@ def _prompt_handler(author, text, thread_id, thread_type):
             reply = "{} has gained {} gold ".format(author["Name"], format_num(reward, truncate=True))
             reply += "and is now at {} gold total!".format(format_num(author["Gold"] + reward, truncate=True))
             client.reactToMessage(client.last_message.uid, MessageReaction.YES)
-            client.send(Message(reply), thread_id=thread_id, thread_type=thread_type)
+            client.send(Message(reply), thread_id, thread_type)
             return True
         else:
             client.reactToMessage(client.last_message.uid, MessageReaction.NO)
@@ -71,7 +71,7 @@ def _quest_handler(author, text, thread_id, thread_type):
     else:
         add_timer(datetime.now() + timedelta(seconds=3), _quest_timer, {"Quest": quest, "ThreadID": thread_id})
         reply = "A quest will be sent out in 3 seconds."
-    client.send(Message(reply), thread_id=thread_id, thread_type=thread_type)
+    client.send(Message(reply), thread_id, thread_type)
     return True
 
 

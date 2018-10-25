@@ -9,12 +9,12 @@ _define_map = load_state("Defines")
 
 def run_user_command(author, command, text, thread_id):
     if command not in _user_map:
-        client.send(Message("Not a valid command."), thread_id=thread_id)
+        client.send(Message("Not a valid command."), thread_id)
         return False
     mapping = _user_map[command]
 
     if author["Priority"] < mapping[1]:
-        client.send(Message("You don't have permission to do this."), thread_id=thread_id)
+        client.send(Message("You don't have permission to do this."), thread_id)
     elif not mapping[0](author, text, thread_id, ThreadType.USER):
         run_user_command(author, "help", command, thread_id)
     else:
@@ -30,22 +30,22 @@ def map_user_command(mappings, handler, priority, info):
 def run_group_command(author, command, text, thread_id):
     if command in _define_map:
         mapping = _define_map[command]
-        if mapping[0] == '!':
+        if mapping[0] == "!":
             command, text = split(mapping)
             command = command[1:].lower()
             text = text.strip()
             return run_group_command(author, command, text, thread_id)
         else:
-            client.send(Message(mapping), thread_id=thread_id, thread_type=ThreadType.GROUP)
+            client.send(Message(mapping), thread_id, ThreadType.GROUP)
             return True
 
     if command not in _group_map:
-        client.send(Message("Not a valid command."), thread_id=thread_id, thread_type=ThreadType.GROUP)
+        client.send(Message("Not a valid command."), thread_id, ThreadType.GROUP)
         return False
     mapping = _group_map[command]
 
     if author["Priority"] < mapping[1]:
-        client.send(Message("You don't have permission to do this."), thread_id=thread_id, thread_type=ThreadType.GROUP)
+        client.send(Message("You don't have permission to do this."), thread_id, ThreadType.GROUP)
     elif not mapping[0](author, text, thread_id, ThreadType.GROUP):
         run_group_command(author, "help", command, thread_id)
     else:
@@ -74,7 +74,7 @@ def _define_handler(author, text, thread_id, thread_type):
         reply = "!{} has been cleared.".format(command)
     else:
         reply = "!{} does not exist.".format(command)
-    client.send(Message(reply), thread_id=thread_id, thread_type=thread_type)
+    client.send(Message(reply), thread_id, thread_type)
     save_state("Defines", _define_map)
     return True
 
@@ -149,7 +149,7 @@ def _help_handler(author, text, thread_id, thread_type):
         for required_priority, string in strings:
             if priority >= required_priority:
                 reply += "\n" + string
-    client.send(Message(reply), thread_id=thread_id, thread_type=thread_type)
+    client.send(Message(reply), thread_id, thread_type)
     return True
 
 
