@@ -1,10 +1,6 @@
 from datetime import timedelta
-import random
-import signal
-import sys
 
 from command import *
-from data import random_emoji
 from polling import *
 from util import *
 

@@ -7,34 +7,46 @@ _group_map = {}
 _define_map = load_state("Defines")
 
 
-def run_user_command(author, command, text, thread_id):
-    if command not in _user_map:
-        client.send(Message("Not a valid command."), thread_id)
-        return False
-    mapping = _user_map[command]
-
-    if author["Priority"] < mapping[1]:
-        client.send(Message("You don't have permission to do this."), thread_id)
-    elif not mapping[0](author, text, thread_id, ThreadType.USER):
-        run_user_command(author, "help", command, thread_id)
-    else:
-        return True
-    return False
-
-
 def map_user_command(mappings, handler, priority, info):
     for mapping in mappings:
         _user_map[mapping] = (handler, priority, info)
 
 
-def run_group_command(author, command, text, thread_id):
+def map_group_command(mappings, handler, priority, info):
+    for mapping in mappings:
+        _group_map[mapping] = (handler, priority, info)
+
+
+def run_command(author, command, text, thread_id, thread_type):
+    if thread_type == ThreadType.USER:
+        _run_user_command(author, command, text, thread_id)
+    else:
+        _run_group_command(author, command, text, thread_id)
+
+
+def _run_user_command(author, command, text, thread_id):
+    if command not in _user_map:
+        client.send(Message("Not a valid command."), thread_id, ThreadType.USER)
+        return False
+    mapping = _user_map[command]
+
+    if author["Priority"] < mapping[1]:
+        client.send(Message("You don't have permission to do this."), thread_id, ThreadType.USER)
+    elif not mapping[0](author, text, thread_id, ThreadType.USER):
+        _run_user_command(author, "help", command, thread_id)
+    else:
+        return True
+    return False
+
+
+def _run_group_command(author, command, text, thread_id):
     if command in _define_map:
         mapping = _define_map[command]
         if mapping[0] == "!":
             command, text = split(mapping)
             command = command[1:].lower()
             text = text.strip()
-            return run_group_command(author, command, text, thread_id)
+            return _run_group_command(author, command, text, thread_id)
         else:
             client.send(Message(mapping), thread_id, ThreadType.GROUP)
             return True
@@ -47,15 +59,10 @@ def run_group_command(author, command, text, thread_id):
     if author["Priority"] < mapping[1]:
         client.send(Message("You don't have permission to do this."), thread_id, ThreadType.GROUP)
     elif not mapping[0](author, text, thread_id, ThreadType.GROUP):
-        run_group_command(author, "help", command, thread_id)
+        _run_group_command(author, "help", command, thread_id)
     else:
         return True
     return False
-
-
-def map_group_command(mappings, handler, priority, info):
-    for mapping in mappings:
-        _group_map[mapping] = (handler, priority, info)
 
 
 # Define command

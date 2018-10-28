@@ -6,8 +6,9 @@ _timers = []   # Called when time is exceeded
 
 def polling():
     now = datetime.now()
-    for handler in _threads:
-        handler(now)
+    for handler in list(_threads):
+        if handler(now):
+            _threads.remove(handler)
 
 
 # - Handler should take in time
@@ -27,6 +28,7 @@ def _timer_handler(time):
     while len(_timers) and time > _timers[0][0]:
         timer_time, handler, args = _timers.pop(0)
         handler(timer_time, args)
+    return False
 
 
 add_thread(_timer_handler)

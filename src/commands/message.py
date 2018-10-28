@@ -10,9 +10,9 @@ def _message_handler(author, text, thread_id, thread_type):
     if not user:
         client.send(Message("User not found."), thread_id, thread_type)
     elif len(reply):
-        client.send(Message(reply), user["_id"])
+        client.send(Message(reply), user["_id"], ThreadType.USER)
     else:
-        client.send(Message(emoji_size=EmojiSize.SMALL), user["_id"])
+        client.send(Message(emoji_size=EmojiSize.SMALL), user["_id"], ThreadType.USER)
     return True
 
 

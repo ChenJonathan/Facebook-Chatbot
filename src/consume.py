@@ -1,74 +1,108 @@
 from fbchat.models import *
 
-_user_map = {}
-_group_map = {}
+from util import *
+
+_handler_map = {}  # Handler name to handler
+_active_map, _passive_map = load_state("Consumes")  # thread_id to user_id to consumer dicts
 
 
-# - Handler should take in author, text, thread_id, and thread_type
-def add_user_consumption(handler, user_id):
-    if user_id not in _user_map:
-        _user_map[user_id] = []
-    _user_map[user_id].append(handler)
+# - Handler should take in author, text, thread_id, thread_type, and args
+def add_handler(handler_name, handler):
+    _handler_map[handler_name] = handler
 
 
-# - Handler should take in author, text, thread_id, and thread_type
-def add_group_consumption(handler, user_id, thread_id):
-    if thread_id not in _group_map:
-        _group_map[thread_id] = {}
-    current_map = _group_map[thread_id]
+def add_active_consumption(user_id, thread_id, thread_type, handler_name, prompt=None, args=None):
+    if thread_id not in _active_map:
+        _active_map[thread_id] = {}
+    current_map = _active_map[thread_id]
+
+    # - "None" is used to represent all users
+    user_id = user_id or "None"
     if user_id not in current_map:
         current_map[user_id] = []
-    current_map[user_id].append(handler)
+        if prompt is not None:
+            client.send(Message(prompt), thread_id, thread_type)
+
+    current_map[user_id].append({
+        "Handler": handler_name,
+        "Prompt": prompt,
+        "Args": args
+    })
+    save_state("Consumes", [_active_map, _passive_map])
 
 
-# - Handler should take in author, text, thread_id, and thread_type
-def add_consumption(handler, user_id, thread_id, thread_type):
-    if thread_type == ThreadType.USER:
-        add_user_consumption(handler, thread_id)
-    else:
-        add_group_consumption(handler, user_id, thread_id)
+def add_passive_consumption(user_id, thread_id, handler_name, args=None):
+    if thread_id not in _passive_map:
+        _passive_map[thread_id] = {}
+    current_map = _passive_map[thread_id]
+
+    # - "None" is used to represent all users
+    user_id = user_id or "None"
+    if user_id not in current_map:
+        current_map[user_id] = []
+
+    current_map[user_id].append({
+        "Handler": handler_name,
+        "Args": args
+    })
+    save_state("Consumes", [_active_map, _passive_map])
 
 
-def try_user_consumption(author, text, thread_id):
-    if thread_id not in _user_map:
-        return False
-    consumed = False
-
-    for consumer in list(_user_map[thread_id]):
-        result = consumer(author, text, thread_id, ThreadType.USER)
-        if result:
-            _user_map[thread_id].remove(consumer)
-            consumed = True
-    if not len(_user_map[thread_id]):
-        del _user_map[thread_id]
-    return consumed
+def try_consumption(author, text, thread_id, thread_type):
+    if _try_active_consumption(author, text, thread_id, thread_type):
+        return True
+    _try_passive_consumption(author, text, thread_id, thread_type)
+    return False
 
 
-def try_group_consumption(author, text, thread_id):
+def _try_active_consumption(author, text, thread_id, thread_type):
     author_id = author["_id"]
-    if thread_id not in _group_map:
+    if thread_id not in _active_map:
         return False
-    current_map = _group_map[thread_id]
-    consumed = False
+    current_map = _active_map[thread_id]
+    current_key = author_id if author_id in current_map else "None"
+    if current_key not in current_map:
+        return False
 
-    if author_id in current_map:
-        for consumer in list(current_map[author_id]):
-            result = consumer(author, text, thread_id, ThreadType.GROUP)
-            if result:
-                current_map[author_id].remove(consumer)
-                consumed = True
-        if not len(current_map[author_id]):
-            del current_map[author_id]
+    consumer = current_map[current_key][0]
+    handler = _handler_map[consumer["Handler"]]
+    if handler(author, text, thread_id, thread_type, consumer["Args"]):
+        current_map[current_key].pop(0)
+        if len(current_map[current_key]):
+            prompt = current_map[current_key][0]["Prompt"]
+            if prompt is not None:
+                client.send(Message(prompt), thread_id, thread_type)
+        else:
+            del current_map[current_key]
+            if not len(current_map):
+                del _active_map[thread_id]
+    save_state("Consumes", [_active_map, _passive_map])
+    return True
 
-    if None in current_map:
-        for consumer in list(current_map[None]):
-            result = consumer(author, text, thread_id, ThreadType.GROUP)
-            if result:
-                current_map[None].remove(consumer)
-                consumed = True
-        if not len(current_map[None]):
-            del current_map[None]
 
-    if not len(current_map):
-        del _group_map[thread_id]
-    return consumed
+def _try_passive_consumption(author, text, thread_id, thread_type):
+    author_id = author["_id"]
+    if thread_id not in _passive_map:
+        return False
+    current_map = _passive_map[thread_id]
+
+    for current_key in [author_id, "None"]:
+        if current_key not in current_map:
+            continue
+
+        for consumer in list(current_map[current_key]):
+            if consumer["Handler"] not in _handler_map:
+                current_map["None"].remove(consumer)
+                continue
+
+            handler = _handler_map[consumer["Handler"]]
+            if handler(author, text, thread_id, thread_type, consumer["Args"]):
+                current_map[current_key].remove(consumer)
+
+        if not len(current_map[current_key]):
+            del current_map[current_key]
+            if not len(current_map):
+                del _passive_map[thread_id]
+
+    save_state("Consumes", [_active_map, _passive_map])
+    return False
