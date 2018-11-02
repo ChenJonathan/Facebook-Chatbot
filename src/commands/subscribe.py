@@ -13,11 +13,11 @@ def _event_handler(time, args):
             subscriptions = group["Subscriptions"]
             try:
                 if "color" in subscriptions:
-                    run_group_command(user_get(client.uid), "roll", "color", group_id)
+                    run_command(user_get(client.uid), "roll", "color", group_id, ThreadType.GROUP)
                 if "emoji" in subscriptions:
-                    run_group_command(user_get(client.uid), "roll", "emoji", group_id)
+                    run_command(user_get(client.uid), "roll", "emoji", group_id, ThreadType.GROUP)
                 if "note" in subscriptions:
-                    run_group_command(user_get(client.uid), "note", "", group_id)
+                    run_command(user_get(client.uid), "note", "", group_id, ThreadType.GROUP)
             except FBchatException:
                 pass
     # - Reset timer
@@ -48,7 +48,7 @@ def _subscribe_handler(author, text, thread_id, thread_type):
         reply = "This conversation has been subscribed to {} events.".format(text)
     client.send(Message(reply), thread_id, thread_type)
 
-    if len(group["Subscriptions"]):
+    if "Subscriptions" in group:
         group_update(thread_id, {"$set": {"Subscriptions": group["Subscriptions"]}})
     else:
         group_update(thread_id, {"$unset": {"Subscriptions": None}})

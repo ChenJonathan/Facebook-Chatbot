@@ -63,8 +63,7 @@ def _alarm_thread(time):
         while len(alarm_list) and time.timestamp() > alarm_list[0]["Time"]:
             alarm = alarm_list.pop(0)
             reply = "An alarm has gone off!\n\n{}".format(alarm["Note"])
-            thread_type = client.fetchThreadInfo(thread_id)[thread_id].type
-            client.send(Message(reply), thread_id, thread_type)
+            client.send(Message(reply), thread_id)
             modified = True
         if not len(alarm_list):
             del _alarms[thread_id]
