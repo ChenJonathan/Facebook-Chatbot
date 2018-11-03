@@ -58,7 +58,7 @@ def _prompt_handler(author, text, thread_id, thread_type, args):
     try:
         text = int(text)
         assert 0 < text <= len(quest["Answers"])
-    except (AssertionError, ValueError):
+    except (AssertionError, TypeError, ValueError):
         if thread_type == ThreadType.USER:
             client.send(Message("Not a valid answer."), thread_id, thread_type)
         return False

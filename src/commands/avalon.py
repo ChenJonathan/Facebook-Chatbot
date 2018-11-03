@@ -299,6 +299,7 @@ def _assign_roles(thread_id):
             for name in sorted([player["Name"] for player in filter(lambda p: p != player, evil_players)]):
                 reply += "\n-> {}".format(name)
 
+        reply += "\n\nDirect messaging is allowed and encouraged."
         client.send(Message(reply), user_id, ThreadType.USER)
 
     # Summarize game rules
@@ -313,6 +314,7 @@ def _assign_roles(thread_id):
         group_reply += "\n-> *{}* ({}): {}".format(role_name, "Good", _DESCRIPTIONS[role_name])
     for role_name in filter(lambda r: r in roles, _EVIL_CHARS):
         group_reply += "\n-> *{}* ({}): {}".format(role_name, "Evil", _DESCRIPTIONS[role_name])
+    client.send(Message(group_reply), thread_id, ThreadType.GROUP)
 
 
 def _prompt_vote(author, text, thread_id, thread_type, args):
@@ -335,12 +337,15 @@ def _prompt_vote(author, text, thread_id, thread_type, args):
 
     # Check for vote completion
     if len(game["Players"]) == len(game["Votes"]["Accept"]) + len(game["Votes"]["Reject"]):
-        group_reply = "*Accept*:"
-        for user_id in game["Votes"]["Accept"]:
-            group_reply += "\n-> {}".format(game["Players"][user_id]["Name"])
-        group_reply += "\n*Reject*:"
-        for user_id in game["Votes"]["Reject"]:
-            group_reply += "\n-> {}".format(game["Players"][user_id]["Name"])
+        group_reply = ""
+        if len(game["Votes"]["Accept"]):
+            group_reply += "*Accept*:"
+            for user_id in game["Votes"]["Accept"]:
+                group_reply += "\n-> {}".format(game["Players"][user_id]["Name"])
+        if len(game["Votes"]["Reject"]):
+            group_reply += "\n*Reject*:"
+            for user_id in game["Votes"]["Reject"]:
+                group_reply += "\n-> {}".format(game["Players"][user_id]["Name"])
 
         # Begin quest phase
         if len(game["Votes"]["Accept"]) > len(game["Votes"]["Reject"]):
@@ -351,8 +356,11 @@ def _prompt_vote(author, text, thread_id, thread_type, args):
             fail_threshold = _FAIL_THRESHOLD[len(game["Players"]) - _MIN_PLAYERS][quest]
             group_reply += "\n\nThe vote has passed! The team must now vote to complete the quest in private chat."
             group_reply += " The quest fails with {} fail vote(s).".format(fail_threshold)
-            prompt = "\n\nEnter \"success\" or \"fail\" in private chat to determine the outcome of the quest. "
-            prompt += "The quest fails with {} fail vote(s).".format(fail_threshold)
+            prompt = "\n\nEnter \"success\" or \"fail\" to determine the outcome of the quest. "
+            prompt += "The quest fails with {} fail vote(s).\n\n".format(fail_threshold)
+            prompt += "The team consists of the following players:"
+            for member in game["Team"]:
+                prompt += "\n-> {}".format(game["Players"][member]["Name"])
             for player_id in game["Team"]:
                 add_active_consumption(None, player_id, ThreadType.USER, "AvalonQuest", prompt, args)
 
@@ -435,7 +443,7 @@ def _prompt_quest(author, text, thread_id, thread_type, args):
                 group_reply += "\n\n*Successful quests*: {}\n".format(game["Success"])
                 group_reply += "*Failed quests: {}*\n\n".format(game["Fail"])
                 group_reply += "The new leader is {} ".format(game["Players"][game["Leaders"][-1]]["Name"])
-                group_reply += "and {} players are needed for the team.".format(team_size)
+                group_reply += "and {} players are needed for the team. ".format(team_size)
                 group_reply += "Use \"!avalon add <name>\" to add players to the team, \"!avalon clear\" "
                 group_reply += "to clear the current team, and \"!avalon submit\" to submit the current team."
 

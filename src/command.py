@@ -119,6 +119,7 @@ _user_strings = [
 
 _group_strings = [
     (0, "<Game Commands>"),
+    (0, "!avalon: Play a game of Avalon"),
     (0, "!check: See user statistics"),
     (0, "!duel: Duel another player"),
     (0, "!quest: Solve quizzes for gold"),
