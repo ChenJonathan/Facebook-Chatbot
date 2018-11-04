@@ -78,16 +78,6 @@ def _start_handler(author, thread_id):
             reply = "Only the session host can start the game."
         else:
             _start_game(thread_id)
-            game["State"] = _GameState.TEAM.value
-            game["Leaders"] = [random.choice(list(game["Players"].keys()))]
-            game["Team"] = []
-            game["Success"] = 0
-            game["Fail"] = 0
-            team_size = _TEAM_SIZE[len(game["Players"]) - _MIN_PLAYERS][0]
-            reply = "The current leader is {} ".format(game["Players"][game["Leaders"][-1]]["Name"])
-            reply += "and {} players are needed for the team.\n\n".format(team_size)
-            reply += "Use \"!avalon add <name>\" to add players to the team, \"!avalon clear\" "
-            reply += "to clear the current team, and \"!avalon submit\" to submit the current team."
     else:
         reply = "A game is already in progress."
     client.send(Message(reply), thread_id, ThreadType.GROUP)
@@ -121,7 +111,7 @@ def _team_handler(author, command, text, thread_id):
         return False
     elif game["State"] != _GameState.TEAM.value:
         reply = "A team is not currently being proposed."
-    elif game["Leaders"][-1] != author["_id"]:
+    elif game["Order"][game["Leader"]] != author["_id"]:
         reply = "Only the leader can propose a team."
 
     elif command == "add":
@@ -208,8 +198,9 @@ def _status_handler(thread_id):
         reply += "and \"!avalon submit\" to submit the current team.\n\n"
         reply += "*Successful quests*: {}\n".format(game["Success"])
         reply += "*Failed quests*: {}\n\n".format(game["Fail"])
-        reply += "*Rejected teams*: {}\n".format(len(game["Leaders"]) - 1)
-        reply += "*Current leader*: {}\n".format(game["Players"][game["Leaders"][-1]]["Name"])
+        reply += "*Rejected teams*: {}\n".format(game["Attempts"])
+        leader_id = game["Order"][game["Leader"]]
+        reply += "*Current leader*: {}\n".format(game["Players"][leader_id]["Name"])
         if len(game["Team"]):
             reply += "*Current team*:"
             for player in game["Team"]:
@@ -219,8 +210,9 @@ def _status_handler(thread_id):
         reply = "A quest team is being voted on. Enter \"accept\" or \"reject\" in private chat to enter your vote.\n\n"
         reply += "*Successful quests*: {}\n".format(game["Success"])
         reply += "*Failed quests*: {}\n\n".format(game["Fail"])
-        reply += "*Rejected teams*: {}\n".format(len(game["Leaders"]) - 1)
-        reply += "*Current leader*: {}\n".format(game["Players"][game["Leaders"][-1]]["Name"])
+        reply += "*Rejected teams*: {}\n".format(game["Attempts"])
+        leader_id = game["Order"][game["Leader"]]
+        reply += "*Current leader*: {}\n".format(game["Players"][leader_id]["Name"])
         reply += "*Current team*:"
         for player in game["Team"]:
             reply += "\n-> {}".format(game["Players"][player]["Name"])
@@ -328,6 +320,8 @@ def _start_game(thread_id):
         client.send(Message(reply), user_id, ThreadType.USER)
 
     # Summarize game rules
+    game["Success"] = 0
+    game["Fail"] = 0
     group_reply = "The game has begun! The side of good wins if three quests are completed successfully. "
     group_reply += "The side of evil wins if three quests fail or if Mordred can guess Merlin's identity "
     group_reply += "at the end of the game.\n\n"
@@ -339,6 +333,24 @@ def _start_game(thread_id):
         group_reply += "\n-> *{}* ({}): {}".format(role_name, "Good", _DESCRIPTIONS[role_name])
     for role_name in filter(lambda r: r in roles, _EVIL_CHARS):
         group_reply += "\n-> *{}* ({}): {}".format(role_name, "Evil", _DESCRIPTIONS[role_name])
+    client.send(Message(group_reply), thread_id, ThreadType.GROUP)
+
+    # Initialize team phase
+    game["State"] = _GameState.TEAM.value
+    game["Order"] = list(game["Players"].keys())
+    game["Leader"] = 0
+    game["Team"] = []
+    game["Attempts"] = 0
+    random.shuffle(game["Order"])
+    group_reply = "Team leaders will be chosen in the following order:"
+    for user_id in game["Order"]:
+        group_reply += "\n-> {}".format(game["Players"][user_id]["Name"])
+    leader_id = game["Order"][game["Leader"]]
+    group_reply += "\n\nThe current leader is {} ".format(game["Players"][leader_id]["Name"])
+    team_size = _TEAM_SIZE[len(game["Players"]) - _MIN_PLAYERS][0]
+    group_reply += "and {} players are needed for the team.\n\n".format(team_size)
+    group_reply += "Use \"!avalon add <name>\" to add players to the team, \"!avalon clear\" "
+    group_reply += "to clear the current team, and \"!avalon submit\" to submit the current team."
     client.send(Message(group_reply), thread_id, ThreadType.GROUP)
 
 
@@ -362,62 +374,65 @@ def _prompt_vote(author, text, thread_id, thread_type, args):
 
     # Check for vote completion
     if len(game["Players"]) == len(game["Votes"]["Accept"]) + len(game["Votes"]["Reject"]):
-        group_reply = ""
-        if len(game["Votes"]["Accept"]):
-            group_reply += "*Accept*:"
-            for user_id in game["Votes"]["Accept"]:
-                group_reply += "\n-> {}".format(game["Players"][user_id]["Name"])
-        if len(game["Votes"]["Reject"]):
-            group_reply += "\n*Reject*:"
-            for user_id in game["Votes"]["Reject"]:
-                group_reply += "\n-> {}".format(game["Players"][user_id]["Name"])
-
-        # Begin quest phase
-        if len(game["Votes"]["Accept"]) > len(game["Votes"]["Reject"]):
-            game["State"] = _GameState.QUEST.value
-            del game["Leaders"]
-            game["Votes"] = {"Success": [], "Fail": []}
-            quest = game["Success"] + game["Fail"]
-            fail_threshold = _FAIL_THRESHOLD[len(game["Players"]) - _MIN_PLAYERS][quest]
-            group_reply += "\n\nThe vote has passed! The team must now vote to complete the quest in private chat."
-            group_reply += " The quest fails with {} fail vote(s).".format(fail_threshold)
-            prompt = "\n\nEnter \"success\" or \"fail\" to determine the outcome of the quest. "
-            prompt += "The quest fails with {} fail vote(s).\n\n".format(fail_threshold)
-            prompt += "The team consists of the following players:"
-            for member in game["Team"]:
-                prompt += "\n-> {}".format(game["Players"][member]["Name"])
-            for player_id in game["Team"]:
-                add_active_consumption(None, player_id, ThreadType.USER, "AvalonQuest", prompt, args)
-
-        # Five attempts failed
-        elif len(game["Leaders"]) >= 5:
-            group_reply += "\n\nFive attempts to create a team have failed. The side of evil wins by default."
-            del _games[args]
-            # TODO game rewards
-
-        # Create another team
-        else:
-            game["State"] = _GameState.TEAM.value
-            order = list(game["Players"].keys())
-            random.shuffle(order)
-            for user_id in order:
-                if user_id not in game["Leaders"]:
-                    game["Leaders"].append(user_id)
-                    break
-            game["Team"] = []
-            group_reply += "\n\nThe vote has failed. {} ".format(game["Players"][game["Leaders"][-1]]["Name"])
-            group_reply += "has been assigned as the new leader. As before, use \"!avalon add <name>\", "
-            group_reply += "\"!avalon clear\", and \"!avalon submit\" to create the team."
-            if len(game["Leaders"]) == 5:
-                group_reply += "\n\nNote that this is the last attempt! The side of evil wins by default "
-                group_reply += "if the vote does not pass this time."
-        client.send(Message(group_reply), args, ThreadType.GROUP)
+        _on_vote_completion(args)
 
     if args in _games:
         group_update(args, {"$set": {"Avalon": _games[args]}})
     else:
         group_update(args, {"$unset": {"Avalon": None}})
     return result
+
+
+def _on_vote_completion(thread_id):
+    game = _games[thread_id]
+    reply = ""
+    if len(game["Votes"]["Accept"]):
+        reply += "*Accept*:"
+        for user_id in game["Votes"]["Accept"]:
+            reply += "\n-> {}".format(game["Players"][user_id]["Name"])
+    if len(game["Votes"]["Reject"]):
+        reply += "\n*Reject*:"
+        for user_id in game["Votes"]["Reject"]:
+            reply += "\n-> {}".format(game["Players"][user_id]["Name"])
+
+    # Begin quest phase
+    if len(game["Votes"]["Accept"]) > len(game["Votes"]["Reject"]):
+        game["State"] = _GameState.QUEST.value
+        del game["Attempts"]
+        game["Votes"] = {"Success": [], "Fail": []}
+        quest = game["Success"] + game["Fail"]
+        fail_threshold = _FAIL_THRESHOLD[len(game["Players"]) - _MIN_PLAYERS][quest]
+        reply += "\n\nThe vote has passed! The team must now vote to complete the quest in private chat."
+        reply += " The quest fails with {} fail vote(s).".format(fail_threshold)
+        prompt = "\n\nEnter \"success\" or \"fail\" to determine the outcome of the quest. "
+        prompt += "The quest fails with {} fail vote(s).\n\n".format(fail_threshold)
+        prompt += "The team consists of the following players:"
+        for member in game["Team"]:
+            prompt += "\n-> {}".format(game["Players"][member]["Name"])
+        for player_id in game["Team"]:
+            add_active_consumption(None, player_id, ThreadType.USER, "AvalonQuest", prompt, thread_id)
+
+    # Five attempts failed
+    elif game["Attempts"] >= 5:
+        reply += "\n\nFive attempts to create a team have failed. The side of evil wins by default."
+        del _games[thread_id]
+        # TODO game rewards
+
+    # Create another team
+    else:
+        game["State"] = _GameState.TEAM.value
+        game["Leader"] = (game["Leader"] + 1) % len(game["Order"])
+        game["Team"] = []
+        game["Attempts"] += 1
+        del game["Votes"]
+        leader_id = game["Order"][game["Leader"]]
+        reply += "\n\nThe vote has failed. {} ".format(game["Players"][leader_id]["Name"])
+        reply += "has been assigned as the new leader. As before, use \"!avalon add <name>\", "
+        reply += "\"!avalon clear\", and \"!avalon submit\" to create the team."
+        if game["Attempts"] == 4:
+            reply += "\n\nNote that this is the last attempt! The side of evil wins by default "
+            reply += "if the vote does not pass this time."
+    client.send(Message(reply), thread_id, ThreadType.GROUP)
 
 
 def _prompt_quest(author, text, thread_id, thread_type, args):
@@ -441,49 +456,58 @@ def _prompt_quest(author, text, thread_id, thread_type, args):
                 reply = "The side of good is not allowed to fail quests. Please vote success instead."
             else:
                 game["Votes"]["Fail"].append(author["_id"])
-        if len(game["Team"]) == len(game["Votes"]["Success"]) + len(game["Votes"]["Fail"]):
-            quest = game["Success"] + game["Fail"]
-            fail_threshold = _FAIL_THRESHOLD[len(game["Players"]) - _MIN_PLAYERS][quest]
-
-            if len(game["Votes"]["Fail"]) < fail_threshold:
-                game["Success"] += 1
-                group_reply = "The quest was completed successfully!"
-            else:
-                game["Fail"] += 1
-                group_reply = "The quest was sabotaged!"
-
-            if game["Success"] >= 3:
-                game["State"] = _GameState.ASSASSIN.value
-                del game["Team"]
-                del game["Votes"]
-                mordred = next(filter(lambda p: p["Role"] == "Mordred", game["Players"].values()), None)["Name"]
-                group_reply += " The side of now has one last chance to win the game by assassinating Merlin. "
-                group_reply += " Use \"!avalon kill <name>\" to select your target if you are Mordred.\n\n"
-                group_reply += "*Mordred*: {}\n*Merlin*: ???".format(mordred)
-            elif game["Fail"] >= 3:
-                group_reply += " The side of evil wins!"  # TODO game rewards
-                del _games[args]
-            else:
-                game["State"] = _GameState.TEAM.value
-                game["Leaders"] = [random.choice(list(game["Players"].keys()))]
-                game["Team"] = []
-                del game["Votes"]
-                quest = game["Success"] + game["Fail"]
-                team_size = _TEAM_SIZE[len(game["Players"]) - _MIN_PLAYERS][quest]
-                group_reply += "\n\n*Successful quests*: {}\n".format(game["Success"])
-                group_reply += "*Failed quests: {}*\n\n".format(game["Fail"])
-                group_reply += "The new leader is {} ".format(game["Players"][game["Leaders"][-1]]["Name"])
-                group_reply += "and {} players are needed for the team. ".format(team_size)
-                group_reply += "Use \"!avalon add <name>\" to add players to the team, \"!avalon clear\" "
-                group_reply += "to clear the current team, and \"!avalon submit\" to submit the current team."
-
-            client.send(Message(group_reply), args, ThreadType.GROUP)
     client.send(Message(reply), thread_id, ThreadType.USER)
+
+    # Check for quest completion
+    if len(game["Team"]) == len(game["Votes"]["Success"]) + len(game["Votes"]["Fail"]):
+        _on_quest_completion(args)
+
     if args in _games:
         group_update(args, {"$set": {"Avalon": _games[args]}})
     else:
         group_update(args, {"$unset": {"Avalon": None}})
     return result
+
+
+def _on_quest_completion(thread_id):
+    game = _games[thread_id]
+    quest = game["Success"] + game["Fail"]
+    fail_threshold = _FAIL_THRESHOLD[len(game["Players"]) - _MIN_PLAYERS][quest]
+
+    if len(game["Votes"]["Fail"]) < fail_threshold:
+        game["Success"] += 1
+        reply = "The quest was completed successfully!"
+    else:
+        game["Fail"] += 1
+        reply = "The quest was sabotaged!"
+
+    if game["Success"] >= 3:
+        game["State"] = _GameState.ASSASSIN.value
+        del game["Team"]
+        del game["Votes"]
+        mordred = next(filter(lambda p: p["Role"] == "Mordred", game["Players"].values()), None)["Name"]
+        reply += " The side of now has one last chance to win the game by assassinating Merlin. "
+        reply += " Use \"!avalon kill <name>\" to select your target if you are Mordred.\n\n"
+        reply += "*Mordred*: {}\n*Merlin*: ???".format(mordred)
+    elif game["Fail"] >= 3:
+        reply += " The side of evil wins!"  # TODO game rewards
+        del _games[thread_id]
+    else:
+        game["State"] = _GameState.TEAM.value
+        game["Leader"] = (game["Leader"] + 1) % len(game["Order"])
+        game["Team"] = []
+        game["Attempts"] = 0
+        del game["Votes"]
+        quest = game["Success"] + game["Fail"]
+        team_size = _TEAM_SIZE[len(game["Players"]) - _MIN_PLAYERS][quest]
+        reply += "\n\n*Successful quests*: {}\n".format(game["Success"])
+        reply += "*Failed quests: {}*\n\n".format(game["Fail"])
+        leader_id = game["Order"][game["Leader"]]
+        reply += "The new leader is {} ".format(game["Players"][leader_id]["Name"])
+        reply += "and {} players are needed for the team. ".format(team_size)
+        reply += "Use \"!avalon add <name>\" to add players to the team, \"!avalon clear\" "
+        reply += "to clear the current team, and \"!avalon submit\" to submit the current team."
+    client.send(Message(reply), thread_id, ThreadType.GROUP)
 
 
 _avalon_info = """<<Avalon>>
