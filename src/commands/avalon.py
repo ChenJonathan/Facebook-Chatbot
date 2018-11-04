@@ -39,7 +39,7 @@ _games = {group["_id"]: group["Avalon"] for group in group_query_all({"Avalon": 
 
 
 def _avalon_handler(author, text, thread_id, thread_type):
-    command, text = partition(text, ["status", "start", "join", "add", "clear", "submit"])
+    command, text = partition(text, ["start", "join", "add", "clear", "submit", "kill", "status"])
     command = command or "status"
 
     result = False
@@ -49,6 +49,8 @@ def _avalon_handler(author, text, thread_id, thread_type):
         result = _join_handler(author, thread_id)
     elif command in ["add", "clear", "submit"]:
         result = _team_handler(author, command, text, thread_id)
+    elif command == "kill":
+        result = _kill_handler(author, text, thread_id)
 
     if result:
         group_update(thread_id, {"$set": {"Avalon": _games[thread_id]}})
@@ -75,7 +77,7 @@ def _start_handler(author, thread_id):
         elif author["_id"] != game["Host"]:
             reply = "Only the session host can start the game."
         else:
-            _assign_roles(thread_id)
+            _start_game(thread_id)
             game["State"] = _GameState.TEAM.value
             game["Leaders"] = [random.choice(list(game["Players"].keys()))]
             game["Team"] = []
@@ -163,6 +165,30 @@ def _team_handler(author, command, text, thread_id):
     return True
 
 
+def _kill_handler(author, text, thread_id):
+    game = _games.get(thread_id, None)
+    if game is None:
+        return False
+    elif game["State"] != _GameState.ASSASSIN.value:
+        reply = "It is not yet time to assassinate Merlin."
+    elif game["Players"][author["_id"]]["Role"] != "Mordred":
+        reply = "Only Mordred can name an assassination target."
+    else:
+        user = match_user_in_group(thread_id, text)
+        if user is None:
+            reply = "User not found."
+        elif user["_id"] not in game["Players"]:
+            reply = "{} is not in the game.".format(user["Name"])
+        elif game["Players"][user["_id"]]["Role"] == "Merlin":
+            reply = "The side of evil wins! Merlin was chosen correctly."  # TODO game rewards
+        else:
+            merlin = next(filter(lambda p: p["Role"] == "Merlin", game["Players"].values()), None)["Name"]
+            reply = "The side of good wins! Merlin's real identity was {}.".format(merlin)  # TODO game rewards
+
+    client.send(Message(reply), thread_id, ThreadType.GROUP)
+    return True
+
+
 def _status_handler(thread_id):
     game = _games.get(thread_id, None)
     if game is None:
@@ -218,16 +244,15 @@ def _status_handler(thread_id):
             reply += "\n-> {}".format(game["Players"][user_id]["Name"])
 
     else:
-        reply = "Three quests have been completed successfully, but Mordred still has one last chance to kill "
+        reply = "Three quests have been completed successfully, but Mordred still has one last chance to assassinate "
         reply += "Merlin. Use \"!avalon kill <name>\" to select your target if you are Mordred.\n\n"
         mordred = next(filter(lambda p: p["Role"] == "Mordred", game["Players"].values()), None)["Name"]
-        reply += "*Mordred*: {}".format(mordred)
-        reply += "*Merlin*: ???"
+        reply += "*Mordred*: {}\n*Merlin*: ???".format(mordred)
 
     client.send(Message(reply), thread_id, ThreadType.GROUP)
 
 
-def _assign_roles(thread_id):
+def _start_game(thread_id):
     game = _games[thread_id]
     order = list(game["Players"].values())
     random.shuffle(order)
@@ -428,8 +453,13 @@ def _prompt_quest(author, text, thread_id, thread_type, args):
                 group_reply = "The quest was sabotaged!"
 
             if game["Success"] >= 3:
-                group_reply += " The side of good wins!"  # TODO assassin phase and delete team / votes
-                del _games[args]
+                game["State"] = _GameState.ASSASSIN.value
+                del game["Team"]
+                del game["Votes"]
+                mordred = next(filter(lambda p: p["Role"] == "Mordred", game["Players"].values()), None)["Name"]
+                group_reply += " The side of now has one last chance to win the game by assassinating Merlin. "
+                group_reply += " Use \"!avalon kill <name>\" to select your target if you are Mordred.\n\n"
+                group_reply += "*Mordred*: {}\n*Merlin*: ???".format(mordred)
             elif game["Fail"] >= 3:
                 group_reply += " The side of evil wins!"  # TODO game rewards
                 del _games[args]
